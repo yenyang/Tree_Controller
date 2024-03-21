@@ -7,7 +7,6 @@ namespace Tree_Controller.Tools
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Xml.Serialization;
     using Colossal.Logging;
@@ -22,7 +21,6 @@ namespace Tree_Controller.Tools
     using Unity.Entities;
     using Unity.Jobs;
     using UnityEngine.InputSystem;
-    using static Colossal.AssetPipeline.Diagnostic.Report;
 
     /// <summary>
     /// UI system for Object Tool while using tree prefabs.
@@ -161,15 +159,13 @@ namespace Tree_Controller.Tools
             AddBinding(m_IsVegetation = new ValueBinding<bool>(ModId, "IsVegetation", false));
             AddBinding(m_IsTree = new ValueBinding<bool>(ModId, "IsTree", false));
             AddBinding(m_Radius = new ValueBinding<float>(ModId, "Radius", 100f));
-            AddBinding(new TriggerBinding(ModId, "radius-up-arrow", IncreaseRadius));
-            AddBinding(new TriggerBinding(ModId, "radius-down-arrow", DecreaseRadius));
 
             // This section handles trigger bindings which listen for triggers from UI and then start an event.
             AddBinding(new TriggerBinding<int>(ModId, "ChangeToolMode", ChangeToolMode));
             AddBinding(new TriggerBinding<int>(ModId, "ChangeSelectedAge", ChangeSelectedAge));
             AddBinding(new TriggerBinding<int>(ModId, "ChangeSelectionMode", ChangeSelectionMode));
-            AddBinding(new TriggerBinding<int>(ModId, "ChangeSelectedAge", ChangeSelectedAge));
-            AddBinding(new TriggerBinding<int>(ModId, "ChangeSelectionMode", ChangeSelectionMode));
+            AddBinding(new TriggerBinding(ModId, "radius-up-arrow", IncreaseRadius));
+            AddBinding(new TriggerBinding(ModId, "radius-down-arrow", DecreaseRadius));
 
             m_VegetationQuery = GetEntityQuery(ComponentType.ReadOnly<Vegetation>());
 
@@ -205,12 +201,16 @@ namespace Tree_Controller.Tools
         {
             Ages selectedAges = (Ages)m_SelectedAges.value;
             Ages toggledAge = (Ages)age;
+            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeSelectedAge)} selectedAges = {selectedAges}");
+            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeSelectedAge)} toggled = {toggledAge}");
             if (toggledAge != Ages.All && (selectedAges & Ages.All) == Ages.All)
             {
+                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeSelectedAge)} removed all.");
                 selectedAges &= ~Ages.All;
             }
             else if (toggledAge == Ages.All && selectedAges != Ages.None)
             {
+                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeSelectedAge)} setting to none.");
                 m_SelectedAges.Update((int)Ages.None);
                 return;
             }
@@ -229,6 +229,7 @@ namespace Tree_Controller.Tools
                 selectedAges |= Ages.All;
             }
 
+            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeSelectedAge)} selectedAges = {selectedAges}");
             m_SelectedAges.Update((int)selectedAges);
         }
 

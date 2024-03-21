@@ -107,6 +107,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
         const lineToolActive = useValue(tool.activeTool$).id == "Line Tool";
         const SelectionMode = useValue(SelectionMode$);
         const CurrentToolMode = useValue(ToolMode$);
+        console.log(useValue(SelectedAges$));
         const SelectedAges = useValue(SelectedAges$) as Ages;
         const Radius = useValue(Radius$);
 

@@ -213,6 +213,11 @@ namespace Tree_Controller.Tools
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeSelectedAge)} setting to none.");
                 m_SelectedAges.Update((int)Ages.None);
                 return;
+            } else if (toggledAge == Ages.All && selectedAges == Ages.None)
+            {
+                selectedAges |= Ages.Child | Ages.Teen | Ages.Adult | Ages.Elderly | Ages.Elderly | Ages.All;
+                m_SelectedAges.Update((int)selectedAges);
+                return;
             }
 
             if ((selectedAges & toggledAge) == toggledAge)

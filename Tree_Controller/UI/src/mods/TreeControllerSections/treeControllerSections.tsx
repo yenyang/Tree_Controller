@@ -107,9 +107,10 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
         const lineToolActive = useValue(tool.activeTool$).id == "Line Tool";
         const SelectionMode = useValue(SelectionMode$);
         const CurrentToolMode = useValue(ToolMode$);
-        console.log(useValue(SelectedAges$));
         const SelectedAges = useValue(SelectedAges$) as Ages;
         const Radius = useValue(Radius$);
+        const IsVegetation = useValue(IsVegetation$);
+        const IsTree = useValue(IsTree$);
 
 
         // These set up state variables for custom sets switching from number to save disk icon.
@@ -200,7 +201,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
 
         var result = Component();
         
-        if (objectToolActive || treeControllerToolActive || lineToolActive) 
+        if (((objectToolActive || treeControllerToolActive || lineToolActive) && IsVegetation) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge) ) 
         {
             result.props.children?.push
             (
@@ -223,6 +224,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                         <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"custom 5"}      /*onSelect={() => handleClick("rotatoin")}*/       children={GenerateCustomSetNumber5()}   focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                     </VanillaComponentResolver.instance.Section>
                     )}
+                    { IsTree && (
                     <VanillaComponentResolver.instance.Section title={"Age"}>
                         <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.All) == Ages.All}         tooltip={"clear"}       onSelect={() => changeSelectedAge(Ages.All)}        src={clearAgesSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.Child) == Ages.Child}     tooltip={"child"}       onSelect={() => changeSelectedAge(Ages.Child)}      src={childSrc}           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
@@ -231,6 +233,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                         <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.Elderly) == Ages.Elderly} tooltip={"elderly"}     onSelect={() => changeSelectedAge(Ages.Elderly)}    src={elderlySrc}         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.Dead) == Ages.Dead}       tooltip={"dead"}        onSelect={() => changeSelectedAge(Ages.Dead)}       src={deadSrc}            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                     </VanillaComponentResolver.instance.Section>
+                    )}
                     { treeControllerToolActive && (
                     <VanillaComponentResolver.instance.Section title={"Selection"}>
                         <VanillaComponentResolver.instance.ToolButton  selected={SelectionMode == Selection.Single}         tooltip={"single tree"}      onSelect={() => changeSelectionMode(Selection.Single)}             src={adultSrc}            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>

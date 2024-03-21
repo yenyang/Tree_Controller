@@ -47,7 +47,6 @@ namespace Tree_Controller.Systems
             m_EndFrameBarrier = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_SafelyRemoveSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<SafelyRemoveSystem>();
             m_Log.Info($"{nameof(LumberSystem)} created!");
-            RequireForUpdate(m_WoodResourceQuery);
         }
 
         /// <inheritdoc/>

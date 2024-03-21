@@ -5,6 +5,7 @@
 namespace Tree_Controller.Tools
 {
     using Colossal.UI.Binding;
+    using System;
 
     /// <summary>
     /// A enum of Ages that are selected.
@@ -124,11 +125,11 @@ namespace Tree_Controller.Tools
         {
             writer.TypeBegin(GetType().FullName);
             writer.PropertyName(nameof(selectedAges));
-            writer.Write((byte)selectedAges);
+            writer.Write(Enum.GetName(typeof(Ages), selectedAges));
             writer.PropertyName(nameof(toolMode));
-            writer.Write((byte)toolMode);
+            writer.Write(Enum.GetName(typeof(ToolMode), toolMode));
             writer.PropertyName(nameof(selection));
-            writer.Write((byte)selection);
+            writer.Write(Enum.GetName(typeof(Selection), selection));
             writer.TypeEnd();
         }
     }

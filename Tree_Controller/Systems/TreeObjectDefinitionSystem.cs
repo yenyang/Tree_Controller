@@ -34,6 +34,7 @@ namespace Tree_Controller.Systems
         };
 
         private ToolSystem m_ToolSystem;
+        private TreeControllerUISystem m_TreeControllerUISystem;
         private ObjectToolSystem m_ObjectToolSystem;
         private PrefabSystem m_PrefabSystem;
         private EntityQuery m_ObjectDefinitionQuery;
@@ -53,6 +54,7 @@ namespace Tree_Controller.Systems
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
+            m_TreeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
             m_ObjectToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
             m_TreeControllerTool = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerTool>();
@@ -87,10 +89,11 @@ namespace Tree_Controller.Systems
                 }
 
                 Unity.Mathematics.Random random = new ((uint)(Mathf.Abs(currentObjectDefinition.m_Position.x) + Mathf.Abs(currentObjectDefinition.m_Position.z)) * 1000);
+                /*
                 if (TreeControllerMod.Instance.Settings.RandomRotation && !m_ObjectToolSystem.brushing)
                 {
                     currentObjectDefinition.m_Rotation = Unity.Mathematics.quaternion.RotateY(random.NextFloat(2f * (float)Math.PI));
-                }
+                }*/
 
                 Entity prefabEntity = currentCreationDefinition.m_Prefab;
 
@@ -110,7 +113,7 @@ namespace Tree_Controller.Systems
                     return;
                 }
 
-                TreeState nextTreeState = m_TreeControllerTool.GetNextTreeState(ref random);
+                TreeState nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random);
                 if (BrushTreeStateAges.ContainsKey(nextTreeState))
                 {
                     currentObjectDefinition.m_Age = BrushTreeStateAges[nextTreeState];

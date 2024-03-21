@@ -18,13 +18,14 @@ namespace Tree_Controller.Tools
         /// <summary>
         /// A dictionary of ToolMode Tooltips.
         /// </summary>
-        private readonly Dictionary<TreeControllerTool.TCSelectionMode, StringTooltip> m_ToolModeToolTipsDictionary = new ()
+        private readonly Dictionary<Selection, StringTooltip> m_ToolModeToolTipsDictionary = new ()
         {
-             { TreeControllerTool.TCSelectionMode.WholeMap, new StringTooltip() { path = "Options.TOOLTIPYYTC[WholeMapApply]", value = LocalizedString.IdWithFallback("Options.TOOLTIPYYTC[WholeMapApply]", "Right Click to Apply.") } },
+             { Selection.Map, new StringTooltip() { path = "Options.TOOLTIPYYTC[WholeMapApply]", value = LocalizedString.IdWithFallback("Options.TOOLTIPYYTC[WholeMapApply]", "Right Click to Apply.") } },
         };
 
         private ToolSystem m_ToolSystem;
-        private TreeControllerTool m_TCTool;
+        private TreeControllerTool m_TreeControllerTool;
+        private TreeControllerUISystem m_TreeControllerUISystem;
         private StringTooltip m_ToolModeTooltip;
 
         /// <summary>
@@ -39,25 +40,22 @@ namespace Tree_Controller.Tools
         {
             base.OnCreate();
             m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
-            m_TCTool = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerTool>();
+            m_TreeControllerTool = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerTool>();
+            m_TreeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
             m_ToolModeTooltip = new StringTooltip();
-            if (m_ToolModeToolTipsDictionary.ContainsKey(m_TCTool.SelectionMode))
-            {
-                m_ToolModeTooltip = m_ToolModeToolTipsDictionary[m_TCTool.SelectionMode];
-            }
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (m_ToolSystem.activeTool != m_TCTool)
+            if (m_ToolSystem.activeTool != m_TreeControllerTool)
             {
                 return;
             }
 
-            if (m_ToolModeToolTipsDictionary.ContainsKey(m_TCTool.SelectionMode))
+            if (m_ToolModeToolTipsDictionary.ContainsKey(m_TreeControllerUISystem.SelectionMode))
             {
-                m_ToolModeTooltip = m_ToolModeToolTipsDictionary[m_TCTool.SelectionMode];
+                m_ToolModeTooltip = m_ToolModeToolTipsDictionary[m_TreeControllerUISystem.SelectionMode];
                 AddMouseTooltip(m_ToolModeTooltip);
             }
         }

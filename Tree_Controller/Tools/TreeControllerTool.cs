@@ -37,128 +37,25 @@ namespace Tree_Controller.Tools
     /// </summary>
     public partial class TreeControllerTool : ToolBaseSystem
     {
-        private readonly Dictionary<TreeState, float> AgeWeights = new ()
-        {
-            { 0, ObjectUtils.TREE_AGE_PHASE_CHILD },
-            { TreeState.Teen,  ObjectUtils.TREE_AGE_PHASE_TEEN },
-            { TreeState.Adult, ObjectUtils.TREE_AGE_PHASE_ADULT },
-            { TreeState.Elderly, ObjectUtils.TREE_AGE_PHASE_ELDERLY },
-            { TreeState.Dead, ObjectUtils.TREE_AGE_PHASE_DEAD },
-        };
-
         private ProxyAction m_ApplyAction;
         private ProxyAction m_SecondaryApplyAction;
         private OverlayRenderSystem m_OverlayRenderSystem;
         private ToolOutputBarrier m_ToolOutputBarrier;
         private EntityQuery m_VegetationQuery;
-        private NativeList<TreeState> m_SelectedTreeStates;
         private ObjectToolSystem m_ObjectToolSystem;
         private NativeList<Entity> m_SelectedTreePrefabEntities;
         [CanBeNull]
         private PrefabBase m_OriginallySelectedPrefab;
-        private TCSelectionMode m_SelectionMode = TCSelectionMode.Radius;
-        private float m_Radius = 100f;
-        private bool m_AtLeastOneAgeSelected = true;
         private ILog m_Log;
         private TreeControllerUISystem m_TreeControllerUISystem;
-
-        /// <summary>
-        /// An enum for the tool mod selection.
-        /// </summary>
-        public enum TCSelectionMode
-        {
-            /// <summary>
-            /// Tree Controller Tool will only apply to one tree either on the map, inside a net or building.
-            /// </summary>
-            SingleTree,
-
-            /// <summary>
-            /// Tree Controller Tool will apply to all trees inside a net or building.
-            /// </summary>
-            WholeBuildingOrNet,
-
-            /// <summary>
-            /// Tree controller tool will apply to all trees on the map, inside a net, or building within specified radius.
-            /// </summary>
-            Radius,
-
-            /// <summary>
-            /// Tree controller tool will apply to all trees on the map, inside all nets, and inside all buildings.
-            /// </summary>
-            WholeMap,
-        }
-
 
         /// <inheritdoc/>
         public override string toolID => "Tree Controller Tool";
 
         /// <summary>
-        /// Gets or sets the TreeAgeChanger ToolMode.
-        /// </summary>
-        public TCSelectionMode SelectionMode { get => m_SelectionMode; set => m_SelectionMode = value; }
-
-        /// <summary>
-        /// Gets or sets the TreeAgeChanger Radius.
-        /// </summary>
-        public float Radius { get => m_Radius; set => m_Radius = value; }
-
-        /// <summary>
         /// Gets or sets the OriginallySelectedPrefab.
         /// </summary>
         public PrefabBase OriginallySelectedPrefab { get => m_OriginallySelectedPrefab; set => m_OriginallySelectedPrefab = value; }
-
-        /// <summary>
-        /// Gets a Tree State from Selected tree States. Only random implemented right now.
-        /// </summary>
-        public TreeState NextTreeState
-        {
-            get
-            {
-                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(NextTreeState)}");
-                if (m_SelectedTreeStates.Length == 0)
-                {
-                    m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(NextTreeState)} selected tree states.length == 0");
-                    return TreeState.Adult;
-                }
-
-                switch (TreeControllerMod.Instance.Settings.AgeSelectionTechnique)
-                {
-                    case TreeControllerSettings.AgeSelectionOptions.RandomEqualWeight:
-                        Unity.Mathematics.Random random = new ((uint)UnityEngine.Random.Range(1, 100000));
-                        return m_SelectedTreeStates[random.NextInt(m_SelectedTreeStates.Length)];
-
-                    case TreeControllerSettings.AgeSelectionOptions.RandomWeighted:
-                        float totalWeight = 0f;
-                        for (int i = 0; i < m_SelectedTreeStates.Length; i++)
-                        {
-                            if (AgeWeights.ContainsKey(m_SelectedTreeStates[i]))
-                            {
-                                totalWeight += AgeWeights[m_SelectedTreeStates[i]];
-                            }
-                        }
-
-                        Unity.Mathematics.Random random2 = new ((uint)UnityEngine.Random.Range(1, 100000));
-                        float randomWeight = random2.NextFloat(totalWeight);
-                        float currentWeight = 0f;
-                        for (int i = 0; i < m_SelectedTreeStates.Length; i++)
-                        {
-                            if (AgeWeights.ContainsKey(m_SelectedTreeStates[i]))
-                            {
-                                currentWeight += AgeWeights[m_SelectedTreeStates[i]];
-                            }
-
-                            if (randomWeight < currentWeight)
-                            {
-                                return m_SelectedTreeStates[i];
-                            }
-                        }
-
-                        return m_SelectedTreeStates[m_SelectedTreeStates.Length - 1];
-                }
-
-                return TreeState.Adult;
-            }
-        }
 
         /// <summary>
         /// Adds the selected Prefab to the list by finding prefab entity.
@@ -219,46 +116,6 @@ namespace Tree_Controller.Tools
         {
             m_SelectedTreePrefabEntities.Clear();
             m_OriginallySelectedPrefab = null;
-        }
-
-        /// <summary>
-        /// A way for to apply the selected age selection.
-        /// </summary>
-        /// <param name="ages">An array of ages for selected trees. </param>
-        public void ApplySelectedAges(bool[] ages)
-        {
-            m_SelectedTreeStates.Clear();
-            if (CheckForAtLeastOneSelectedAge(ages, ref m_SelectedTreeStates))
-            {
-                m_AtLeastOneAgeSelected = true;
-            }
-            else
-            {
-                m_AtLeastOneAgeSelected = false;
-            }
-        }
-
-        /// <summary>
-        /// Gets the selected ages for export to JS.
-        /// </summary>
-        /// <returns>An array of bools to represent selected ages.</returns>
-        public bool[] GetSelectedAges()
-        {
-            bool[] ages = new bool[5];
-            for (int i = 0; i < m_SelectedTreeStates.Length; i++)
-            {
-                TreeState state = m_SelectedTreeStates[i];
-                if (state == 0)
-                {
-                    ages[0] = true;
-                }
-                else
-                {
-                    ages[(int)Math.Log((double)state, 2.0) + 1] = true;
-                }
-            }
-
-            return ages;
         }
 
         /// <summary>
@@ -344,21 +201,21 @@ namespace Tree_Controller.Tools
         public override void InitializeRaycast()
         {
             base.InitializeRaycast();
-            if (m_SelectionMode == TCSelectionMode.SingleTree)
+            if (m_TreeControllerUISystem.SelectionMode == Selection.Single)
             {
                 m_ToolRaycastSystem.typeMask = TypeMask.StaticObjects | TypeMask.Net;
                 m_ToolRaycastSystem.netLayerMask = Layer.Road | Layer.PublicTransportRoad;
             }
-            else if (m_SelectionMode == TCSelectionMode.WholeBuildingOrNet)
+            else if (m_TreeControllerUISystem.SelectionMode == Selection.BuildingOrNet)
             {
                 m_ToolRaycastSystem.typeMask = TypeMask.StaticObjects | TypeMask.Net | TypeMask.Terrain;
                 m_ToolRaycastSystem.netLayerMask = Layer.Road | Layer.PublicTransportRoad;
             }
-            else if (m_SelectionMode == TCSelectionMode.Radius)
+            else if (m_TreeControllerUISystem.SelectionMode == Selection.Radius)
             {
                 m_ToolRaycastSystem.typeMask = TypeMask.Terrain;
             }
-            else if (m_SelectionMode == TCSelectionMode.WholeMap)
+            else if (m_TreeControllerUISystem.SelectionMode == Selection.Map)
             {
                 m_ToolRaycastSystem.typeMask = TypeMask.Terrain;
             }
@@ -370,54 +227,6 @@ namespace Tree_Controller.Tools
         public void RequestDisable()
         {
             m_ToolSystem.activeTool = m_DefaultToolSystem;
-        }
-
-        /// <summary>
-        /// Gets a tree state from the selected tree state given a random parameter.
-        /// </summary>
-        /// <param name="random">A source of randomness.</param>
-        /// <returns>A random tree state from selected or Adult if none are selected.</returns>
-        public TreeState GetNextTreeState(ref Unity.Mathematics.Random random)
-        {
-            if (m_SelectedTreeStates.Length == 0)
-            {
-                return TreeState.Adult;
-            }
-
-            switch (TreeControllerMod.Instance.Settings.AgeSelectionTechnique)
-            {
-                case TreeControllerSettings.AgeSelectionOptions.RandomEqualWeight:
-                    return m_SelectedTreeStates[random.NextInt(m_SelectedTreeStates.Length)];
-
-                case TreeControllerSettings.AgeSelectionOptions.RandomWeighted:
-                    float totalWeight = 0f;
-                    for (int i = 0; i < m_SelectedTreeStates.Length; i++)
-                    {
-                        if (AgeWeights.ContainsKey(m_SelectedTreeStates[i]))
-                        {
-                            totalWeight += AgeWeights[m_SelectedTreeStates[i]];
-                        }
-                    }
-
-                    float randomWeight = random.NextFloat(totalWeight);
-                    float currentWeight = 0f;
-                    for (int i = 0; i < m_SelectedTreeStates.Length; i++)
-                    {
-                        if (AgeWeights.ContainsKey(m_SelectedTreeStates[i]))
-                        {
-                            currentWeight += AgeWeights[m_SelectedTreeStates[i]];
-                        }
-
-                        if (randomWeight < currentWeight)
-                        {
-                            return m_SelectedTreeStates[i];
-                        }
-                    }
-
-                    return m_SelectedTreeStates[m_SelectedTreeStates.Length - 1];
-            }
-
-            return TreeState.Adult;
         }
 
         /// <summary>
@@ -452,10 +261,6 @@ namespace Tree_Controller.Tools
             m_OverlayRenderSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<OverlayRenderSystem>();
             m_ObjectToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_TreeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
-            m_SelectedTreeStates = new NativeList<TreeState>(1, Allocator.Persistent)
-            {
-                TreeState.Adult,
-            };
             m_SelectedTreePrefabEntities = new NativeList<Entity>(0, Allocator.Persistent);
             base.OnCreate();
 
@@ -504,6 +309,7 @@ namespace Tree_Controller.Tools
         protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
             inputDeps = Dependency;
+            NativeList<TreeState> selectedTreeStates = m_TreeControllerUISystem.GetSelectedAges();
             bool raycastFlag = GetRaycastResult(out Entity e, out RaycastHit hit);
             bool isVegetationPrefabFlag = false;
             if (EntityManager.TryGetComponent(e, out PrefabRef prefabEntity))
@@ -518,13 +324,13 @@ namespace Tree_Controller.Tools
             bool hasTransformComponentFlag = EntityManager.HasComponent<Game.Objects.Transform>(e);
             bool hasBufferFlag = EntityManager.HasBuffer<Game.Objects.SubObject>(e);
 
-            if (m_Radius > 0 && raycastFlag && m_SelectionMode == TCSelectionMode.Radius) // Radius Circle
+            if (m_TreeControllerUISystem.Radius > 0 && raycastFlag && m_TreeControllerUISystem.SelectionMode == Selection.Radius) // Radius Circle
             {
                 ToolRadiusJob toolRadiusJob = new ()
                 {
                     m_OverlayBuffer = m_OverlayRenderSystem.GetBuffer(out JobHandle outJobHandle),
                     m_Position = new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z),
-                    m_Radius = m_Radius,
+                    m_Radius = m_TreeControllerUISystem.Radius,
                 };
                 inputDeps = IJobExtensions.Schedule(toolRadiusJob, JobHandle.CombineDependencies(inputDeps, outJobHandle));
                 m_OverlayRenderSystem.AddBufferWriter(inputDeps);
@@ -532,17 +338,18 @@ namespace Tree_Controller.Tools
 
             if (m_ApplyAction.WasPressedThisFrame())
             {
-                if (m_SelectionMode == TCSelectionMode.SingleTree || m_SelectionMode == TCSelectionMode.WholeBuildingOrNet)
+                if (m_TreeControllerUISystem.SelectionMode == Selection.Single || m_TreeControllerUISystem.SelectionMode == Selection.BuildingOrNet)
                 {
                     if (raycastFlag && isVegetationPrefabFlag)
                     {
-                        if (m_AtLeastOneAgeSelected && hasTreeComponentFlag)
+                        if (m_TreeControllerUISystem.AtLeastOneAgeSelected && hasTreeComponentFlag)
                         {
+
                             ChangeTreeStateJob changeTreeStateJob = new ()
                             {
                                 m_Entity = e,
                                 m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
-                                m_Ages = m_SelectedTreeStates,
+                                m_Ages = selectedTreeStates,
                                 m_Tree = EntityManager.GetComponentData<Tree>(e),
                                 buffer = m_ToolOutputBarrier.CreateCommandBuffer(),
                             };
@@ -570,7 +377,7 @@ namespace Tree_Controller.Tools
                                 m_SelectedPrefabEntities = m_SelectedTreePrefabEntities,
                                 m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
                                 buffer = m_ToolOutputBarrier.CreateCommandBuffer(),
-                                m_Ages = m_SelectedTreeStates,
+                                m_Ages = selectedTreeStates,
                                 m_TreeDataLookup = SystemAPI.GetComponentLookup<TreeData>(isReadOnly: true),
                                 m_TreeLookup = SystemAPI.GetComponentLookup<Tree>(isReadOnly: true),
                             };
@@ -584,22 +391,22 @@ namespace Tree_Controller.Tools
                     }
                 }
             }
-            else if (m_ApplyAction.IsPressed() && m_SelectionMode == TCSelectionMode.Radius && raycastFlag)
+            else if (m_ApplyAction.IsPressed() && m_TreeControllerUISystem.SelectionMode == Selection.Radius && raycastFlag)
             {
                 bool overridePrefab = !m_SelectedTreePrefabEntities.IsEmpty;
-                if (m_AtLeastOneAgeSelected || overridePrefab)
+                if (m_TreeControllerUISystem.AtLeastOneAgeSelected || overridePrefab)
                 {
                     TreeChangerWithinRadius changeTreeAgeWithinRadiusJob = new()
                     {
                         m_EntityType = SystemAPI.GetEntityTypeHandle(),
                         m_Position = hit.m_HitPosition,
-                        m_Radius = m_Radius,
-                        m_Ages = m_SelectedTreeStates,
+                        m_Radius = m_TreeControllerUISystem.Radius,
+                        m_Ages = selectedTreeStates,
                         m_TransformType = SystemAPI.GetComponentTypeHandle<Game.Objects.Transform>(isReadOnly: true),
                         m_TreeType = SystemAPI.GetComponentTypeHandle<Game.Objects.Tree>(),
                         buffer = m_ToolOutputBarrier.CreateCommandBuffer().AsParallelWriter(),
                         m_PrefabRefType = SystemAPI.GetComponentTypeHandle<PrefabRef>(),
-                        m_OverrideState = m_AtLeastOneAgeSelected,
+                        m_OverrideState = m_TreeControllerUISystem.AtLeastOneAgeSelected,
                         m_OverridePrefab = overridePrefab,
                         m_Random = new((uint)UnityEngine.Random.Range(1, 100000)),
                         m_PrefabEntities = m_SelectedTreePrefabEntities,
@@ -611,19 +418,19 @@ namespace Tree_Controller.Tools
                     m_ToolOutputBarrier.AddJobHandleForProducer(inputDeps);
                 }
             }
-            else if (m_SecondaryApplyAction.WasPressedThisFrame() && m_SelectionMode == TCSelectionMode.WholeMap && raycastFlag)
+            else if (m_SecondaryApplyAction.WasPressedThisFrame() && m_TreeControllerUISystem.SelectionMode == Selection.Map && raycastFlag)
             {
                 bool overridePrefab = !m_SelectedTreePrefabEntities.IsEmpty;
-                if (m_AtLeastOneAgeSelected || overridePrefab)
+                if (m_TreeControllerUISystem.AtLeastOneAgeSelected || overridePrefab)
                 {
                     TreeChangerWholeMap changeTreeAgeWholeMap = new ()
                     {
                         m_EntityType = __TypeHandle.__Unity_Entities_Entity_TypeHandle,
-                        m_Ages = m_SelectedTreeStates,
+                        m_Ages = selectedTreeStates,
                         m_TreeType = SystemAPI.GetComponentTypeHandle<Game.Objects.Tree>(),
                         buffer = m_ToolOutputBarrier.CreateCommandBuffer().AsParallelWriter(),
                         m_PrefabRefType = GetComponentTypeHandle<PrefabRef>(),
-                        m_OverrideState = m_AtLeastOneAgeSelected,
+                        m_OverrideState = m_TreeControllerUISystem.AtLeastOneAgeSelected,
                         m_OverridePrefab = overridePrefab,
                         m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
                         m_PrefabEntities = m_SelectedTreePrefabEntities,
@@ -665,12 +472,12 @@ namespace Tree_Controller.Tools
                         {
                             Game.Objects.Transform currentTransform = EntityManager.GetComponentData<Game.Objects.Transform>(subObject);
                             float radius = 2f;
-                            if (m_SelectionMode == TCSelectionMode.Radius)
+                            if (m_TreeControllerUISystem.SelectionMode == Selection.Radius)
                             {
-                                radius = m_Radius;
+                                radius = m_TreeControllerUISystem.Radius;
                             }
 
-                            if (CheckForHoveringOverTree(new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z), currentTransform.m_Position, radius) || m_SelectionMode == TCSelectionMode.WholeBuildingOrNet)
+                            if (CheckForHoveringOverTree(new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z), currentTransform.m_Position, radius) || m_TreeControllerUISystem.SelectionMode == Selection.BuildingOrNet)
                             {
                                 TreeCircleRenderJob treeCircleRenderJob = new ()
                                 {
@@ -685,7 +492,7 @@ namespace Tree_Controller.Tools
                 }
             }
 
-            if (m_ApplyAction.WasReleasedThisFrame() && m_SelectionMode == TCSelectionMode.Radius)
+            if (m_ApplyAction.WasReleasedThisFrame() && m_TreeControllerUISystem.SelectionMode == Selection.Radius)
             {
                 applyMode = ApplyMode.Clear;
             }
@@ -694,6 +501,7 @@ namespace Tree_Controller.Tools
                 applyMode = ApplyMode.None;
             }
 
+            selectedTreeStates.Dispose(inputDeps);
             return inputDeps;
         }
 
@@ -778,20 +586,22 @@ namespace Tree_Controller.Tools
                     if (isVegetationPrefabFlag && EntityManager.HasComponent<Game.Objects.Transform>(subObject))
                     {
                         Game.Objects.Transform currentTransform = EntityManager.GetComponentData<Game.Objects.Transform>(subObject);
-                        if (CheckForHoveringOverTree(new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z), currentTransform.m_Position, 2f) || m_SelectionMode == TCSelectionMode.WholeBuildingOrNet)
+                        if (CheckForHoveringOverTree(new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z), currentTransform.m_Position, 2f) || m_TreeControllerUISystem.SelectionMode == Selection.BuildingOrNet)
                         {
-                            if (m_AtLeastOneAgeSelected && EntityManager.HasComponent<Tree>(subObject))
+                            if (m_TreeControllerUISystem.AtLeastOneAgeSelected && EntityManager.HasComponent<Tree>(subObject))
                             {
+                                NativeList<TreeState> selectedTreeStates = m_TreeControllerUISystem.GetSelectedAges();
                                 ChangeTreeStateJob changeTreeStateJob = new ()
                                 {
                                     m_Entity = subObject,
                                     m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
-                                    m_Ages = m_SelectedTreeStates,
+                                    m_Ages = selectedTreeStates,
                                     m_Tree = EntityManager.GetComponentData<Tree>(subObject),
                                     buffer = m_ToolOutputBarrier.CreateCommandBuffer(),
                                 };
                                 jobHandle = changeTreeStateJob.Schedule(jobHandle);
                                 m_ToolOutputBarrier.AddJobHandleForProducer(jobHandle);
+                                selectedTreeStates.Dispose(jobHandle);
                             }
 
                             bool doNotApplyTreePrefab = false;
@@ -808,18 +618,20 @@ namespace Tree_Controller.Tools
 
                             if (!m_SelectedTreePrefabEntities.IsEmpty && !doNotApplyTreePrefab)
                             {
+                                NativeList<TreeState> selectedTreeStates = m_TreeControllerUISystem.GetSelectedAges();
                                 ChangePrefabRefJob changePrefabRefJob = new ()
                                 {
                                     m_Entity = subObject,
                                     m_SelectedPrefabEntities = m_SelectedTreePrefabEntities,
                                     m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
                                     buffer = m_ToolOutputBarrier.CreateCommandBuffer(),
-                                    m_Ages = m_SelectedTreeStates,
+                                    m_Ages = selectedTreeStates,
                                     m_TreeDataLookup = SystemAPI.GetComponentLookup<TreeData>(isReadOnly: true),
                                     m_TreeLookup = SystemAPI.GetComponentLookup<Tree>(isReadOnly: true),
                                 };
                                 jobHandle = changePrefabRefJob.Schedule(jobHandle);
                                 m_ToolOutputBarrier.AddJobHandleForProducer(jobHandle);
+                                selectedTreeStates.Dispose(jobHandle);
                             }
                         }
                     }

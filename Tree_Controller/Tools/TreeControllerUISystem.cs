@@ -9,9 +9,11 @@ namespace Tree_Controller.Tools
     using System.Collections.Generic;
     using System.IO;
     using System.Xml.Serialization;
+    using cohtml.Net;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
     using Colossal.UI.Binding;
+    using Game.Objects;
     using Game.Prefabs;
     using Game.Tools;
     using Game.UI;
@@ -28,6 +30,15 @@ namespace Tree_Controller.Tools
     public partial class TreeControllerUISystem : UISystemBase
     {
         private const string ModId = "Tree_Controller";
+
+        private readonly Dictionary<TreeState, float> AgeWeights = new ()
+        {
+            { 0, ObjectUtils.TREE_AGE_PHASE_CHILD },
+            { TreeState.Teen,  ObjectUtils.TREE_AGE_PHASE_TEEN },
+            { TreeState.Adult, ObjectUtils.TREE_AGE_PHASE_ADULT },
+            { TreeState.Elderly, ObjectUtils.TREE_AGE_PHASE_ELDERLY },
+            { TreeState.Dead, ObjectUtils.TREE_AGE_PHASE_DEAD },
+        };
 
         private readonly List<PrefabID> m_VanillaDeciduousPrefabIDs = new()
         {
@@ -117,6 +128,145 @@ namespace Tree_Controller.Tools
         {
             get => m_ThemeEntity;
             set => m_ThemeEntity = value;
+        }
+
+        /// <summary>
+        /// Gets the current tool mode.
+        /// </summary>
+        public ToolMode CurrentToolMode { get => (ToolMode)m_ToolMode.value; }
+
+        /// <summary>
+        /// Gets the Selection mode for tree controller tool.
+        /// </summary>
+        public Selection SelectionMode { get => (Selection)m_SelectionMode.value; }
+
+        /// <summary>
+        /// Gets the radius for tree controller tool with radius tool mode.
+        /// </summary>
+        public float Radius { get => m_Radius.value; }
+
+        /// <summary>
+        /// Gets a value indicating whether gets a bool for whether there are any ages selected.
+        /// </summary>
+        public bool AtLeastOneAgeSelected { get => m_SelectedAges.value != 0; }
+
+        /// <summary>
+        /// Gets a native list of tree states from selected ages.
+        /// </summary>
+        /// <returns>Native List of tree states.</returns>
+        public NativeList<TreeState> GetSelectedAges()
+        {
+            Ages seletedAges = (Ages)m_SelectedAges.value;
+
+            NativeList<TreeState> treeState = new NativeList<TreeState>(Allocator.TempJob);
+
+            if (seletedAges == Ages.None)
+            {
+                treeState.Add(TreeState.Adult);
+                return treeState;
+            }
+
+            if ((seletedAges & Ages.Child) == Ages.Child)
+            {
+                treeState.Add(0);
+            }
+
+            if ((seletedAges & Ages.Teen) == Ages.Teen)
+            {
+                treeState.Add(TreeState.Teen);
+            }
+
+            if ((seletedAges & Ages.Adult) == Ages.Adult)
+            {
+                treeState.Add(TreeState.Adult);
+            }
+
+            if ((seletedAges & Ages.Elderly) == Ages.Elderly)
+            {
+                treeState.Add(TreeState.Elderly);
+            }
+
+            if ((seletedAges & Ages.Dead) == Ages.Dead)
+            {
+                treeState.Add(TreeState.Dead);
+            }
+
+            return treeState;
+        }
+
+        /// <summary>
+        /// Gets a tree state from the selected tree state given a random parameter.
+        /// </summary>
+        /// <param name="random">A source of randomness.</param>
+        /// <returns>A random tree state from selected or Adult if none are selected.</returns>
+        public TreeState GetNextTreeState(ref Unity.Mathematics.Random random)
+        {
+            List<TreeState> selectedTreeStates = new List<TreeState>();
+            Ages seletedAges = (Ages)m_SelectedAges.value;
+            if (seletedAges == Ages.None)
+            {
+                return TreeState.Adult;
+            }
+
+            if ((seletedAges & Ages.Child) == Ages.Child)
+            {
+                selectedTreeStates.Add(0);
+            }
+
+            if ((seletedAges & Ages.Teen) == Ages.Teen)
+            {
+                selectedTreeStates.Add(TreeState.Teen);
+            }
+
+            if ((seletedAges & Ages.Adult) == Ages.Adult)
+            {
+                selectedTreeStates.Add(TreeState.Adult);
+            }
+
+            if ((seletedAges & Ages.Elderly) == Ages.Elderly)
+            {
+                selectedTreeStates.Add(TreeState.Elderly);
+            }
+
+            if ((seletedAges & Ages.Dead) == Ages.Dead)
+            {
+                selectedTreeStates.Add(TreeState.Dead);
+            }
+
+            switch (TreeControllerMod.Instance.Settings.AgeSelectionTechnique)
+            {
+                case TreeControllerSettings.AgeSelectionOptions.RandomEqualWeight:
+                    return selectedTreeStates[random.NextInt(selectedTreeStates.Count)];
+
+                case TreeControllerSettings.AgeSelectionOptions.RandomWeighted:
+                    float totalWeight = 0f;
+                    for (int i = 0; i < selectedTreeStates.Count; i++)
+                    {
+                        if (AgeWeights.ContainsKey(selectedTreeStates[i]))
+                        {
+                            totalWeight += AgeWeights[selectedTreeStates[i]];
+                        }
+                    }
+
+                    float randomWeight = random.NextFloat(totalWeight);
+                    float currentWeight = 0f;
+                    for (int i = 0; i < selectedTreeStates.Count; i++)
+                    {
+                        if (AgeWeights.ContainsKey(selectedTreeStates[i]))
+                        {
+                            currentWeight += AgeWeights[selectedTreeStates[i]];
+                        }
+
+                        if (randomWeight < currentWeight)
+                        {
+                            return selectedTreeStates[i];
+                        }
+                    }
+
+                    return selectedTreeStates[selectedTreeStates.Count - 1];
+            }
+
+            return TreeState.Adult;
         }
 
         /// <inheritdoc/>
@@ -213,9 +363,10 @@ namespace Tree_Controller.Tools
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeSelectedAge)} setting to none.");
                 m_SelectedAges.Update((int)Ages.None);
                 return;
-            } else if (toggledAge == Ages.All && selectedAges == Ages.None)
+            }
+            else if (toggledAge == Ages.All && selectedAges == Ages.None)
             {
-                selectedAges |= Ages.Child | Ages.Teen | Ages.Adult | Ages.Elderly | Ages.Elderly | Ages.All;
+                selectedAges |= Ages.Child | Ages.Teen | Ages.Adult | Ages.Elderly | Ages.Elderly | Ages.Dead | Ages.All;
                 m_SelectedAges.Update((int)selectedAges);
                 return;
             }
@@ -264,16 +415,6 @@ namespace Tree_Controller.Tools
             }
 
             m_ToolSystem.activeTool = m_TreeControllerTool;
-        }
-
-        /// <summary>
-        /// C# event handler for event callback from UI JavaScript.
-        /// </summary>
-        /// <param name="ages">An array of bools for whether that age is selected.</param>
-        private void ChangeSelectedAges(bool[] ages)
-        {
-            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeSelectedAges)}");
-            m_TreeControllerTool.ApplySelectedAges(ages);
         }
 
         /// <summary>

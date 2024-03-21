@@ -4,9 +4,6 @@
 
 namespace Tree_Controller.Tools
 {
-    using Colossal.UI.Binding;
-    using System;
-
     /// <summary>
     /// A enum of Ages that are selected.
     /// </summary>
@@ -100,6 +97,7 @@ namespace Tree_Controller.Tools
         Map = 3,
     }
 
+    /*
     /// <summary>
     /// A JsonWritable binding for tree controller tool data.
     /// </summary>
@@ -133,4 +131,5 @@ namespace Tree_Controller.Tools
             writer.TypeEnd();
         }
     }
+    */
 }

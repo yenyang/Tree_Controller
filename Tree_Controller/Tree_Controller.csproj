@@ -139,7 +139,6 @@
 	  <Folder Include="l10n\" />
 	  <Folder Include="Utils\" />
 	  <Folder Include="UI\" />
-	  <Folder Include="Tools\" />
 	  <Folder Include="Systems\" />
 	  <Folder Include="Settings\" />
 	  <Folder Include="Patches\" />

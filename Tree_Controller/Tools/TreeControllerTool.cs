@@ -203,6 +203,14 @@ namespace Tree_Controller.Tools
             }
         }
 
+        /// <inheritdoc/>
+        public override void GetAvailableSnapMask(out Snap onMask, out Snap offMask)
+        {
+            base.GetAvailableSnapMask(out onMask, out offMask);
+            onMask |= Snap.ContourLines;
+            offMask |= Snap.ContourLines;
+        }
+
 
         /// <summary>
         /// Resets the selected Tree Prefabs.

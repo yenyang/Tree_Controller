@@ -1,13 +1,13 @@
 import {ModuleRegistryExtend} from "cs2/modding";
 import { bindValue, trigger, useValue } from "cs2/api";
-import { Tool, tool } from "cs2/bindings";
+import { tool } from "cs2/bindings";
 import mod from "../../../mod.json";
 import { VanillaComponentResolver } from "../VanillaComponentResolver/VanillaComponentResolver";
 import { useLocalization } from "cs2/l10n";
 import clearAgesSrc from "./All.svg";
 import brushSrc from "./Brush.svg";
 import styles from "./treeController.module.scss";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { Icon } from "cs2/ui";
 
 export enum Ages 
@@ -62,38 +62,16 @@ export const randomRotationSrc =    couiStandard +  "Dice.svg";
 export const ToolMode$ =            bindValue<number> (mod.id, 'ToolMode');
 export const SelectedAges$ =        bindValue<number> (mod.id, 'SelectedAges');
 export const SelectionMode$ =       bindValue<number> (mod.id, 'SelectionMode');
-/*
-export const RadiusValue$ =        bindValue<number> (mod.id, 'RadiusValue');
-export const MinDepthValue$ =      bindValue<number> (mod.id, 'MinDepthValue');
-export const AmountLocaleKey$ =    bindValue<string> (mod.id, 'AmountLocaleKey');
-export const AmountStep$ =         bindValue<number> (mod.id, 'AmountStep');
-export const RadiusStep$ =         bindValue<number> (mod.id, 'RadiusStep');
-export const MinDepthStep$ =       bindValue<number> (mod.id, 'MinDepthStep');
-export const AmountScale$ =        bindValue<number> (mod.id, 'AmountScale');
-export const RadiusScale$ =        bindValue<number> (mod.id, 'RadiusScale');
-export const MinDepthScale$ =      bindValue<number> (mod.id, 'MinDepthScale');
-export const ShowMinDepth$ =       bindValue<number> (mod.id, 'ShowMinDepth');
-export const ToolMode$ =           bindValue<number> (mod.id, "ToolMode");
-*/
+export const IsVegetation$ =        bindValue<boolean>(mod.id, 'IsVegetation');
+export const IsTree$ =              bindValue<boolean>(mod.id, 'IsTree');
+export const Radius$ =              bindValue<number>(mod.id, 'Radius');
 
 // These are strings that will be used for translations keys and event triggers.
-/*
-export const amountDownID =             "amount-down-arrow";
-export const amountUpID =               "amount-up-arrow";
 export const radiusDownID =             "radius-down-arrow";
 export const radiusUpID =               "radius-up-arrow";
-export const minDepthDownID =           "min-depth-down-arrow";
-export const minDepthUpID =             "min-depth-up-arrow";
-export const amountStepID =             "amount-rate-of-change";
-export const radiusStepID =             "radius-rate-of-change";
-export const minDepthStepID =           "min-depth-rate-of-change";
-export const tooltipDescriptionPrefix = "YY_WATER_FEATURES_DESCRIPTION.";
-export const sectionTitlePrefix =       "YY_WATER_FEATURES.";
-export const elevationChangeID =        "ElevationChange";
-export const placeWaterSourceID =       "PlaceWaterSource";
-export const moveWaterSourceID =        "MoveWaterSource";
-export const radiusChangeID =           "RadiusChange";
-*/
+export const tooltipDescriptionPrefix = "YY_TREE_CONTROLLER_DESCRIPTION[";
+export const sectionTitlePrefix =       "YY_TREE_CONTROLLER[";
+export const suffix = "]";
 
 // This functions trigger an event on C# side and C# designates the method to implement.
 export function handleClick(eventName: string) 
@@ -130,19 +108,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
         const SelectionMode = useValue(SelectionMode$);
         const CurrentToolMode = useValue(ToolMode$);
         const SelectedAges = useValue(SelectedAges$) as Ages;
-        /*
-        const RadiusValue = useValue(RadiusValue$);
-        const MinDepthValue = useValue(MinDepthValue$);
-        const AmountLocaleKey = useValue(AmountLocaleKey$);
-        const AmountStep = useValue(AmountStep$);
-        const RadiusStep = useValue(RadiusStep$);
-        const MinDepthStep = useValue(MinDepthStep$);
-        const AmountScale = useValue(AmountScale$);
-        const RadiusScale = useValue(RadiusScale$);
-        const MinDepthScale = useValue(MinDepthScale$);
-        const ShowMinDepth = useValue(ShowMinDepth$);
-        const ToolMode = useValue(ToolMode$);
-        */
+        const Radius = useValue(Radius$);
 
 
         // These set up state variables for custom sets switching from number to save disk icon.
@@ -244,7 +210,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
 
                 */
                 <>
-                    { ((objectToolActive && CurrentToolMode == ToolMode.Brush)|| (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType)) && (
+                    { ((objectToolActive && CurrentToolMode == ToolMode.Brush) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType)) && (
                     <VanillaComponentResolver.instance.Section title={"Sets"}>
                         <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"deciduous"}        /*onSelect={() => handleClick("rotatoin")}*/    src={deciduousSrc}                                              focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"evergreen"}      /*onSelect={() => handleClick("rotatoin")}*/      src={evergreenSrc}                                              focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
@@ -274,9 +240,9 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                     )}
                     { treeControllerToolActive && SelectionMode == Selection.Radius && (
                     <VanillaComponentResolver.instance.Section title={"Radius"}>
-                        <VanillaComponentResolver.instance.ToolButton tooltip={"radiusDownTooltip"} onSelect={() => handleClick("radius down")} src={arrowDownSrc} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} className={VanillaComponentResolver.instance.mouseToolOptionsTheme.startButton}></VanillaComponentResolver.instance.ToolButton>
-                        <div className={VanillaComponentResolver.instance.mouseToolOptionsTheme.numberField}>{ 10 /*RadiusValue.toFixed(RadiusScale)*/ + " m"}</div>
-                        <VanillaComponentResolver.instance.ToolButton tooltip={"radiusUpTooltip"} onSelect={() => handleClick("radius up")} src={arrowUpSrc} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} className={VanillaComponentResolver.instance.mouseToolOptionsTheme.endButton} ></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton tooltip={"radiusDownTooltip"} onSelect={() => handleClick(radiusDownID)} src={arrowDownSrc} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} className={VanillaComponentResolver.instance.mouseToolOptionsTheme.startButton}></VanillaComponentResolver.instance.ToolButton>
+                        <div className={VanillaComponentResolver.instance.mouseToolOptionsTheme.numberField}>{ Radius + " m"}</div>
+                        <VanillaComponentResolver.instance.ToolButton tooltip={"radiusUpTooltip"} onSelect={() => handleClick(radiusUpID)} src={arrowUpSrc} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} className={VanillaComponentResolver.instance.mouseToolOptionsTheme.endButton} ></VanillaComponentResolver.instance.ToolButton>
                     </VanillaComponentResolver.instance.Section>
                     )}
                     <VanillaComponentResolver.instance.Section title={"Change"}>

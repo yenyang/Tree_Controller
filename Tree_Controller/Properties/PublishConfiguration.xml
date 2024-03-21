@@ -4,9 +4,8 @@
   <!--Name of the mod to display to players-->
   <DisplayName Value="Tree_Controller" />
   <!--Short description of the mod-->
-  <ShortDescription Value="This is a short description" />
+  <ShortDescription Value="Plop selected age tree. Change Age and Type of trees and bushes. Forest brushes. Optional custom seasonal colors, dead model in winter, and disable tree growth." />
   <!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
-  <!--LongDescription Value="This is a long description" /-->
   <LongDescription>
   </LongDescription>
   <!--Thumbnail-->
@@ -18,15 +17,14 @@
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="" />
   <!--Version of the mod-->
-  <ModVersion Value="1.0" />
+  <ModVersion Value="1.0.0" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.0.*" />
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog Value="" />
-  <!--ChangeLog>
-	</ChangeLog-->
+	<ChangeLog>
+	</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="" Url="" />
 </Publish>

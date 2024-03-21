@@ -22,6 +22,7 @@ namespace Tree_Controller.Tools
     using Unity.Entities;
     using Unity.Jobs;
     using UnityEngine.InputSystem;
+    using static Colossal.AssetPipeline.Diagnostic.Report;
 
     /// <summary>
     /// UI system for Object Tool while using tree prefabs.
@@ -153,14 +154,20 @@ namespace Tree_Controller.Tools
                 TryLoadCustomPrefabSet($"YYTC-custom-set-{i}");
             }
 
+            // This section handles binding couples between C# and UI.
             AddBinding(m_ToolMode = new ValueBinding<int>(ModId, "ToolMode", (int)ToolMode.Plop));
             AddBinding(m_SelectedAges = new ValueBinding<int>(ModId, "SelectedAges", (int)Ages.Adult));
             AddBinding(m_SelectionMode = new ValueBinding<int>(ModId, "SelectionMode", (int)Selection.Radius));
             AddBinding(m_IsVegetation = new ValueBinding<bool>(ModId, "IsVegetation", false));
             AddBinding(m_IsTree = new ValueBinding<bool>(ModId, "IsTree", false));
             AddBinding(m_Radius = new ValueBinding<float>(ModId, "Radius", 100f));
+            AddBinding(new TriggerBinding(ModId, "radius-up-arrow", IncreaseRadius));
+            AddBinding(new TriggerBinding(ModId, "radius-down-arrow", DecreaseRadius));
 
+            // This section handles trigger bindings which listen for triggers from UI and then start an event.
             AddBinding(new TriggerBinding<int>(ModId, "ChangeToolMode", ChangeToolMode));
+            AddBinding(new TriggerBinding<int>(ModId, "ChangeSelectedAge", ChangeSelectedAge));
+            AddBinding(new TriggerBinding<int>(ModId, "ChangeSelectionMode", ChangeSelectionMode));
             AddBinding(new TriggerBinding<int>(ModId, "ChangeSelectedAge", ChangeSelectedAge));
             AddBinding(new TriggerBinding<int>(ModId, "ChangeSelectionMode", ChangeSelectionMode));
 
@@ -397,22 +404,48 @@ namespace Tree_Controller.Tools
             m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(LogFromJS)} {log}");
         }
 
-
         /// <summary>
-        /// Changes the radius.
+        /// Increases the radius.
         /// </summary>
-        /// <param name="radius">A int from JS for radius.</param>
-        private void ChangeRadius(int radius)
+        private void IncreaseRadius()
         {
-            m_TreeControllerTool.Radius = radius;
+            float radius = m_Radius.value;
+            if (radius >= 500 && radius < 1000)
+            {
+                radius += 100;
+            }
+            else if (radius >= 100 && radius < 500)
+            {
+                radius += 50;
+            }
+            else if (radius < 1000)
+            {
+                radius += 10;
+            }
+
+            m_Radius.Update(radius);
         }
 
         /// <summary>
-        /// C# event handler for event callback from UI JavaScript.
+        /// Decreases the radius.
         /// </summary>
-        /// <param name="newToolMode">A string representing the new tool mode.</param>
-        private void ChangeToolMode(string newToolMode)
+        private void DecreaseRadius()
         {
+            float radius = m_Radius.value;
+            if (radius <= 100 && radius > 10)
+            {
+                radius -= 10;
+            }
+            else if (radius <= 500 && radius > 100)
+            {
+                radius -= 50;
+            }
+            else if (radius > 500)
+            {
+                radius -= 100;
+            }
+
+            m_Radius.Update(radius);
         }
 
         /// <summary>
@@ -421,12 +454,34 @@ namespace Tree_Controller.Tools
         /// <param name="tool">The new tool.</param>
         private void OnToolChanged(ToolBaseSystem tool)
         {
-            // This script creates the Tree Controller object if it doesn't exist.
-            if (tool != null)
+            if (m_ToolSystem.activePrefab != null)
             {
-                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)} {tool.toolID}");
-            }
+                if (m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity))
+                {
+                    if (EntityManager.HasComponent<Vegetation>(prefabEntity))
+                    {
+                        m_IsVegetation.Update(true);
+                    }
+                    else
+                    {
+                        m_IsVegetation.Update(false);
+                    }
 
+                    if (EntityManager.HasComponent<TreeData>(prefabEntity))
+                    {
+                        m_IsTree.Update(true);
+                    }
+                    else
+                    {
+                        m_IsTree.Update(false);
+                    }
+                }
+            }
+            else
+            {
+                m_IsTree.Update(false);
+                m_IsVegetation.Update(false);
+            }
         }
 
         /// <summary>
@@ -439,7 +494,32 @@ namespace Tree_Controller.Tools
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} {prefab.name} {prefab.uiTag}");
             }
+            else
+            {
+                m_IsTree.Update(false);
+                m_IsVegetation.Update(false);
+            }
 
+            if (m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
+            {
+                if (EntityManager.HasComponent<Vegetation>(prefabEntity))
+                {
+                    m_IsVegetation.Update(true);
+                }
+                else
+                {
+                    m_IsVegetation.Update(false);
+                }
+
+                if (EntityManager.HasComponent<TreeData>(prefabEntity))
+                {
+                    m_IsTree.Update(true);
+                }
+                else
+                {
+                    m_IsTree.Update(false);
+                }
+            }
 
             if (m_ObjectToolSystem.prefab != null)
             {

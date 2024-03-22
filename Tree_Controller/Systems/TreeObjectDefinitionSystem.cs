@@ -89,15 +89,10 @@ namespace Tree_Controller.Systems
                 }
 
                 Unity.Mathematics.Random random = new ((uint)(Mathf.Abs(currentObjectDefinition.m_Position.x) + Mathf.Abs(currentObjectDefinition.m_Position.z)) * 1000);
-                /*
-                if (TreeControllerMod.Instance.Settings.RandomRotation && !m_ObjectToolSystem.brushing)
-                {
-                    currentObjectDefinition.m_Rotation = Unity.Mathematics.quaternion.RotateY(random.NextFloat(2f * (float)Math.PI));
-                }*/
 
                 Entity prefabEntity = currentCreationDefinition.m_Prefab;
 
-                if (m_ObjectToolSystem.brushing)
+                if ((m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush) || m_ToolSystem.activeTool.toolID == "Line Tool")
                 {
                     prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
                     if (prefabEntity != Entity.Null)

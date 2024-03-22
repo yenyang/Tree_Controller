@@ -173,6 +173,7 @@ namespace Tree_Controller.Tools
                 }
                 else if (m_SelectedTreePrefabEntities.Contains(prefabEntity) && m_SelectedTreePrefabEntities.Length > 1 && !m_TreeControllerUISystem.UpdateSelectionSet && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
                 {
+                    m_TreeControllerUISystem.ResetPrefabSets();
                     UnselectTreePrefab(prefab);
                     if (m_OriginallySelectedPrefab == prefab)
                     {
@@ -186,10 +187,12 @@ namespace Tree_Controller.Tools
                         }
                     }
                 }
-                else if (!m_TreeControllerUISystem.UpdateSelectionSet)
+                else if (!m_TreeControllerUISystem.UpdateSelectionSet && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
                 {
+                    m_TreeControllerUISystem.ResetPrefabSets();
                     SelectTreePrefab(prefab);
                 }
+
                 /*
                 if (!m_TreeControllerUISystem.UpdateSelectionSet)
                 {

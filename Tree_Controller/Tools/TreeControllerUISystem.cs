@@ -341,14 +341,14 @@ namespace Tree_Controller.Tools
             toolSystem2.EventPrefabChanged = (Action<PrefabBase>)Delegate.Combine(toolSystem2.EventPrefabChanged, new Action<PrefabBase>(OnPrefabChanged));
             m_PrefabSetsLookup = new Dictionary<string, List<PrefabID>>()
             {
-                { "YYTC-wild-deciduous-trees", m_VanillaDeciduousPrefabIDs },
-                { "YYTC-evergreen-trees", m_VanillaEvergreenPrefabIDs },
-                { "YYTC-wild-bushes", m_VanillaWildBushPrefabs },
-                { "YYTC-custom-set-1", m_DefaultCustomSet1Prefabs },
-                { "YYTC-custom-set-2", m_DefaultCustomSet2Prefabs },
-                { "YYTC-custom-set-3", m_DefaultCustomSet3Prefabs },
-                { "YYTC-custom-set-4", m_DefaultCustomSet4Prefabs },
-                { "YYTC-custom-set-5", m_DefaultCustomSet5Prefabs },
+                { "wild-deciduous-trees", m_VanillaDeciduousPrefabIDs },
+                { "evergreen-trees", m_VanillaEvergreenPrefabIDs },
+                { "wild-bushes", m_VanillaWildBushPrefabs },
+                { "custom-set-1", m_DefaultCustomSet1Prefabs },
+                { "custom-set-2", m_DefaultCustomSet2Prefabs },
+                { "custom-set-3", m_DefaultCustomSet3Prefabs },
+                { "custom-set-4", m_DefaultCustomSet4Prefabs },
+                { "custom-set-5", m_DefaultCustomSet5Prefabs },
             };
 
             for (int i = 1; i <= 5; i++)
@@ -383,7 +383,7 @@ namespace Tree_Controller.Tools
         protected override void OnUpdate()
         {
             List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
-            if ((m_ToolSystem.activeTool == m_TreeControllerTool || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush)) && m_UiView != null)
+            if ((m_ToolSystem.activeTool == m_TreeControllerTool || m_ToolSystem.activeTool.toolID == "Line Tool" || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush)) && m_UiView != null)
             {
                 // This script creates the Tree Controller object if it doesn't exist.
                 m_UiView.ExecuteScript("if (yyTreeController == null) var yyTreeController = {};");
@@ -436,7 +436,7 @@ namespace Tree_Controller.Tools
                     m_FrameCount++;
                 }
             }
-            else if (m_UiView != null && m_MultiplePrefabsSelected && (m_ToolSystem.activeTool.toolID == "Line Tool" || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create)))
+            else if (m_UiView != null && m_MultiplePrefabsSelected && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create)
             {
                 m_UiView.ExecuteScript("if (yyTreeController == null) var yyTreeController = {};");
                 UnselectPrefabs();

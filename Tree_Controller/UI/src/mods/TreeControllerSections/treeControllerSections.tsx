@@ -9,6 +9,7 @@ import brushSrc from "./BrushYYTC.svg";
 import styles from "./treeController.module.scss";
 import { useState } from "react";
 import { Icon } from "cs2/ui";
+import locale from "../lang/en-US.json";
 
 export enum Ages 
 {
@@ -134,6 +135,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
         const IsTree = useValue(IsTree$);
         const PrefabSet = useValue(PrefabSet$);
 
+        
 
         // These set up state variables for custom sets switching from number to save disk icon.
         const [isCustomSet1Hovered, setCustomSet1Hovered] = useState(false);
@@ -201,6 +203,9 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
         
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
+
+        console.log(locale["YY_TREE_CONTROLLER[custom-set-1]"]);
+        console.log(translate("YY_TREE_CONTROLLER[Rotation]", locale["YY_TREE_CONTROLLER[Rotation]"]));
         /*
         const amountDownTooltip =       translate(tooltipDescriptionPrefix + amountDownID,      "Reduces the flow for Streams. Decreases the depth or elevation for rivers, seas, and lakes. Reduces the max depth for retention and detention basins.");
         const amountUpTooltip =         translate(tooltipDescriptionPrefix + amountUpID,        "Increases the flow for Streams. Increases the depth or elevation for rivers, seas, and lakes. Increases the max depth for retention and detention basins.");

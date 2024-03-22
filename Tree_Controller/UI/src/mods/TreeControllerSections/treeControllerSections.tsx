@@ -8,7 +8,7 @@ import clearAgesSrc from "./All.svg";
 import brushSrc from "./Brush.svg";
 import styles from "./treeController.module.scss";
 import { useState } from "react";
-import { Icon } from "cs2/ui";
+import { Icon, Button, Tooltip} from "cs2/ui";
 
 export enum Ages 
 {
@@ -65,10 +65,15 @@ export const SelectionMode$ =       bindValue<number> (mod.id, 'SelectionMode');
 export const IsVegetation$ =        bindValue<boolean>(mod.id, 'IsVegetation');
 export const IsTree$ =              bindValue<boolean>(mod.id, 'IsTree');
 export const Radius$ =              bindValue<number>(mod.id, 'Radius');
+export const PrefabSet$ =           bindValue<string>(mod.id, 'PrefabSet');
 
 // These are strings that will be used for translations keys and event triggers.
 export const radiusDownID =             "radius-down-arrow";
 export const radiusUpID =               "radius-up-arrow";
+export const deciduousTreesID =         "wild-deciduous-trees";
+export const evergreenTreesID =         "evergreen-trees";
+export const wildBushesID =             "wild-bushes";
+export const customSetID =              "custom-set-";
 export const tooltipDescriptionPrefix = "YY_TREE_CONTROLLER_DESCRIPTION[";
 export const sectionTitlePrefix =       "YY_TREE_CONTROLLER[";
 export const suffix = "]";
@@ -84,14 +89,29 @@ export function changeToolMode(toolMode: ToolMode) {
     trigger(mod.id, "ChangeToolMode", toolMode);
 }
 
-// This function triggers an event to change the tree controller tool mode to specified tool mode.
+// This function triggers an event to change the selected age.
 export function changeSelectedAge(age: Ages) {
     trigger(mod.id, "ChangeSelectedAge", age);
 }
 
-// This function triggers an event to change the tree controller tool mode to specified tool mode.
+// This function triggers an event to change the tree controller selection mode.
 export function changeSelectionMode(selectionMode: Selection) {
     trigger(mod.id, "ChangeSelectionMode", selectionMode);
+}
+
+// This function triggers an event to change the prefab set.
+export function changePrefabSet(prefabSet: string) {
+    trigger(mod.id, "ChangePrefabSet", prefabSet);
+}
+
+export function descriptionTooltip(tooltipTitle: string, tooltipDescription: string) : JSX.Element {
+    return (
+        // <VanillaComponentResolver.instance.DescriptionTooltip title={tooltipTitle} description={tooltipDescription}></VanillaComponentResolver.instance.DescriptionTooltip>
+        <>
+            <div className={VanillaComponentResolver.instance.descriptionTooltipTheme.title}>{tooltipTitle}</div>
+            <div className={VanillaComponentResolver.instance.descriptionTooltipTheme.content}>{tooltipDescription}</div>
+        </>
+    );
 }
 
 export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) => 
@@ -214,14 +234,14 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                 <>
                     { ((objectToolActive && CurrentToolMode == ToolMode.Brush) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType)) && (
                     <VanillaComponentResolver.instance.Section title={"Sets"}>
-                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"deciduous"}        /*onSelect={() => handleClick("rotatoin")}*/    src={deciduousSrc}                                              focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"evergreen"}      /*onSelect={() => handleClick("rotatoin")}*/      src={evergreenSrc}                                              focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"bushes"}      /*onSelect={() => handleClick("rotatoin")}*/         src={bushesSrc}                                                 focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"custom 1"} /*onSelect={() => handleClick("rotatoin")}*/               children={GenerateCustomSetNumber1()}   focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"custom 2"}      /*onSelect={() => handleClick("rotatoin")}*/       children={GenerateCustomSetNumber2()}   focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"custom 3"}      /*onSelect={() => handleClick("rotatoin")}*/       children={GenerateCustomSetNumber3()}   focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"custom 4"}      /*onSelect={() => handleClick("rotatoin")}*/       children={GenerateCustomSetNumber4()}   focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"custom 5"}      /*onSelect={() => handleClick("rotatoin")}*/       children={GenerateCustomSetNumber5()}   focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={descriptionTooltip("decidous","description")}    onSelect={() => changePrefabSet(deciduousTreesID)}    src={deciduousSrc}                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"evergreen"}    onSelect={() => changePrefabSet(evergreenTreesID)}    src={evergreenSrc}                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"bushes"}       onSelect={() => changePrefabSet(wildBushesID)}        src={bushesSrc}                                                   focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"custom 1"}     onSelect={() => changePrefabSet(customSetID+1)}                             children={GenerateCustomSetNumber1()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"custom 2"}     onSelect={() => changePrefabSet(customSetID+2)}                             children={GenerateCustomSetNumber2()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"custom 3"}     onSelect={() => changePrefabSet(customSetID+3)}                             children={GenerateCustomSetNumber3()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"custom 4"}     onSelect={() => changePrefabSet(customSetID+4)}                             children={GenerateCustomSetNumber4()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={false}    tooltip={"custom 5"}     onSelect={() => changePrefabSet(customSetID+5)}                             children={GenerateCustomSetNumber5()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                     </VanillaComponentResolver.instance.Section>
                     )}
                     { (IsTree || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge)) && (

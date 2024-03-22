@@ -83,7 +83,6 @@ namespace Tree_Controller.Systems
                 },
             });
             RequireForUpdate(m_DeciduousTreeQuery);
-            RequireForUpdate(m_TreePrefabQuery);
         }
 
         /// <inheritdoc/>
@@ -106,7 +105,8 @@ namespace Tree_Controller.Systems
             uint updateFrame = SimulationUtils.GetUpdateFrame(m_SimulationSystem.frameIndex, 32, 16);
             m_DeciduousTreeQuery.ResetFilter();
             m_DeciduousTreeQuery.SetSharedComponentFilter(new UpdateFrame(updateFrame));
-            m_Log.Debug(FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.m_NameID));
+
+            // m_Log.Debug(FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.m_NameID));
             TreeSeasonChangeJob treeSeasonChangeJob = new ()
             {
                 m_TreeType = SystemAPI.GetComponentTypeHandle<Game.Objects.Tree>(),

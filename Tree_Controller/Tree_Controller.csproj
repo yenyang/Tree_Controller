@@ -139,7 +139,6 @@
 	  <Folder Include="Components\" />
 	  <Folder Include="l10n\" />
 	  <Folder Include="lang\" />
-	  <Folder Include="Utils\" />
 	  <Folder Include="UI\" />
 	  <Folder Include="Systems\" />
 	  <Folder Include="Settings\" />

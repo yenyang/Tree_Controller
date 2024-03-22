@@ -12,7 +12,7 @@ type PropsToolButton = {
     selected? : boolean
     multiSelect? : boolean
     disabled?: boolean
-    tooltip?: string | null
+    tooltip?: ReactNode | null
     selectSound?: any
     uiTag?: string
     className?: string
@@ -20,19 +20,18 @@ type PropsToolButton = {
     onSelect?: (x: any) => any,
 } & HTMLAttributes<any>
 
-type PropsStepToolButton = {
-    focusKey?: UniqueFocusKey | null
-    selectedValue: number
-    values : number[]
-    tooltip?: string | null
-    uiTag?: string
-    onSelect?: (x: any) => any,
-} & HTMLAttributes<any>
-
 type PropsSection = {
     title?: string | null
     uiTag?: string
     children: string | JSX.Element | JSX.Element[]
+}
+
+type PropsDescriptionTooltip = 
+{
+    title: string | null
+    description: string | null
+    content? : JSX.Element | null
+    children?: string | JSX.Element | JSX.Element[]
 }
 
 // This is an array of the different components and sass themes that are appropriate for your UI. You need to figure out which ones you need from the registry.
@@ -45,6 +44,8 @@ const registryIndex = {
     FOCUS_AUTO: ["game-ui/common/focus/focus-key.ts", "FOCUS_AUTO"],
     useUniqueFocusKey: ["game-ui/common/focus/focus-key.ts", "useUniqueFocusKey"],
     assetGridTheme: ["game-ui/game/components/asset-menu/asset-grid/asset-grid.module.scss", "classes"],  
+    descriptionTooltipTheme: ["game-ui/common/tooltip/description-tooltip/description-tooltip.module.scss", "classes"],
+    
 }
 
 export class VanillaComponentResolver {
@@ -74,6 +75,7 @@ export class VanillaComponentResolver {
     public get toolButtonTheme(): Theme | any { return this.cachedData["toolButtonTheme"] ?? this.updateCache("toolButtonTheme") }
     public get mouseToolOptionsTheme(): Theme | any { return this.cachedData["mouseToolOptionsTheme"] ?? this.updateCache("mouseToolOptionsTheme") }
     public get assetGridTheme(): Theme | any { return this.cachedData["assetGridTheme"] ?? this.updateCache("assetGridTheme") }
+    public get descriptionTooltipTheme(): Theme | any { return this.cachedData["descriptionTooltipTheme"] ?? this.updateCache("descriptionTooltipTheme") }
 
     public get FOCUS_DISABLED(): UniqueFocusKey { return this.cachedData["FOCUS_DISABLED"] ?? this.updateCache("FOCUS_DISABLED") }
     public get FOCUS_AUTO(): UniqueFocusKey { return this.cachedData["FOCUS_AUTO"] ?? this.updateCache("FOCUS_AUTO") }

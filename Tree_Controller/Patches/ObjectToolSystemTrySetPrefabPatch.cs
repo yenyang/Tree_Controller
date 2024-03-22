@@ -62,20 +62,20 @@ namespace Tree_Controller.Patches
                 log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} has vegetation component");
                 bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
                 if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.brushing == false)
-                || (toolSystem.activeTool == objectToolSystem && !ctrlKeyPressed /*&& !treeControllerUISystem.RecentlySelectedPrefabSet*/)
-                || toolSystem.activeTool.toolID == "Line Tool")
+                || (toolSystem.activeTool == objectToolSystem && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet)
+                || (toolSystem.activeTool.toolID == "Line Tool" && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet))
                 {
                     log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} resetting selecting and returning.");
                     treeControllerTool.ClearSelectedTreePrefabs();
-                    // treeControllerUISystem.ResetPrefabSets();
+                    treeControllerUISystem.ResetPrefabSets();
                     treeControllerTool.SelectTreePrefab(prefab);
                     return true;
                 }
 
-                if (toolSystem.activeTool == objectToolSystem)
+                if (toolSystem.activeTool == objectToolSystem || toolSystem.activeTool.toolID == "Line Tool")
                 {
                     List<PrefabBase> selectedPrefabs = treeControllerTool.GetSelectedPrefabs();
-                    if (selectedPrefabs.Contains(prefab) && selectedPrefabs.Count > 1 /*&& !treeControllerUISystem.UpdateSelectionSet && !treeControllerUISystem.RecentlySelectedPrefabSet*/)
+                    if (selectedPrefabs.Contains(prefab) && selectedPrefabs.Count > 1 && !treeControllerUISystem.UpdateSelectionSet && !treeControllerUISystem.RecentlySelectedPrefabSet)
                     {
                         treeControllerTool.UnselectTreePrefab(prefab);
                         selectedPrefabs.Remove(prefab);
@@ -98,7 +98,7 @@ namespace Tree_Controller.Patches
                             __result = true;
                             return false;
                         }
-                    }/*
+                    }
                     else if (!selectedPrefabs.Contains(prefab) && !treeControllerUISystem.UpdateSelectionSet)
                     {
                         treeControllerTool.SelectTreePrefab(prefab);
@@ -109,7 +109,7 @@ namespace Tree_Controller.Patches
                     {
                         log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} recently selected prefab set.");
                         return true;
-                    }*/
+                    }
                     else
                     {
                         log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} Set prefab {prefab.name} to active prefab {selectedPrefabs[0].name}.");

@@ -54,11 +54,10 @@ namespace Tree_Controller.Patches
 
                     if (prefabSystem.EntityManager.HasComponent<Vegetation>(prefabEntity) && treeControllerUISystem.ThemeEntity != themeEntity)
                     {
-                        /*
                         if (treeControllerUISystem.ThemeEntity != Entity.Null)
                         {
                             treeControllerUISystem.UpdateSelectionSet = true;
-                        }*/
+                        }
 
                         treeControllerUISystem.ThemeEntity = themeEntity;
                         TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} Setting UpdateSelectionSet to true while using object tool and brushing.");
@@ -67,11 +66,10 @@ namespace Tree_Controller.Patches
             }
             else if (treeControllerUISystem.ThemeEntity != themeEntity)
             {
-                /*
                 if (treeControllerUISystem.ThemeEntity != Entity.Null)
                 {
                     treeControllerUISystem.UpdateSelectionSet = true;
-                }*/
+                }
 
                 treeControllerUISystem.ThemeEntity = themeEntity;
                 TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} Setting UpdateSelectionSet to true while using tree controller tool.");

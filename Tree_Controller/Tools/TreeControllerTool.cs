@@ -73,9 +73,12 @@ namespace Tree_Controller.Tools
                     m_OriginallySelectedPrefab = prefab;
                 }
 
-                // m_TreeControllerUISystem.UpdateSelectionSet = true;
+                m_TreeControllerUISystem.UpdateSelectionSet = true;
                 m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(SelectTreePrefab)} selected {prefab.name} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
-                m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
+                if (m_ToolSystem.activeTool == this)
+                {
+                    m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
+                }
             }
         }
 
@@ -95,8 +98,11 @@ namespace Tree_Controller.Tools
                     m_OriginallySelectedPrefab = null;
                 }
 
-                // m_TreeControllerUISystem.UpdateSelectionSet = true;
-                m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
+                m_TreeControllerUISystem.UpdateSelectionSet = true;
+                if (m_ToolSystem.activeTool == this)
+                {
+                    m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
+                }
             }
         }
 
@@ -159,7 +165,6 @@ namespace Tree_Controller.Tools
             if (EntityManager.HasComponent<Vegetation>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
                 bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
-                /*
                 if (!ctrlKeyPressed && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
                 {
                     m_TreeControllerUISystem.ResetPrefabSets();
@@ -185,11 +190,12 @@ namespace Tree_Controller.Tools
                 {
                     SelectTreePrefab(prefab);
                 }
-
+                /*
                 if (!m_TreeControllerUISystem.UpdateSelectionSet)
                 {
                     m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
-                }*/
+                }
+                */
 
                 return true;
             }

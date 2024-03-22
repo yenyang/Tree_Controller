@@ -192,6 +192,12 @@ namespace Tree_Controller.Tools
                     m_TreeControllerUISystem.ResetPrefabSets();
                     SelectTreePrefab(prefab);
                 }
+                else if (!m_TreeControllerUISystem.RecentlySelectedPrefabSet && prefab != m_OriginallySelectedPrefab)
+                {
+                    m_OriginallySelectedPrefab = prefab;
+                    m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(TrySetPrefab)} setting originallySelectedPrefab to {prefab.name}.");
+                }
+
 
                 /*
                 if (!m_TreeControllerUISystem.UpdateSelectionSet)

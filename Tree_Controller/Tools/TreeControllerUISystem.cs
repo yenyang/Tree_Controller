@@ -341,14 +341,14 @@ namespace Tree_Controller.Tools
             toolSystem2.EventPrefabChanged = (Action<PrefabBase>)Delegate.Combine(toolSystem2.EventPrefabChanged, new Action<PrefabBase>(OnPrefabChanged));
             m_PrefabSetsLookup = new Dictionary<string, List<PrefabID>>()
             {
-                { "wild-deciduous-trees", m_VanillaDeciduousPrefabIDs },
-                { "evergreen-trees", m_VanillaEvergreenPrefabIDs },
-                { "wild-bushes", m_VanillaWildBushPrefabs },
-                { "custom-set-1", m_DefaultCustomSet1Prefabs },
-                { "custom-set-2", m_DefaultCustomSet2Prefabs },
-                { "custom-set-3", m_DefaultCustomSet3Prefabs },
-                { "custom-set-4", m_DefaultCustomSet4Prefabs },
-                { "custom-set-5", m_DefaultCustomSet5Prefabs },
+                { "YYTC-wild-deciduous-trees", m_VanillaDeciduousPrefabIDs },
+                { "YYTC-evergreen-trees", m_VanillaEvergreenPrefabIDs },
+                { "YYTC-wild-bushes", m_VanillaWildBushPrefabs },
+                { "YYTC-custom-set-1", m_DefaultCustomSet1Prefabs },
+                { "YYTC-custom-set-2", m_DefaultCustomSet2Prefabs },
+                { "YYTC-custom-set-3", m_DefaultCustomSet3Prefabs },
+                { "YYTC-custom-set-4", m_DefaultCustomSet4Prefabs },
+                { "YYTC-custom-set-5", m_DefaultCustomSet5Prefabs },
             };
 
             for (int i = 1; i <= 5; i++)
@@ -442,6 +442,16 @@ namespace Tree_Controller.Tools
                 UnselectPrefabs();
                 SelectPrefab(m_ToolSystem.activePrefab);
                 m_MultiplePrefabsSelected = false;
+            }
+
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush && m_ToolMode.value != (int)ToolMode.Brush)
+            {
+                m_ToolMode.Update((int)ToolMode.Brush);
+            }
+
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create && m_ToolMode.value != (int)ToolMode.Plop)
+            {
+                m_ToolMode.Update((int)ToolMode.Plop);
             }
 
             base.OnUpdate();
@@ -622,7 +632,6 @@ namespace Tree_Controller.Tools
             UnselectPrefabs();
             m_TreeControllerTool.ClearSelectedTreePrefabs();
             m_SelectedPrefabSet.Update(prefabSetID);
-
             int i = 0;
             foreach (PrefabID id in m_PrefabSetsLookup[prefabSetID])
             {
@@ -633,6 +642,9 @@ namespace Tree_Controller.Tools
                     i++;
                 }
             }
+
+            m_RecentlySelectedPrefabSet = true;
+            m_UpdateSelectionSet = true;
 
             selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
             if (!selectedPrefabs.Contains(m_ToolSystem.activePrefab))
@@ -727,11 +739,11 @@ namespace Tree_Controller.Tools
                 m_IsTree.Update(EntityManager.HasComponent<TreeData>(prefabEntity));
                 if (tool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create)
                 {
-                    ChangeToolMode((int)ToolMode.Plop);
+                    m_ToolMode.Update((int)ToolMode.Plop);
                 }
-                else if (tool == m_ObjectToolSystem)
+                else if (tool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush)
                 {
-                    ChangeToolMode((int)ToolMode.Brush);
+                    m_ToolMode.Update((int)ToolMode.Brush);
                 }
 
                 if (m_IsVegetation.value)

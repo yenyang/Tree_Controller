@@ -4,11 +4,11 @@ import { tool } from "cs2/bindings";
 import mod from "../../../mod.json";
 import { VanillaComponentResolver } from "../VanillaComponentResolver/VanillaComponentResolver";
 import { useLocalization } from "cs2/l10n";
-import clearAgesSrc from "./All.svg";
-import brushSrc from "./Brush.svg";
+import clearAgesSrc from "./AllYYTC.svg";
+import brushSrc from "./BrushYYTC.svg";
 import styles from "./treeController.module.scss";
 import { useState } from "react";
-import { Icon, Button, Tooltip} from "cs2/ui";
+import { Icon } from "cs2/ui";
 
 export enum Ages 
 {
@@ -74,6 +74,7 @@ export const deciduousTreesID =         "wild-deciduous-trees";
 export const evergreenTreesID =         "evergreen-trees";
 export const wildBushesID =             "wild-bushes";
 export const customSetID =              "custom-set-";
+export const buttonPrefix =             "YYTC-"
 export const tooltipDescriptionPrefix = "YY_TREE_CONTROLLER_DESCRIPTION[";
 export const sectionTitlePrefix =       "YY_TREE_CONTROLLER[";
 export const suffix = "]";
@@ -233,16 +234,16 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
 
                 */
                 <>
-                    { ((objectToolActive && CurrentToolMode == ToolMode.Brush) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType)) && (
+                    { ((objectToolActive && CurrentToolMode == ToolMode.Brush) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType) || lineToolActive) && (
                     <VanillaComponentResolver.instance.Section title={"Sets"}>
-                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == deciduousTreesID}    tooltip={descriptionTooltip("decidous","description")}    onSelect={() => changePrefabSet(deciduousTreesID)}    src={deciduousSrc}                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == evergreenTreesID}    tooltip={"evergreen"}                                     onSelect={() => changePrefabSet(evergreenTreesID)}    src={evergreenSrc}                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == wildBushesID}    tooltip={"bushes"}                                        onSelect={() => changePrefabSet(wildBushesID)}        src={bushesSrc}                                                   focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == customSetID+1}    tooltip={"custom 1"}                                      onSelect={() => changePrefabSet(customSetID+1)}                             children={GenerateCustomSetNumber1()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == customSetID+2}    tooltip={"custom 2"}                                      onSelect={() => changePrefabSet(customSetID+2)}                             children={GenerateCustomSetNumber2()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == customSetID+3}    tooltip={"custom 3"}                                      onSelect={() => changePrefabSet(customSetID+3)}                             children={GenerateCustomSetNumber3()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == customSetID+4}    tooltip={"custom 4"}     onSelect={() => changePrefabSet(customSetID+4)}                             children={GenerateCustomSetNumber4()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == customSetID+5}    tooltip={"custom 5"}     onSelect={() => changePrefabSet(customSetID+5)}                             children={GenerateCustomSetNumber5()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == buttonPrefix+deciduousTreesID}    tooltip={descriptionTooltip("decidous","description")}    onSelect={() => changePrefabSet(buttonPrefix+deciduousTreesID)}    src={deciduousSrc}                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == buttonPrefix+evergreenTreesID}    tooltip={"evergreen"}                                     onSelect={() => changePrefabSet(buttonPrefix+evergreenTreesID)}    src={evergreenSrc}                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == buttonPrefix+wildBushesID}    tooltip={"bushes"}                                        onSelect={() => changePrefabSet(buttonPrefix+wildBushesID)}        src={bushesSrc}                                                   focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == buttonPrefix+customSetID+1}    tooltip={"custom 1"}                                      onSelect={() => changePrefabSet(buttonPrefix+customSetID+1)}                             children={GenerateCustomSetNumber1()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == buttonPrefix+customSetID+2}    tooltip={"custom 2"}                                      onSelect={() => changePrefabSet(buttonPrefix+customSetID+2)}                             children={GenerateCustomSetNumber2()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == buttonPrefix+customSetID+3}    tooltip={"custom 3"}                                      onSelect={() => changePrefabSet(buttonPrefix+customSetID+3)}                             children={GenerateCustomSetNumber3()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == buttonPrefix+customSetID+4}    tooltip={"custom 4"}     onSelect={() => changePrefabSet(buttonPrefix+customSetID+4)}                             children={GenerateCustomSetNumber4()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == buttonPrefix+customSetID+5}    tooltip={"custom 5"}     onSelect={() => changePrefabSet(buttonPrefix+customSetID+5)}                             children={GenerateCustomSetNumber5()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                     </VanillaComponentResolver.instance.Section>
                     )}
                     { (IsTree || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge)) && (

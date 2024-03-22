@@ -61,7 +61,7 @@ namespace Tree_Controller.Patches
             {
                 log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} has vegetation component");
                 bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
-                if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.brushing == false)
+                if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush)
                 || (toolSystem.activeTool == objectToolSystem && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet)
                 || (toolSystem.activeTool.toolID == "Line Tool" && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet))
                 {
@@ -108,6 +108,11 @@ namespace Tree_Controller.Patches
                     else if (selectedPrefabs.Contains(toolSystem.activePrefab) || treeControllerUISystem.RecentlySelectedPrefabSet)
                     {
                         log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} recently selected prefab set.");
+                        return true;
+                    }
+                    else if (treeControllerUISystem.UpdateSelectionSet)
+                    {
+                        log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} need to update selection set. Changing active prefab but not selecting it with tree controller tool.");
                         return true;
                     }
                     else

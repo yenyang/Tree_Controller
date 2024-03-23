@@ -61,7 +61,7 @@ namespace Tree_Controller.Patches
             {
                 log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} has vegetation component");
                 bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
-                if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush)
+                if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush && !treeControllerUISystem.RecentlyUsingLineTool)
                 || (toolSystem.activeTool == objectToolSystem && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet)
                 || ((toolSystem.activeTool.toolID == "Line Tool" || treeControllerUISystem.RecentlyUsingLineTool) && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet))
                 {

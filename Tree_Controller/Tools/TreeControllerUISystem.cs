@@ -758,8 +758,13 @@ namespace Tree_Controller.Tools
             {
                 Enabled = true;
                 m_IsVegetation.Update(EntityManager.HasComponent<Vegetation>(prefabEntity));
-                m_IsVegetation.Update(true);
                 List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
+                if (m_IsVegetation.value && selectedPrefabs.Count == 0)
+                {
+                    m_TreeControllerTool.SelectTreePrefab(m_ToolSystem.activePrefab);
+                    m_UpdateSelectionSet = true;
+                }
+
                 bool isTree = false;
                 if (EntityManager.HasComponent<TreeData>(prefabEntity) && selectedPrefabs.Contains(m_ToolSystem.activePrefab))
                 {
@@ -785,12 +790,6 @@ namespace Tree_Controller.Tools
                 else if (tool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush)
                 {
                     m_ToolMode.Update((int)ToolMode.Brush);
-                }
-
-                if (m_IsVegetation.value && selectedPrefabs.Count == 0)
-                {
-                    m_TreeControllerTool.SelectTreePrefab(m_ToolSystem.activePrefab);
-                    m_UpdateSelectionSet = true;
                 }
             }
             else

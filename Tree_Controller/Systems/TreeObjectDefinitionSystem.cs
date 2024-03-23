@@ -94,11 +94,27 @@ namespace Tree_Controller.Systems
 
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush) || m_ToolSystem.activeTool.toolID == "Line Tool")
                 {
+                    m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)} prefabEntity = {prefabEntity.Index}:{prefabEntity.Version}");
+                    if (m_PrefabSystem.TryGetPrefab(prefabEntity, out PrefabBase prefab))
+                    {
+                        m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)} prefab.name = {prefab.name}");
+                    }
+
                     prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
                     if (prefabEntity != Entity.Null)
                     {
                         currentCreationDefinition.m_Prefab = prefabEntity;
                         EntityManager.SetComponentData(entity, currentCreationDefinition);
+
+                        m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)} prefabEntity = {prefabEntity.Index}:{prefabEntity.Version}");
+                        if (m_PrefabSystem.TryGetPrefab(prefabEntity, out PrefabBase prefab1))
+                        {
+                            m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)} prefab.name = {prefab1.name}");
+                        }
+                    }
+                    else
+                    {
+                        m_Log.Warn("PrefabEntity was null");
                     }
                 }
 

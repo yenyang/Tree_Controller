@@ -22,6 +22,7 @@ namespace Tree_Controller.Tools
     using Game.Tools;
     using Tree_Controller;
     using Tree_Controller.Settings;
+    using Tree_Controller.Systems;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
     using Unity.Collections;
@@ -266,7 +267,15 @@ namespace Tree_Controller.Tools
                     random.NextInt();
                 }
 
-                return m_SelectedTreePrefabEntities[random.NextInt(m_SelectedTreePrefabEntities.Length)];
+                Entity result = m_SelectedTreePrefabEntities[random.NextInt(m_SelectedTreePrefabEntities.Length)];
+
+                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(GetNextPrefabEntity)} prefabEntity = {result.Index}:{result.Version}");
+                if (m_PrefabSystem.TryGetPrefab(result, out PrefabBase prefab1))
+                {
+                    m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(GetNextPrefabEntity)} prefab.name = {prefab1.name}");
+                }
+
+                return result;
             }
 
             return Entity.Null;

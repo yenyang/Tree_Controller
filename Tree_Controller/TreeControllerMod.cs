@@ -79,7 +79,6 @@ namespace Tree_Controller
         {
             Instance = this;
             Logger = LogManager.GetLogger("Mods_Yenyang_Tree_Controller").SetShowsErrorsInUI(false);
-            Logger.Info(nameof(OnLoad));
 #if DEBUG
             Logger.effectivenessLevel = Level.Debug;
 #elif VERBOSE

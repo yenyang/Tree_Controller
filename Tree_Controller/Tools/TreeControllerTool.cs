@@ -269,12 +269,6 @@ namespace Tree_Controller.Tools
 
                 Entity result = m_SelectedTreePrefabEntities[random.NextInt(m_SelectedTreePrefabEntities.Length)];
 
-                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(GetNextPrefabEntity)} prefabEntity = {result.Index}:{result.Version}");
-                if (m_PrefabSystem.TryGetPrefab(result, out PrefabBase prefab1))
-                {
-                    m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(GetNextPrefabEntity)} prefab.name = {prefab1.name}");
-                }
-
                 return result;
             }
 

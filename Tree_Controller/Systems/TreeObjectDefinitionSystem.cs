@@ -67,7 +67,7 @@ namespace Tree_Controller.Systems
         {
             m_ObjectDefinitionQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<CreationDefinition, Game.Tools.ObjectDefinition>()
-                // .WithAll<Updated>()
+                .WithAll<Updated>()
                 .WithNone<Deleted, Overridden>()
                 .Build();
 
@@ -106,20 +106,16 @@ namespace Tree_Controller.Systems
                 }
 
                 TreeState nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random);
-                m_Log.Debug($"nextTreeState = {nextTreeState}");
                 if (BrushTreeStateAges.ContainsKey(nextTreeState))
                 {
                     currentObjectDefinition.m_Age = BrushTreeStateAges[nextTreeState];
-                    m_Log.Debug($"currentObjectDefinition.m_Age = {currentObjectDefinition.m_Age}");
                 }
                 else
                 {
                     currentObjectDefinition.m_Age = ObjectUtils.TREE_AGE_PHASE_CHILD + ObjectUtils.TREE_AGE_PHASE_TEEN;
-                    m_Log.Debug($"currentObjectDefinition.m_Age = {currentObjectDefinition.m_Age} default");
                 }
 
                 EntityManager.SetComponentData(entity, currentObjectDefinition);
-                m_Log.Debug($"done");
             }
 
             entities.Dispose();

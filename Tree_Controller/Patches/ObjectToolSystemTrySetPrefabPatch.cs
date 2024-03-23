@@ -63,7 +63,7 @@ namespace Tree_Controller.Patches
                 bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
                 if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush)
                 || (toolSystem.activeTool == objectToolSystem && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet)
-                || (toolSystem.activeTool.toolID == "Line Tool" && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet))
+                || ((toolSystem.activeTool.toolID == "Line Tool" || treeControllerUISystem.RecentlyUsingLineTool) && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet))
                 {
                     log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} resetting selecting and returning.");
                     treeControllerTool.ClearSelectedTreePrefabs();

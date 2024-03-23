@@ -88,7 +88,6 @@ namespace Tree_Controller
             Logger.effectivenessLevel = Level.Info;
 #endif
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)}");
-            Logger.effectivenessLevel = Level.Debug;  // Remember to change this before release.
             Settings = new (this);
             Settings.RegisterInOptionsUI();
             AssetDatabase.global.LoadSettings(nameof(TreeControllerMod), Settings, new TreeControllerSettings(this));

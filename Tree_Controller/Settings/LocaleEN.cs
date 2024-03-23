@@ -4,14 +4,8 @@
 
 namespace Tree_Controller.Settings
 {
-    using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
     using Colossal;
-    using Colossal.IO.AssetDatabase.Internal;
-    using Game.Objects;
-    using UnityEngine;
 
     /// <summary>
     /// Localization for <see cref="TreeControllerSettings"/> in English.

@@ -762,6 +762,7 @@ namespace Tree_Controller.Tools
                 if (m_IsVegetation.value && selectedPrefabs.Count == 0)
                 {
                     m_TreeControllerTool.SelectTreePrefab(m_ToolSystem.activePrefab);
+                    selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
                     m_UpdateSelectionSet = true;
                 }
 

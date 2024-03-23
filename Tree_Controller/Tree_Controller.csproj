@@ -146,7 +146,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Components\" />
-	  <Folder Include="l10n\" />
 	  <Folder Include="UI\" />
 	  <Folder Include="Systems\" />
 	  <Folder Include="Settings\" />

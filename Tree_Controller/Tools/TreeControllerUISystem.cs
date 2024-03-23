@@ -23,6 +23,7 @@ namespace Tree_Controller.Tools
     using Unity.Entities;
     using Unity.Jobs;
     using UnityEngine.InputSystem;
+    using static Colossal.AssetPipeline.Diagnostic.Report;
 
     /// <summary>
     /// UI system for Object Tool while using tree prefabs.
@@ -757,7 +758,26 @@ namespace Tree_Controller.Tools
             {
                 Enabled = true;
                 m_IsVegetation.Update(EntityManager.HasComponent<Vegetation>(prefabEntity));
-                m_IsTree.Update(EntityManager.HasComponent<TreeData>(prefabEntity));
+                m_IsVegetation.Update(true);
+                List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
+                bool isTree = false;
+                if (EntityManager.HasComponent<TreeData>(prefabEntity) && selectedPrefabs.Contains(m_ToolSystem.activePrefab))
+                {
+                    isTree = true;
+                }
+                else if (selectedPrefabs.Count > 1)
+                {
+                    foreach (PrefabBase prefabBase in selectedPrefabs)
+                    {
+                        if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity3) && EntityManager.HasComponent<TreeData>(prefabEntity3))
+                        {
+                            isTree = true;
+                            break;
+                        }
+                    }
+                }
+
+                m_IsTree.Update(isTree);
                 if (tool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create)
                 {
                     m_ToolMode.Update((int)ToolMode.Plop);
@@ -767,7 +787,7 @@ namespace Tree_Controller.Tools
                     m_ToolMode.Update((int)ToolMode.Brush);
                 }
 
-                if (m_IsVegetation.value)
+                if (m_IsVegetation.value && selectedPrefabs.Count == 0)
                 {
                     m_TreeControllerTool.SelectTreePrefab(m_ToolSystem.activePrefab);
                     m_UpdateSelectionSet = true;

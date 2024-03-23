@@ -67,7 +67,7 @@ namespace Tree_Controller.Systems
         {
             m_ObjectDefinitionQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<CreationDefinition, Game.Tools.ObjectDefinition>()
-                .WithAll<Updated>()
+                // .WithAll<Updated>()
                 .WithNone<Deleted, Overridden>()
                 .Build();
 
@@ -89,52 +89,37 @@ namespace Tree_Controller.Systems
                 }
 
                 Unity.Mathematics.Random random = new ((uint)(Mathf.Abs(currentObjectDefinition.m_Position.x) + Mathf.Abs(currentObjectDefinition.m_Position.z)) * 1000);
-
                 Entity prefabEntity = currentCreationDefinition.m_Prefab;
-
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush) || m_ToolSystem.activeTool.toolID == "Line Tool")
                 {
-                    m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)} prefabEntity = {prefabEntity.Index}:{prefabEntity.Version}");
-                    if (m_PrefabSystem.TryGetPrefab(prefabEntity, out PrefabBase prefab))
-                    {
-                        m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)} prefab.name = {prefab.name}");
-                    }
-
                     prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
                     if (prefabEntity != Entity.Null)
                     {
                         currentCreationDefinition.m_Prefab = prefabEntity;
                         EntityManager.SetComponentData(entity, currentCreationDefinition);
-
-                        m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)} prefabEntity = {prefabEntity.Index}:{prefabEntity.Version}");
-                        if (m_PrefabSystem.TryGetPrefab(prefabEntity, out PrefabBase prefab1))
-                        {
-                            m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)} prefab.name = {prefab1.name}");
-                        }
-                    }
-                    else
-                    {
-                        m_Log.Warn("PrefabEntity was null");
                     }
                 }
 
                 if (!EntityManager.HasComponent(prefabEntity, ComponentType.ReadOnly<TreeData>()))
                 {
-                    EntityManager.SetComponentData(entity, currentObjectDefinition);
                     return;
                 }
 
                 TreeState nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random);
+                m_Log.Debug($"nextTreeState = {nextTreeState}");
                 if (BrushTreeStateAges.ContainsKey(nextTreeState))
                 {
                     currentObjectDefinition.m_Age = BrushTreeStateAges[nextTreeState];
+                    m_Log.Debug($"currentObjectDefinition.m_Age = {currentObjectDefinition.m_Age}");
                 }
                 else
                 {
                     currentObjectDefinition.m_Age = ObjectUtils.TREE_AGE_PHASE_CHILD + ObjectUtils.TREE_AGE_PHASE_TEEN;
+                    m_Log.Debug($"currentObjectDefinition.m_Age = {currentObjectDefinition.m_Age} default");
                 }
 
                 EntityManager.SetComponentData(entity, currentObjectDefinition);
+                m_Log.Debug($"done");
             }
 
             entities.Dispose();

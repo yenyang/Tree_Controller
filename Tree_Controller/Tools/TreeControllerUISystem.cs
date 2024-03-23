@@ -784,6 +784,11 @@ namespace Tree_Controller.Tools
                 }
 
                 m_IsTree.Update(isTree);
+                if (selectedPrefabs.Count > 1)
+                {
+                    m_UpdateSelectionSet = true;
+                }
+
                 if (tool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create)
                 {
                     m_ToolMode.Update((int)ToolMode.Plop);

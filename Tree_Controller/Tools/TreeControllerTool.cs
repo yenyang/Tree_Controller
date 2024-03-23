@@ -79,6 +79,11 @@ namespace Tree_Controller.Tools
                 {
                     m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
                 }
+
+                if (!m_TreeControllerUISystem.RecentlySelectedPrefabSet)
+                {
+                    m_TreeControllerUISystem.ResetPrefabSets();
+                }
             }
         }
 
@@ -102,6 +107,11 @@ namespace Tree_Controller.Tools
                 if (m_ToolSystem.activeTool == this)
                 {
                     m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
+                }
+
+                if (!m_TreeControllerUISystem.RecentlySelectedPrefabSet)
+                {
+                    m_TreeControllerUISystem.ResetPrefabSets();
                 }
             }
         }
@@ -167,13 +177,11 @@ namespace Tree_Controller.Tools
                 bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
                 if (!ctrlKeyPressed && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
                 {
-                    m_TreeControllerUISystem.ResetPrefabSets();
                     ClearSelectedTreePrefabs();
                     SelectTreePrefab(prefab);
                 }
                 else if (m_SelectedTreePrefabEntities.Contains(prefabEntity) && m_SelectedTreePrefabEntities.Length > 1 && !m_TreeControllerUISystem.UpdateSelectionSet && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
                 {
-                    m_TreeControllerUISystem.ResetPrefabSets();
                     UnselectTreePrefab(prefab);
                     if (m_OriginallySelectedPrefab == prefab)
                     {
@@ -189,7 +197,6 @@ namespace Tree_Controller.Tools
                 }
                 else if (!m_TreeControllerUISystem.UpdateSelectionSet && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
                 {
-                    m_TreeControllerUISystem.ResetPrefabSets();
                     SelectTreePrefab(prefab);
                 }
                 else if (!m_TreeControllerUISystem.RecentlySelectedPrefabSet && prefab != m_OriginallySelectedPrefab)

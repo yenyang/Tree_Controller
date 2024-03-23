@@ -24,7 +24,7 @@
   "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "When multiple Tree Ages are selected, one will be selected using this option. Equal Distribution is just a random selection. Forest Distribution randomly selects using the editor's approximation for a forest.",
   "Options.TOOLTIPYYTC[WholeMapApply]": "右键单击以应用。",
   "YY_TREE_CONTROLLER[Selection]": "替换方式",
-  "YY_TREE_CONTROLLER[Age]": "å¹´é¾„",
+  "YY_TREE_CONTROLLER[Age]": "年龄",
   "YY_TREE_CONTROLLER[Radius]": "半径",
   "YY_TREE_CONTROLLER[Sets]": "种类",
   "YY_TREE_CONTROLLER[Rotation]": "旋转",

@@ -67,7 +67,6 @@ namespace Tree_Controller.Patches
                 {
                     log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} resetting selecting and returning.");
                     treeControllerTool.ClearSelectedTreePrefabs();
-                    treeControllerUISystem.ResetPrefabSets();
                     treeControllerTool.SelectTreePrefab(prefab);
                     return true;
                 }

@@ -276,6 +276,17 @@ namespace Tree_Controller.Tools
                 selectedTreeStates.Add(TreeState.Dead);
             }
 
+            if (selectedTreeStates.Count == 1)
+            {
+                return selectedTreeStates[0];
+            }
+
+            int iterations = random.NextInt(10);
+            for (int i = 0; i < iterations; i++)
+            {
+                random.NextInt();
+            }
+
             switch (TreeControllerMod.Instance.Settings.AgeSelectionTechnique)
             {
                 case TreeControllerSettings.AgeSelectionOptions.RandomEqualWeight:

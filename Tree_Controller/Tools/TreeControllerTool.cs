@@ -260,7 +260,8 @@ namespace Tree_Controller.Tools
         {
             if (m_SelectedTreePrefabEntities.Length > 0)
             {
-                for (int i = 0; i < random.NextInt(5); i++)
+                int iterations = random.NextInt(10);
+                for (int i = 0; i < iterations; i++)
                 {
                     random.NextInt();
                 }

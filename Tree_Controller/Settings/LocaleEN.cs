@@ -51,25 +51,24 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Yenyangs), "Yenyang's" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Vanilla), "Vanilla" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Custom), "Custom" },
-                { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.AgeSelectionOptions.RandomEqualWeight), "Random: Equal Weight" },
-                { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.AgeSelectionOptions.RandomWeighted), "Random: Weighted" },
+                { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.AgeSelectionOptions.RandomEqualWeight), "Equal Distribution" },
+                { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.AgeSelectionOptions.RandomWeighted), "Forest Distribution" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "Age Selection Technique" },
-                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "When multiple Tree Ages are selected, one will be selected using this option. Random: Equal Weight is just a random selection. Random: Weighted randomly selected using game's editor weights." },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "When multiple Tree Ages are selected, one will be selected using this option. Equal Distribution is just a random selection. Forest Distribution randomly selects using the editor's approximation for a forest." },
                 { "Options.TOOLTIPYYTC[WholeMapApply]", "Right Click to Apply." },
-                { "YY_TREE_CONTROLLER[ToolMode]", "Tool Mode" },
                 { "YY_TREE_CONTROLLER[Selection]", "Selection" },
                 { "YY_TREE_CONTROLLER[Age]", "Age" },
                 { "YY_TREE_CONTROLLER[Radius]", "Radius" },
                 { "YY_TREE_CONTROLLER[Sets]", "Sets" },
                 { "YY_TREE_CONTROLLER[Rotation]", "Rotation" },
-                { "YY_TREE_CONTROLLER[building-or-net]", "Whole Building or Net" },
-                { "YY_TREE_CONTROLLER_DESCRIPTION[building-or-net]", "Selects every tree in a whole building or network. You cannot change type of trees in nets." },
+                { "YY_TREE_CONTROLLER[building-or-net]", "Whole Building or Network" },
+                { "YY_TREE_CONTROLLER_DESCRIPTION[building-or-net]", "Selects every tree in a whole building or network. You cannot change type of trees in networks." },
                 { "YY_TREE_CONTROLLER[single-tree]", "Single Tree" },
-                { "YY_TREE_CONTROLLER_DESCRIPTION[single-tree]", "Selects a single tree in a building, net, or on the map. You cannot change type of trees in nets." },
+                { "YY_TREE_CONTROLLER_DESCRIPTION[single-tree]", "Selects a single tree in a building, network, or on the map. You cannot change type of trees in networks." },
                 { "YY_TREE_CONTROLLER[radius]", "Radius" },
-                { "YY_TREE_CONTROLLER_DESCRIPTION[radius]", "Selects every tree in a radius including those in buildings, nets, or on the map. You should avoid changing type of trees in nets." },
+                { "YY_TREE_CONTROLLER_DESCRIPTION[radius]", "Selects every tree in a radius including those in buildings, networks, or on the map. You should avoid changing type of trees in networks." },
                 { "YY_TREE_CONTROLLER[whole-map]", "Whole Map" },
-                { "YY_TREE_CONTROLLER_DESCRIPTION[whole-map]", "Selects all trees in every building, net, or on the map. Be careful how you use this. Right click to apply. You should avoid changing type of trees in nets." },
+                { "YY_TREE_CONTROLLER_DESCRIPTION[whole-map]", "Selects all trees in every building, network, or on the map. Be careful how you use this. Right click to apply. You should avoid changing type of trees in networks." },
                 { "YY_TREE_CONTROLLER[child]", "Child" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[child]", "Essentially a Sapling. First stage of tree growth." },
                 { "YY_TREE_CONTROLLER[teen]", "teen" },
@@ -82,9 +81,7 @@ namespace Tree_Controller.Settings
                 { "YY_TREE_CONTROLLER_DESCRIPTION[dead]", "A bare, leafless tree. Final stage of tree growth. Will eventually cycle back into a child (sapling) tree." },
                 { "YY_TREE_CONTROLLER[clear-ages]", "Toggle all Ages on/off" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[clear-ages]", "Either selects all or none of the ages depending on your current selection. Having none selected will always default to adult." },
-                { "YY_TREE_CONTROLLER[radius-up-arrow]", "Increase Radius" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[radius-up-arrow]", "Increases the selection radius." },
-                { "YY_TREE_CONTROLLER[radius-down-arrow]", "Decrease Radius" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[radius-down-arrow]", "Decreases the selection radius." },
                 { "YY_TREE_CONTROLLER[change-age-tool]", "Change Tree Age Tool" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[change-age-tool]", "A custom tool for changing the ages of existing trees." },
@@ -96,10 +93,6 @@ namespace Tree_Controller.Settings
                 { "YY_TREE_CONTROLLER_DESCRIPTION[evergreen-trees]", "Pine and spruce trees." },
                 { "YY_TREE_CONTROLLER[wild-bushes]", "Wild Bushes" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[wild-bushes]", "Green and flowering wild bushes." },
-                { "YY_TREE_CONTROLLER[plop-tree]", "Place One" },
-                { "YY_TREE_CONTROLLER_DESCRIPTION[plop-tree]", "Place an individual item on the map." },
-                { "YY_TREE_CONTROLLER[brush-trees]", "Place Multiple" },
-                { "YY_TREE_CONTROLLER_DESCRIPTION[brush-trees]", "Place several items at once. Brush size determines the area, and brush strength the density of items." },
                 { "YY_TREE_CONTROLLER[random-rotation]", "Random Rotation" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[random-rotation]", "Will randomly rotate the tree or bush as the tree or bush is moved to different positions on the map." },
                 { "YY_TREE_CONTROLLER[custom-set-1]", "Custom Set 1" },
@@ -112,6 +105,7 @@ namespace Tree_Controller.Settings
                 { "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-4]", "Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click this button to save a custom set. Once a set has been saved, click this button to select that set. Hold Ctrl while switching themes to maintain the custom set." },
                 { "YY_TREE_CONTROLLER[custom-set-5]", "Custom Set 5" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]", "Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click this button to save a custom set. Once a set has been saved, click this button to select that set. Hold Ctrl while switching themes to maintain the custom set." },
+                { "YY_TREE_CONTROLLER[change]", "Change" },
             };
         }
 
@@ -124,59 +118,6 @@ namespace Tree_Controller.Settings
         /// <inheritdoc/>
         public void Unload()
         {
-        }
-
-        /// <summary>
-        /// Exports a localization CSV template with this files dictionary as default entries.
-        /// </summary>
-        /// <param name="folderPath">the path of where the file should be created.</param>
-        /// <param name="langCodes">the language codes to be included in the template file.</param>
-        /// <returns>True if the file is created. False if not.</returns>
-        public bool ExportLocalizationCSV(string folderPath, string[] langCodes)
-        {
-            System.IO.Directory.CreateDirectory(folderPath);
-            string localizationFilePath = Path.Combine(folderPath, $"l10n.csv");
-            if (!File.Exists(localizationFilePath))
-            {
-                try
-                {
-                    using (StreamWriter streamWriter = new(File.Create(localizationFilePath)))
-                    {
-                        StringBuilder topLine = new StringBuilder();
-                        topLine.Append("key\t");
-                        foreach (string langCode in langCodes)
-                        {
-                            topLine.Append(langCode);
-                            topLine.Append("\t");
-                        }
-
-                        streamWriter.WriteLine(topLine.ToString());
-
-                        foreach (KeyValuePair<string, string> kvp in m_Localization)
-                        {
-                            StringBuilder currentLine = new StringBuilder();
-                            currentLine.Append(kvp.Key);
-                            currentLine.Append("\t");
-                            foreach (string langCode in langCodes)
-                            {
-                                currentLine.Append(kvp.Value);
-                                currentLine.Append("\t");
-                            }
-
-                            streamWriter.WriteLine(currentLine.ToString());
-                        }
-
-                        return true;
-                    }
-                }
-                catch (Exception e)
-                {
-                    TreeControllerMod.Instance.Logger.Warn($"{typeof(LocaleEN)}.{nameof(ExportLocalizationCSV)} Encountered Exception {e} while trying to export localization csv.");
-                    return false;
-                }
-            }
-
-            return false;
         }
     }
 }

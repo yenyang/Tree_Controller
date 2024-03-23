@@ -41,12 +41,24 @@
 		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Colossal.AssetPipeline.dll</HintPath>
 		  <Private>False</Private>
 		</Reference>
+		<Reference Include="Colossal.Core">
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Colossal.Core.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
 		<Reference Include="Colossal.IO">
 		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Colossal.IO.dll</HintPath>
 		  <Private>False</Private>
 		</Reference>
+		<Reference Include="Colossal.IO.AssetDatabase">
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Colossal.IO.AssetDatabase.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
 		<Reference Include="Colossal.Localization">
 		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Colossal.Localization.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
+		<Reference Include="Colossal.Logging">
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Colossal.Logging.dll</HintPath>
 		  <Private>False</Private>
 		</Reference>
 		<Reference Include="Colossal.Mathematics">
@@ -70,27 +82,35 @@
 		  <Private>False</Private>
 		</Reference>
 		<Reference Include="Game">
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Colossal.Core">
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Colossal.Logging">
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Colossal.IO.AssetDatabase">
-			<Private>False</Private>
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Game.dll</HintPath>
+		  <Private>False</Private>
 		</Reference>
 		<Reference Include="System.Windows.Forms">
 		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\System.Windows.Forms.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
+		<Reference Include="Unity.Burst">
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Unity.Burst.dll</HintPath>
 		  <Private>False</Private>
 		</Reference>
 		<Reference Include="Unity.Burst.Unsafe">
 		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Unity.Burst.Unsafe.dll</HintPath>
 		  <Private>False</Private>
 		</Reference>
+		<Reference Include="Unity.Collections">
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Unity.Collections.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
+		<Reference Include="Unity.Entities">
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Unity.Entities.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
 		<Reference Include="Unity.InputSystem">
 		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Unity.InputSystem.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
+		<Reference Include="Unity.Mathematics">
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Unity.Mathematics.dll</HintPath>
 		  <Private>False</Private>
 		</Reference>
 		<Reference Include="UnityEngine">
@@ -98,19 +118,8 @@
 		  <Private>False</Private>
 		</Reference>
 		<Reference Include="UnityEngine.CoreModule">
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Unity.Burst">
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Unity.Collections">
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Unity.Entities">
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="Unity.Mathematics">
-			<Private>False</Private>
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+		  <Private>False</Private>
 		</Reference>
 		<Reference Include="UnityEngine.IMGUIModule">
 		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
@@ -138,7 +147,6 @@
 	<ItemGroup>
 	  <Folder Include="Components\" />
 	  <Folder Include="l10n\" />
-	  <Folder Include="lang\" />
 	  <Folder Include="UI\" />
 	  <Folder Include="Systems\" />
 	  <Folder Include="Settings\" />
@@ -206,5 +214,12 @@
 		</ItemGroup>
 		<Delete Files="@(CleanTargets)" />
 	</Target>
+
+	<ItemGroup>
+		<Folder Include="lang\" />
+		<Content Include="lang\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
 </Project>

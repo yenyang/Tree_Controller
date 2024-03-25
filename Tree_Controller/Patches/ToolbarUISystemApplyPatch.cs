@@ -9,7 +9,6 @@ namespace Tree_Controller.Patches
     using Game.UI.InGame;
     using HarmonyLib;
     using Tree_Controller.Tools;
-    using Unity.Collections;
     using Unity.Entities;
 
     /// <summary>
@@ -30,18 +29,18 @@ namespace Tree_Controller.Patches
             TreeControllerTool treeControllerTool = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerTool>();
             ToolSystem toolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             ObjectToolSystem objectToolSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ObjectToolSystem>();
-            if (toolSystem.activeTool != treeControllerTool && toolSystem.activeTool != objectToolSystem)
-            {
-                return;
-            }
-
-            if (toolSystem.activeTool == objectToolSystem && objectToolSystem.brushing == false)
-            {
-                return;
-            }
-
             TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
-            if (toolSystem.activeTool == objectToolSystem)
+            if (toolSystem.activeTool != treeControllerTool && toolSystem.activeTool != objectToolSystem && toolSystem.activeTool.toolID != "Line Tool")
+            {
+                return;
+            }
+
+            if (toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush && !treeControllerUISystem.RecentlyUsingLineTool)
+            {
+                return;
+            }
+
+            if (toolSystem.activeTool == objectToolSystem || toolSystem.activeTool.toolID == "Line Tool")
             {
                 PrefabBase prefab = objectToolSystem.GetPrefab();
                 if (prefab != null)
@@ -60,7 +59,7 @@ namespace Tree_Controller.Patches
                         }
 
                         treeControllerUISystem.ThemeEntity = themeEntity;
-                        TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} Setting UpdateSelectionSet to true while using object tool and brushing.");
+                        TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} Setting UpdateSelectionSet to true while using {toolSystem.activeTool.toolID}.");
                     }
                 }
             }
@@ -72,7 +71,7 @@ namespace Tree_Controller.Patches
                 }
 
                 treeControllerUISystem.ThemeEntity = themeEntity;
-                TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} Setting UpdateSelectionSet to true while using tree controller tool.");
+                TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} Setting UpdateSelectionSet to true while using {toolSystem.activeTool.toolID}.");
             }
         }
     }

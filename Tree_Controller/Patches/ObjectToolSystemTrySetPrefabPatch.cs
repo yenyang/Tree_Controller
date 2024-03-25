@@ -61,18 +61,17 @@ namespace Tree_Controller.Patches
             {
                 log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} has vegetation component");
                 bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
-                if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.brushing == false)
+                if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush && !treeControllerUISystem.RecentlyUsingLineTool)
                 || (toolSystem.activeTool == objectToolSystem && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet)
-                || toolSystem.activeTool.toolID == "Line Tool")
+                || ((toolSystem.activeTool.toolID == "Line Tool" || treeControllerUISystem.RecentlyUsingLineTool) && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet))
                 {
                     log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} resetting selecting and returning.");
                     treeControllerTool.ClearSelectedTreePrefabs();
-                    treeControllerUISystem.ResetPrefabSets();
                     treeControllerTool.SelectTreePrefab(prefab);
                     return true;
                 }
 
-                if (toolSystem.activeTool == objectToolSystem)
+                if (toolSystem.activeTool == objectToolSystem || toolSystem.activeTool.toolID == "Line Tool")
                 {
                     List<PrefabBase> selectedPrefabs = treeControllerTool.GetSelectedPrefabs();
                     if (selectedPrefabs.Contains(prefab) && selectedPrefabs.Count > 1 && !treeControllerUISystem.UpdateSelectionSet && !treeControllerUISystem.RecentlySelectedPrefabSet)
@@ -108,6 +107,11 @@ namespace Tree_Controller.Patches
                     else if (selectedPrefabs.Contains(toolSystem.activePrefab) || treeControllerUISystem.RecentlySelectedPrefabSet)
                     {
                         log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} recently selected prefab set.");
+                        return true;
+                    }
+                    else if (treeControllerUISystem.UpdateSelectionSet)
+                    {
+                        log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} need to update selection set. Changing active prefab but not selecting it with tree controller tool.");
                         return true;
                     }
                     else

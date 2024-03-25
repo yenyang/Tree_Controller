@@ -79,7 +79,6 @@ namespace Tree_Controller
         {
             Instance = this;
             Logger = LogManager.GetLogger("Mods_Yenyang_Tree_Controller").SetShowsErrorsInUI(false);
-            Logger.Info(nameof(OnLoad));
 #if DEBUG
             Logger.effectivenessLevel = Level.Debug;
 #elif VERBOSE
@@ -88,14 +87,13 @@ namespace Tree_Controller
             Logger.effectivenessLevel = Level.Info;
 #endif
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)}");
-            Logger.effectivenessLevel = Level.Debug;  // Remember to change this before release.
             Settings = new (this);
             Settings.RegisterInOptionsUI();
             AssetDatabase.global.LoadSettings(nameof(TreeControllerMod), Settings, new TreeControllerSettings(this));
             Settings.Contra = false;
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} finished loading settings.");
-            LoadLocales();
-            Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} finished i18n.");
+            GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
+            Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} loaded localization for en-US.");
             Logger.Info($"{nameof(TreeControllerMod)}.{nameof(OnLoad)} Injecting Harmony Patches.");
             m_Harmony = new Harmony("Mods_Yenyang_Anarchy");
             m_Harmony.PatchAll();
@@ -129,46 +127,5 @@ namespace Tree_Controller
             }
         }
 
-        /// <summary>
-        /// Loads csv files for localization.
-        /// </summary>
-        private void LoadLocales()
-        {
-            LocaleEN defaultLocale = new LocaleEN(Settings);
-
-            // defaultLocale.ExportLocalizationCSV(ModInstallFolder, GameManager.instance.localizationManager.GetSupportedLocales());
-            var file = Path.Combine(ModInstallFolder, "l10n", $"l10n.csv");
-            if (File.Exists(file))
-            {
-                var fileLines = File.ReadAllLines(file).Select(x => x.Split('\t'));
-                var enColumn = Array.IndexOf(fileLines.First(), "en-US");
-                var enMemoryFile = new MemorySource(fileLines.Skip(1).ToDictionary(x => x[0], x => x.ElementAtOrDefault(enColumn)));
-                foreach (var lang in GameManager.instance.localizationManager.GetSupportedLocales())
-                {
-                    try
-                    {
-                        GameManager.instance.localizationManager.AddSource(lang, enMemoryFile);
-                        if (lang != "en-US")
-                        {
-                            var valueColumn = Array.IndexOf(fileLines.First(), lang);
-                            if (valueColumn > 0)
-                            {
-                                var i18nFile = new MemorySource(fileLines.Skip(1).ToDictionary(x => x[0], x => x.ElementAtOrDefault(valueColumn)));
-                                GameManager.instance.localizationManager.AddSource(lang, i18nFile);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Warn($"{nameof(TreeControllerMod)}.{nameof(LoadLocales)} Encountered exception {ex} while trying to localize {lang}.");
-                    }
-                }
-            }
-            else
-            {
-                Logger.Info($"{nameof(TreeControllerMod)}.{nameof(LoadLocales)} couldn't find localization file and just loaded english.");
-                GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
-            }
-        }
     }
 }

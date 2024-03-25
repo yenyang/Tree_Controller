@@ -63,7 +63,6 @@ namespace Tree_Controller.Systems
             m_SafelyRemoveSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<SafelyRemoveSystem>();
             m_PrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
             m_Log.Info($"{nameof(FindTreesAndBushesSystem)} created!");
-            RequireForUpdate(m_TreeQuery);
         }
 
         /// <inheritdoc/>

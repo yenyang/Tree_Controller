@@ -1,8 +1,8 @@
 <Publish>
   <!--Id must be set in order to update existed mod. it is not required for publishing mod for the first time-->
-  <ModId Value="" />
+  <ModId Value="75993" />
   <!--Name of the mod to display to players-->
-  <DisplayName Value="Tree_Controller" />
+  <DisplayName Value="Tree Controller" />
   <!--Short description of the mod-->
   <ShortDescription Value="Plop selected age tree. Change Age and Type of trees and bushes. Forest brushes. Optional custom seasonal colors, dead model in winter, and disable tree growth." />
   <!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
@@ -83,7 +83,7 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <Screenshot Value="Properties/Previews/treeControllerToolScreenshot.jpg" />
   <Screenshot Value="Properties/Previews/fall2.jpg" />
   <Screenshot Value="Properties/Previews/spring.jpg" />
-  <Screenshot Value="Properties/Previews/summmer.jpg" />
+  <Screenshot Value="Properties/Previews/summer.jpg" />
   <Screenshot Value="Properties/Previews/fallApple.jpg" />
   <Screenshot Value="Properties/Previews/winter.jpg" />
   <!--Tag, can be set multiple times-->
@@ -98,8 +98,7 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0" />
   <Dependency Id="75426" DisplayName="I18n EveryWhere" Version="1.0.5" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog>
-  </ChangeLog>
+  <ChangeLog>Fix display name.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

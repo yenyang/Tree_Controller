@@ -20,7 +20,7 @@ namespace Tree_Controller.Patches
         /// <summary>
         /// Patches ToolbarUISystemApplyPatch so that additionally selected prefabs can also show as selected.
         /// </summary>
-        /// <param name="themeEntity">Not needed themeEntity.</param>
+        /// <param name="themeEntity">Theme entity for prefab selection.</param>
         /// <param name="assetMenuEntity">Not needed assetMenuEntity.</param>
         /// <param name="assetCategoryEntity">Not needed assetCategoryEntity.</param>
         /// <param name="assetEntity">Not needed assetEntity.</param>
@@ -35,7 +35,7 @@ namespace Tree_Controller.Patches
                 return;
             }
 
-            if (toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush && !treeControllerUISystem.RecentlyUsingLineTool)
+            if (toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush)
             {
                 return;
             }

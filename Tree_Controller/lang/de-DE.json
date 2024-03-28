@@ -19,9 +19,9 @@
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Vanilla]": "Vanilla",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Custom]": "Benutzerdefiniert",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomEqualWeight]": "Völlig zufällig",
-  "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomWeighted]": "Forest Distribution",
+  "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomWeighted]": "Waldverteilung",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "Technik der Altersauswahl",
-  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "When multiple Tree Ages are selected, one will be selected using this option. Equal Distribution is just a random selection. Forest Distribution randomly selects using the editor's approximation for a forest.",
+  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "Wenn mehrere Baumalter ausgewählt sind, wird mit dieser Option einer ausgewählt. Dies kann entweder völlig zufällig sein oder so wie der im Editor festgelegte Wald verteilt ist.",
   "Options.TOOLTIPYYTC[WholeMapApply]": "Rechtsklick zum Anwenden.",
   "YY_TREE_CONTROLLER[Selection]": "Auswahl",
   "YY_TREE_CONTROLLER[Age]": "Alter",
@@ -72,5 +72,5 @@
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-4]": "Strg gedrückt halten, um mehrere Baumarten über die Symbolleiste auszuwählen oder die Auswahl aufzuheben. Dann Strg gedrückt halten und auf diese Schaltfläche klicken, um ein benutzerdefiniertes Set zu speichern. Sobald ein Set gespeichert wurde, auf diese Schaltfläche klicken, um das Set auszuwählen. Strg gedrückt halten, während Sie das Design wechseln, um das benutzerdefinierte Set beizubehalten.",
   "YY_TREE_CONTROLLER[custom-set-5]": "Benutzerdefiniertes Set 5",
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]": "Strg gedrückt halten, um mehrere Baumarten über die Symbolleiste auszuwählen oder die Auswahl aufzuheben. Dann Strg gedrückt halten und auf diese Schaltfläche klicken, um ein benutzerdefiniertes Set zu speichern. Sobald ein Set gespeichert wurde, auf diese Schaltfläche klicken, um das Set auszuwählen. Strg gedrückt halten, während Sie das Design wechseln, um das benutzerdefinierte Set beizubehalten.",
-  "YY_TREE_CONTROLLER[change]": "Change"
+  "YY_TREE_CONTROLLER[change]": "Ändern"
 }

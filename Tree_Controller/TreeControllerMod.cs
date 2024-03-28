@@ -7,15 +7,11 @@ namespace Tree_Controller
 {
     using System;
     using System.IO;
-    using System.Linq;
     using Colossal.IO.AssetDatabase;
-    using Colossal.Localization;
     using Colossal.Logging;
     using Game;
     using Game.Modding;
     using Game.SceneFlow;
-    using Game.Settings;
-    using Game.UI;
     using HarmonyLib;
     using Tree_Controller.Settings;
     using Tree_Controller.Systems;
@@ -95,7 +91,7 @@ namespace Tree_Controller
             GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} loaded localization for en-US.");
             Logger.Info($"{nameof(TreeControllerMod)}.{nameof(OnLoad)} Injecting Harmony Patches.");
-            m_Harmony = new Harmony("Mods_Yenyang_Anarchy");
+            m_Harmony = new Harmony("Mods_Yenyang_Tree_Controller");
             m_Harmony.PatchAll();
             Logger.Info($"{nameof(TreeControllerMod)}.{nameof(OnLoad)} Injecting systems.");
             updateSystem.UpdateAt<TreeControllerTool>(SystemUpdatePhase.ToolUpdate);

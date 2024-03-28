@@ -19,9 +19,9 @@
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Vanilla]": "Juego base/Vanilla",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Custom]": "Personalizado",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomEqualWeight]": "Aleatorio: Equitativo",
-  "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomWeighted]": "Forest Distribution",
-  "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "Técnica de Selección de Edad",
-  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "When multiple Tree Ages are selected, one will be selected using this option. Equal Distribution is just a random selection. Forest Distribution randomly selects using the editor's approximation for a forest.",
+  "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomWeighted]": "Distribución del bosque",
+  "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "Técnica de selección de edad",
+  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "Cuando se seleccionan varias edades de árboles, se seleccionará una usando esta opción. Distribución igualitaria es sólo una selección aleatoria. Distribución del bosque selecciona aleatoriamente usando la aproximación del editor para un bosque.",
   "Options.TOOLTIPYYTC[WholeMapApply]": "Clic derecho para aplicar.",
   "YY_TREE_CONTROLLER[Selection]": "Selección",
   "YY_TREE_CONTROLLER[Age]": "Edad",
@@ -72,5 +72,5 @@
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-4]": "Mantenga pulsado Ctrl para seleccionar o deseleccionar varios tipos de árboles usando el menú de la barra de herramientas. Luego mantenga presionado Ctrl y haga clic en este botón para guardar un conjunto personalizado. Una vez que un conjunto ha sido guardado, haga clic en este botón para seleccionar ese conjunto. Mantenga pulsado Ctrl mientras cambia los temas para mantener la colección personalizada.",
   "YY_TREE_CONTROLLER[custom-set-5]": "Colección personalizada 5",
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]": "Mantenga pulsado Ctrl para seleccionar o deseleccionar varios tipos de árboles usando el menú de la barra de herramientas. Luego mantenga presionado Ctrl y haga clic en este botón para guardar un conjunto personalizado. Una vez que un conjunto ha sido guardado, haga clic en este botón para seleccionar ese conjunto. Mantenga pulsado Ctrl mientras cambia los temas para mantener la colección personalizada.",
-  "YY_TREE_CONTROLLER[change]": "Change"
+  "YY_TREE_CONTROLLER[change]": "Cambiar"
 }

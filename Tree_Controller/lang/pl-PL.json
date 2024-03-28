@@ -19,9 +19,9 @@
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Vanilla]": "Domyślny",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Custom]": "Własny",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomEqualWeight]": "Losowa: zrównoważona",
-  "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomWeighted]": "Forest Distribution",
+  "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomWeighted]": "Losowa: ważona",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "Technika selekcji wzrostu",
-  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "When multiple Tree Ages are selected, one will be selected using this option. Equal Distribution is just a random selection. Forest Distribution randomly selects using the editor's approximation for a forest.",
+  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "Jeżeli wybrałeś wiele etapów wzrostu, za pomocą tej opcji zostanie wybrany jeden. Losowa: zrównoważona to losowy wybór. Losowa: ważona korzysta z wag edytora gry.",
   "Options.TOOLTIPYYTC[WholeMapApply]": "Kliknij prawy przycisk myszy, aby zastosować.",
   "YY_TREE_CONTROLLER[Selection]": "Wybór",
   "YY_TREE_CONTROLLER[Age]": "Etap",
@@ -72,5 +72,5 @@
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-4]": "Przytrzymaj klawisz Ctrl, aby zaznaczyć lub odznaczyć wiele typów drzew w menu roślinności. Następnie przytrzymaj klawisz Ctrl i kliknij ten przycisk, aby zapisać własny zestaw. Po zapisaniu zestawu kliknij ten przycisk, aby wybrać ten zestaw. Przytrzymaj klawisz Ctrl podczas przełączania motywów, aby zachować własny zestaw.",
   "YY_TREE_CONTROLLER[custom-set-5]": "Własny zestaw 5",
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]": "Przytrzymaj klawisz Ctrl, aby zaznaczyć lub odznaczyć wiele typów drzew w menu roślinności. Następnie przytrzymaj klawisz Ctrl i kliknij ten przycisk, aby zapisać własny zestaw. Po zapisaniu zestawu kliknij ten przycisk, aby wybrać ten zestaw. Przytrzymaj klawisz Ctrl podczas przełączania motywów, aby zachować własny zestaw.",
-  "YY_TREE_CONTROLLER[change]": "Change"
+  "YY_TREE_CONTROLLER[change]": "Zmień"
 }

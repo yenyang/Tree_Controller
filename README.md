@@ -14,8 +14,7 @@ I18n Everywhere (Soft dependency required for loading languages other than Engli
 If you want to say thank you with a donation you can do so on [Paypal](https://www.paypal.com/paypalme/YenyangsMods).
 
 ## Translations
-I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the discord link.
-Current Localization Support: Spanish by Nyoko and Citadino, German by Hendrix, Italian by Mazi, Brazilian Portuguese by Luiz Fernando de Paula, Chinese Simplified by RilkeXS, Polish by karmel68, French by Karg, and Japanese by syuuga101.
+I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the discord link. CSL2:CODEMODS -> mods-wip -> Tree Controller: Translations.
 
 # Detailed Description:
 Includes a tree controller tool that lets you change the age or types of existing trees and/or bushes on the following selections:
@@ -68,5 +67,5 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing
 * T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Nullpinter - Localization support
-* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi (Italian), Luiz Fernando de Paula (Brazilian Portuguese), RilkeXS (Chinese Simplified), karmel68 (Polish), Karg (French), syuuga101 (Japanese)
+* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi (Italian), Luiz Fernando de Paula (Brazilian Portuguese), RilkeXS (Chinese Simplified), karmel68 (Polish), Karg (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st (Korean)
 * Tigon Ologdring, code:witch - Testing, Feedback

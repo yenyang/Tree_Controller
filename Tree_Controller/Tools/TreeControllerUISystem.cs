@@ -23,7 +23,6 @@ namespace Tree_Controller.Tools
     using Unity.Entities;
     using Unity.Jobs;
     using UnityEngine.InputSystem;
-    using static Colossal.AssetPipeline.Diagnostic.Report;
 
     /// <summary>
     /// UI system for Object Tool while using tree prefabs.
@@ -112,7 +111,6 @@ namespace Tree_Controller.Tools
         private string m_ContentFolder;
         private EntityQuery m_VegetationQuery;
         private Entity m_ThemeEntity = Entity.Null;
-        private bool m_LastToolWasLineTool = false;
         private ValueBinding<int> m_ToolMode;
         private ValueBinding<int> m_SelectionMode;
         private ValueBinding<int> m_SelectedAges;
@@ -122,10 +120,8 @@ namespace Tree_Controller.Tools
         private ValueBinding<string> m_SelectedPrefabSet;
         private bool m_UpdateSelectionSet = false;
         private bool m_RecentlySelectedPrefabSet = false;
-        private bool m_RecentlyUsingLineTool = false;
         private bool m_MultiplePrefabsSelected = false;
         private int m_FrameCount = 0;
-        private int m_LineToolCoolOff = 3;
 
         /// <summary>
         /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.
@@ -135,11 +131,6 @@ namespace Tree_Controller.Tools
             get => m_UpdateSelectionSet;
             set => m_UpdateSelectionSet = value;
         }
-
-        /// <summary>
-        /// Gets a value indicating whether line tool was recently used.
-        /// </summary>
-        public bool RecentlyUsingLineTool { get => m_RecentlyUsingLineTool; }
 
         /// <summary>
         /// Gets a value indicating whether a prefab set was recently selected.
@@ -455,7 +446,7 @@ namespace Tree_Controller.Tools
                     m_FrameCount++;
                 }
             }
-            else if (m_UiView != null && m_MultiplePrefabsSelected && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create && m_RecentlyUsingLineTool == false)
+            else if (m_UiView != null && m_MultiplePrefabsSelected && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create)
             {
                 m_UiView.ExecuteScript("if (yyTreeController == null) var yyTreeController = {};");
                 UnselectPrefabs();
@@ -471,20 +462,6 @@ namespace Tree_Controller.Tools
             if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create && m_ToolMode.value != (int)ToolMode.Plop)
             {
                 m_ToolMode.Update((int)ToolMode.Plop);
-            }
-
-            if (m_ToolSystem.activeTool.toolID == "Line Tool")
-            {
-                m_RecentlyUsingLineTool = true;
-                m_LineToolCoolOff = 3;
-            }
-            else if (m_LineToolCoolOff > 0)
-            {
-                m_LineToolCoolOff--;
-            }
-            else if (m_LineToolCoolOff <= 0)
-            {
-                m_RecentlyUsingLineTool = false;
             }
 
             base.OnUpdate();
@@ -767,6 +744,7 @@ namespace Tree_Controller.Tools
                 (tool == m_TreeControllerTool || tool.toolID == "Line Tool" || (tool == m_ObjectToolSystem && (m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush)))
                 && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity))
             {
+                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)} ");
                 Enabled = true;
                 m_IsVegetation.Update(EntityManager.HasComponent<Vegetation>(prefabEntity));
                 List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
@@ -838,7 +816,7 @@ namespace Tree_Controller.Tools
                 return;
             }
 
-            if ((m_ToolSystem.activeTool == m_TreeControllerTool || m_ToolSystem.activeTool.toolID == "Line Tool" || m_RecentlyUsingLineTool == true || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush)) && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
+            if ((m_ToolSystem.activeTool == m_TreeControllerTool || m_ToolSystem.activeTool.toolID == "Line Tool" || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush)) && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
             {
                 if (EntityManager.HasComponent<Vegetation>(prefabEntity))
                 {
@@ -868,7 +846,7 @@ namespace Tree_Controller.Tools
                     m_IsVegetation.Update(false);
                 }
             }
-            else if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity2) && m_RecentlyUsingLineTool == false)
+            else if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity2))
             {
                 m_IsVegetation.Update(EntityManager.HasComponent<Vegetation>(prefabEntity2));
                 m_IsTree.Update(EntityManager.HasComponent<TreeData>(prefabEntity2));

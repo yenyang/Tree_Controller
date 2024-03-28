@@ -122,7 +122,6 @@ namespace Tree_Controller.Tools
         private bool m_RecentlySelectedPrefabSet = false;
         private bool m_MultiplePrefabsSelected = false;
         private int m_FrameCount = 0;
-        private int m_LineToolCoolOff = 3;
 
         /// <summary>
         /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.

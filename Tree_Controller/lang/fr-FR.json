@@ -19,9 +19,9 @@
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Vanilla]": "Jeu de base",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Custom]": "Personnalisé",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomEqualWeight]": "Aléatoire : Poids égal",
-  "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomWeighted]": "Forest Distribution",
+  "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomWeighted]": "Répartition forestière",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "Technique de sélection de l'âge",
-  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "When multiple Tree Ages are selected, one will be selected using this option. Equal Distribution is just a random selection. Forest Distribution randomly selects using the editor's approximation for a forest.",
+  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "Lorsque plusieurs âges d'arbre sont sélectionnés, l'un d'entre eux sera sélectionné en utilisant cette option. La distribution égale n'est qu'une sélection aléatoire. La Distribution de la Forêt choisit aléatoirement l'utilisation de l'approximation de l'éditeur pour une forêt.",
   "Options.TOOLTIPYYTC[WholeMapApply]": "Faites un clic droit pour appliquer.",
   "YY_TREE_CONTROLLER[Selection]": "Sélection",
   "YY_TREE_CONTROLLER[Age]": "Âge",
@@ -72,5 +72,5 @@
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-4]": "Maintenez Ctrl enfoncé pour sélectionner ou désélectionner plusieurs types d'arbres à l'aide du menu de la barre d'outils. Puis maintenez Ctrl enfoncé et cliquez sur ce bouton pour enregistrer un ensemble personnalisé. Une fois qu'un ensemble a été enregistré, cliquez sur ce bouton pour sélectionner ce paramètre. Maintenez Ctrl enfoncé tout en changeant de thème pour maintenir le jeu personnalisé.",
   "YY_TREE_CONTROLLER[custom-set-5]": "Ensemble personnalisé 5",
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]": "Maintenez Ctrl enfoncé pour sélectionner ou désélectionner plusieurs types d'arbres à l'aide du menu de la barre d'outils. Puis maintenez Ctrl enfoncé et cliquez sur ce bouton pour enregistrer un ensemble personnalisé. Une fois qu'un ensemble a été enregistré, cliquez sur ce bouton pour sélectionner ce paramètre. Maintenez Ctrl enfoncé tout en changeant de thème pour maintenir le jeu personnalisé.",
-  "YY_TREE_CONTROLLER[change]": "Change"
+  "YY_TREE_CONTROLLER[change]": "Modifier"
 }

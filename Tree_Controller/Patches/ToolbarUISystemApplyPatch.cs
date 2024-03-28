@@ -35,7 +35,7 @@ namespace Tree_Controller.Patches
                 return;
             }
 
-            if (toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush && !treeControllerUISystem.RecentlyUsingLineTool)
+            if (toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush)
             {
                 return;
             }

@@ -16,6 +16,7 @@ namespace Tree_Controller.Patches
     /// <summary>
     /// Patches ObjectToolSystem.TrySetPrefab. If not using tree controller tool, original methods acts as normal. Will skip it and return false if Tree Controller tool is active tool and an appropriate prefab is selected.
     /// </summary>
+    [HarmonyBefore("algernon-LineToolCS2")]
     [HarmonyPatch(typeof(ObjectToolSystem), "TrySetPrefab")]
     public class ObjectToolSystemTrySetPrefabPatch
     {
@@ -61,9 +62,9 @@ namespace Tree_Controller.Patches
             {
                 log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} has vegetation component");
                 bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
-                if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush && !treeControllerUISystem.RecentlyUsingLineTool)
+                if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush)
                 || (toolSystem.activeTool == objectToolSystem && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet)
-                || ((toolSystem.activeTool.toolID == "Line Tool" || treeControllerUISystem.RecentlyUsingLineTool) && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet))
+                || (toolSystem.activeTool.toolID == "Line Tool" && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet))
                 {
                     log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} resetting selecting and returning.");
                     treeControllerTool.ClearSelectedTreePrefabs();
@@ -85,7 +86,7 @@ namespace Tree_Controller.Patches
                             log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} selected prefabs contains active prefab returning.");
                             return true;
                         }
-                        else
+                        else if (toolSystem.activeTool == objectToolSystem)
                         {
                             log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} Set prefab {prefab.name} to active prefab {selectedPrefabs[0].name}.");
                             if (selectedPrefabs[0] is ObjectPrefab)
@@ -114,7 +115,7 @@ namespace Tree_Controller.Patches
                         log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} need to update selection set. Changing active prefab but not selecting it with tree controller tool.");
                         return true;
                     }
-                    else
+                    else if (toolSystem.activeTool == objectToolSystem)
                     {
                         log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} Set prefab {prefab.name} to active prefab {selectedPrefabs[0].name}.");
                         prefab = selectedPrefabs[0];
@@ -122,10 +123,12 @@ namespace Tree_Controller.Patches
                         return false;
                     }
                 }
-
-                log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} Bypassing ObjectTool");
-                __result = false;
-                return false;
+                else if (toolSystem.activeTool == treeControllerTool)
+                {
+                    log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} Bypassing ObjectTool");
+                    __result = false;
+                    return false;
+                }
             }
 
             return true;

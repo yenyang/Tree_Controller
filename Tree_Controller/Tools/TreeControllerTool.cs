@@ -76,7 +76,7 @@ namespace Tree_Controller.Tools
 
                 m_TreeControllerUISystem.UpdateSelectionSet = true;
                 m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(SelectTreePrefab)} selected {prefab.name} prefabEntity = {prefabEntity.Index}.{prefabEntity.Version}");
-                if (m_ToolSystem.activeTool == this)
+                if (m_ToolSystem.activeTool == this || m_ToolSystem.activeTool.toolID == "Line Tool")
                 {
                     m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
                 }
@@ -105,7 +105,7 @@ namespace Tree_Controller.Tools
                 }
 
                 m_TreeControllerUISystem.UpdateSelectionSet = true;
-                if (m_ToolSystem.activeTool == this)
+                if (m_ToolSystem.activeTool == this || m_ToolSystem.activeTool.toolID == "Line Tool")
                 {
                     m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
                 }

@@ -67,5 +67,5 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing
 * T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Nullpinter - Localization support
-* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi (Italian), Luiz Fernando de Paula (Brazilian Portuguese), RilkeXS (Chinese Simplified), karmel68 (Polish), Karg (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st (Korean)
+* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg and edouardtherrien24 (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st (Korean)
 * Tigon Ologdring, code:witch - Testing, Feedback

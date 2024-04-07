@@ -42,14 +42,14 @@ namespace Tree_Controller.Patches
                 return true;
             }
 
-            if (toolSystem.selected != Entity.Null || (toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush && objectToolSystem.mode != ObjectToolSystem.Mode.Create))
+            if (toolSystem.selected != Entity.Null || (toolSystem.activeTool == objectToolSystem && objectToolSystem.actualMode != ObjectToolSystem.Mode.Brush && objectToolSystem.actualMode != ObjectToolSystem.Mode.Create))
             {
                 log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} returned because something is selected or object tool mode is neither brush nor create.");
                 return true;
             }
 
             log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} toolSystem.selected = {toolSystem.selected.Index}.{toolSystem.selected.Version}.");
-            log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} objectToolSystem.mode = {objectToolSystem.mode}");
+            log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} objectToolSystem.actualMode = {objectToolSystem.actualMode}");
             TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
             PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
             if (!prefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
@@ -62,7 +62,7 @@ namespace Tree_Controller.Patches
             {
                 log.Debug($"{nameof(ObjectToolSystemTrySetPrefabPatch)}.{nameof(Prefix)} has vegetation component");
                 bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
-                if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.mode != ObjectToolSystem.Mode.Brush)
+                if ((toolSystem.activeTool == objectToolSystem && objectToolSystem.actualMode != ObjectToolSystem.Mode.Brush)
                 || (toolSystem.activeTool == objectToolSystem && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet)
                 || (toolSystem.activeTool.toolID == "Line Tool" && !ctrlKeyPressed && !treeControllerUISystem.RecentlySelectedPrefabSet))
                 {

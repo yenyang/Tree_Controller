@@ -19,9 +19,9 @@
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Vanilla]": "Sem modificações (Vanilla)",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Custom]": "Personalizado",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomEqualWeight]": "Aleatório: Peso igual",
-  "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomWeighted]": "Forest Distribution",
+  "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomWeighted]": "Distribuição de Floresta",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "Técnica da seleção de idade",
-  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "When multiple Tree Ages are selected, one will be selected using this option. Equal Distribution is just a random selection. Forest Distribution randomly selects using the editor's approximation for a forest.",
+  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "Quando árvores de múltiplas idades são selecionadas, uma será selecionada usando esta opção. A distribuição igual é apenas uma seleção aleatória. A distribuição das florestas seleciona aleatoriamente utilizando a aproximação do editor para uma floresta.",
   "Options.TOOLTIPYYTC[WholeMapApply]": "Clique direito para aplicar.",
   "YY_TREE_CONTROLLER[Selection]": "Seleção",
   "YY_TREE_CONTROLLER[Age]": "Idade",
@@ -72,5 +72,5 @@
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-4]": "Segure Ctrl para selecionar ou desmarcar múltiplos tipos de árvores usando a barra de ferramentas. Em seguida, pressione Ctrl e clique neste botão para salvar um conjunto personalizado. Uma vez que um conjunto foi salvo, clique neste botão para selecionar o conjunto. Pressione Ctrl enquanto troca de temas para manter o conjunto personalizado.",
   "YY_TREE_CONTROLLER[custom-set-5]": "Conjunto Personalizado 5",
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]": "Segure Ctrl para selecionar ou desmarcar múltiplos tipos de árvores usando a barra de ferramentas. Em seguida, pressione Ctrl e clique neste botão para salvar um conjunto personalizado. Uma vez que um conjunto foi salvo, clique neste botão para selecionar o conjunto. Pressione Ctrl enquanto troca de temas para manter o conjunto personalizado.",
-  "YY_TREE_CONTROLLER[change]": "Change"
+  "YY_TREE_CONTROLLER[change]": "Mudar"
 }

@@ -393,7 +393,7 @@ namespace Tree_Controller.Tools
         protected override void OnUpdate()
         {
             List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
-            if ((m_ToolSystem.activeTool == m_TreeControllerTool || m_ToolSystem.activeTool.toolID == "Line Tool" || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush)) && m_UiView != null)
+            if ((m_ToolSystem.activeTool == m_TreeControllerTool || m_ToolSystem.activeTool.toolID == "Line Tool" || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush)) && m_UiView != null)
             {
                 // This script creates the Tree Controller object if it doesn't exist.
                 m_UiView.ExecuteScript("if (yyTreeController == null) var yyTreeController = {};");
@@ -446,7 +446,7 @@ namespace Tree_Controller.Tools
                     m_FrameCount++;
                 }
             }
-            else if (m_UiView != null && m_MultiplePrefabsSelected && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create)
+            else if (m_UiView != null && m_MultiplePrefabsSelected && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create)
             {
                 m_UiView.ExecuteScript("if (yyTreeController == null) var yyTreeController = {};");
                 UnselectPrefabs();
@@ -454,12 +454,12 @@ namespace Tree_Controller.Tools
                 m_MultiplePrefabsSelected = false;
             }
 
-            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush && m_ToolMode.value != (int)ToolMode.Brush)
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush && m_ToolMode.value != (int)ToolMode.Brush)
             {
                 m_ToolMode.Update((int)ToolMode.Brush);
             }
 
-            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create && m_ToolMode.value != (int)ToolMode.Plop)
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create && m_ToolMode.value != (int)ToolMode.Plop)
             {
                 m_ToolMode.Update((int)ToolMode.Plop);
             }
@@ -741,7 +741,7 @@ namespace Tree_Controller.Tools
         private void OnToolChanged(ToolBaseSystem tool)
         {
             if (m_ToolSystem.activePrefab != null &&
-                (tool == m_TreeControllerTool || tool.toolID == "Line Tool" || (tool == m_ObjectToolSystem && (m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush)))
+                (tool == m_TreeControllerTool || tool.toolID == "Line Tool" || (tool == m_ObjectToolSystem && (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush)))
                 && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity))
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)} ");
@@ -778,11 +778,11 @@ namespace Tree_Controller.Tools
                     m_UpdateSelectionSet = true;
                 }
 
-                if (tool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create)
+                if (tool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create)
                 {
                     m_ToolMode.Update((int)ToolMode.Plop);
                 }
-                else if (tool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush)
+                else if (tool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush)
                 {
                     m_ToolMode.Update((int)ToolMode.Brush);
                 }
@@ -816,7 +816,7 @@ namespace Tree_Controller.Tools
                 return;
             }
 
-            if ((m_ToolSystem.activeTool == m_TreeControllerTool || m_ToolSystem.activeTool.toolID == "Line Tool" || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Brush)) && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
+            if ((m_ToolSystem.activeTool == m_TreeControllerTool || m_ToolSystem.activeTool.toolID == "Line Tool" || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush)) && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
             {
                 if (EntityManager.HasComponent<Vegetation>(prefabEntity))
                 {
@@ -846,7 +846,7 @@ namespace Tree_Controller.Tools
                     m_IsVegetation.Update(false);
                 }
             }
-            else if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.mode == ObjectToolSystem.Mode.Create && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity2))
+            else if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity2))
             {
                 m_IsVegetation.Update(EntityManager.HasComponent<Vegetation>(prefabEntity2));
                 m_IsTree.Update(EntityManager.HasComponent<TreeData>(prefabEntity2));

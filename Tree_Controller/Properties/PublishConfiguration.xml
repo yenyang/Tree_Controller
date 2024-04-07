@@ -75,7 +75,7 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing
 * T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Nullpinter - Localization support
-* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi (Italian), Luiz Fernando de Paula (Brazilian Portuguese), RilkeXS (Chinese Simplified), karmel68 (Polish), Karg (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st (Korean)
+* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg and edouardtherrien24 (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st (Korean)
 * Tigon Ologdring, code:witch - Testing, Feedback</LongDescription>
   <!--Thumbnail-->
   <Thumbnail Value="Properties/Thumbnail.png" />
@@ -98,7 +98,10 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0" />
   <Dependency Id="75426" DisplayName="I18n EveryWhere" Version="1.0.5" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Patch V1.2.2</ChangeLog>
+  <ChangeLog># Patch V1.2.2
+* Fixed Palm trees behaving like deciduous trees in winter.
+* Palms trees that should not be dead will revert to previous age on map load.
+* Updated Localization.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

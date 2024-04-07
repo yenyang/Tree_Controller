@@ -1,3 +1,5 @@
-﻿# Patch V1.2.1
-* Updated Multiple Prefab Selection for Line Tool v0.7
-* Updated Localization including Korean by TwotoolusFLY_LSh.st루샥.
+﻿# Patch V1.2.2
+* Fixed Palm trees behaving like deciduous trees in winter.
+* Palms trees that should not be dead will revert to previous age on map load.
+* Updated Localization.
+* Potentially fixed issues with object tool mode recognition.

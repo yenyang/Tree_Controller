@@ -14,6 +14,7 @@ If you want to say thank you with a donation you can do so on Paypal.
 
 ## Translations
 I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the discord link. CSL2:CODEMODS -> mods-wip -> Tree Controller: Translations.
+Fully or Partially Supported Languages: German, Spanish, Italian, Brazilian Portuguese, Chinese Simplified, Polish, French, Japanese, Korean, and Russian.
 
 # Detailed Description:
 Includes a tree controller tool that lets you change the age or types of existing trees and/or bushes on the following selections:
@@ -66,5 +67,5 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing
 * T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Nullpinter - Localization support
-* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi (Italian), Luiz Fernando de Paula (Brazilian Portuguese), RilkeXS (Chinese Simplified), karmel68 (Polish), Karg (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st (Korean)
+* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg and edouardtherrien24 (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st (Korean)
 * Tigon Ologdring, code:witch - Testing, Feedback

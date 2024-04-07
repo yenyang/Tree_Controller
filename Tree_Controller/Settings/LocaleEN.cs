@@ -65,7 +65,7 @@ namespace Tree_Controller.Settings
                 { "YY_TREE_CONTROLLER_DESCRIPTION[whole-map]", "Selects all trees in every building, network, or on the map. Be careful how you use this. Right click to apply. You should avoid changing type of trees in networks." },
                 { "YY_TREE_CONTROLLER[child]", "Child" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[child]", "Essentially a Sapling. First stage of tree growth." },
-                { "YY_TREE_CONTROLLER[teen]", "teen" },
+                { "YY_TREE_CONTROLLER[teen]", "Teen" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[teen]", "A young tree. Second stage of tree growth." },
                 { "YY_TREE_CONTROLLER[adult]", "Adult" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[adult]", "A mature tree but not the largest size. Third stage of tree growth." },

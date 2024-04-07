@@ -144,7 +144,10 @@ namespace Tree_Controller.Systems
                         continue;
                     }
 
-                    if (colorVariationBuffer.Length < 4)
+                    PrefabBase prefabBase = m_PrefabSystem.GetPrefab<PrefabBase>(e);
+                    PrefabID prefabID = prefabBase.GetPrefabID();
+
+                    if (colorVariationBuffer.Length < 4 || prefabBase.name.ToLower().Contains("palm"))
                     {
                         EntityManager.AddComponent<Evergreen>(e);
                         continue;
@@ -152,8 +155,6 @@ namespace Tree_Controller.Systems
 
                     for (int j = 0; j < 4; j++)
                     {
-                        PrefabBase prefabBase = m_PrefabSystem.GetPrefab<PrefabBase>(e);
-                        PrefabID prefabID = prefabBase.GetPrefabID();
 #if VERBOSE
                         m_Log.Verbose($"{prefabID.GetName()} {(TreeState)(int)Math.Pow(2, i - 1)} {(FoliageUtils.Season)j} {colorVariationBuffer[j].m_ColorSet.m_Channel0} {colorVariationBuffer[j].m_ColorSet.m_Channel1} {colorVariationBuffer[j].m_ColorSet.m_Channel2}");
 #endif

@@ -6,6 +6,7 @@
 namespace Tree_Controller.Systems
 {
     using Colossal.Logging;
+    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
     using Game.Objects;
@@ -107,7 +108,7 @@ namespace Tree_Controller.Systems
             m_DeciduousTreeQuery.SetSharedComponentFilter(new UpdateFrame(updateFrame));
 
             // m_Log.Debug(FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.m_NameID));
-            TreeSeasonChangeJob treeSeasonChangeJob = new ()
+            TreeSeasonChangeJob treeSeasonChangeJob = new()
             {
                 m_TreeType = SystemAPI.GetComponentTypeHandle<Game.Objects.Tree>(),
                 m_EntityType = SystemAPI.GetEntityTypeHandle(),
@@ -124,6 +125,30 @@ namespace Tree_Controller.Systems
             {
                 m_SafelyRemoveSystem.Enabled = true;
             }
+        }
+
+        /// <inheritdoc/>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
+            EntityQuery deciduousTreeQuery = SystemAPI.QueryBuilder()
+                   .WithAllRW<Tree, DeciduousData>()
+                   .Build();
+
+            // This is for removing deciduous data from any trees that had it accidently added such as palm trees.
+            RemoveDecidousDataJob removeDecidousDataJob = new ()
+            {
+                m_DeciduousTreeDataType = SystemAPI.GetComponentTypeHandle<DeciduousData>(),
+                m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                m_EvergreenLookup = SystemAPI.GetComponentLookup<Evergreen>(isReadOnly: true),
+                m_PrefabRefType = SystemAPI.GetComponentTypeHandle<PrefabRef>(isReadOnly: true),
+                m_TreeType = SystemAPI.GetComponentTypeHandle<Tree>(),
+                buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
+            };
+
+            JobHandle jobHandle = removeDecidousDataJob.ScheduleParallel(deciduousTreeQuery, Dependency);
+            m_EndFrameBarrier.AddJobHandleForProducer(jobHandle);
+            Dependency = jobHandle;
         }
 
         /// <inheritdoc/>
@@ -193,11 +218,8 @@ namespace Tree_Controller.Systems
                         if (currentTreeData.m_State == TreeState.Dead && currentDeciduousTreeData.m_TechnicallyDead == false && currentDeciduousTreeData.m_PreviousTreeState != TreeState.Dead)
                         {
                             currentTreeData.m_State = currentDeciduousTreeData.m_PreviousTreeState;
-                            currentDeciduousTreeData.m_PreviousTreeState = currentTreeData.m_State;
-                            buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentDeciduousTreeData);
                             buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentTreeData);
                             buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity, default);
-                            buffer.AddComponent<Updated>(unfilteredChunkIndex, currentEntity, default);
                         }
                         else if (currentDeciduousTreeData.m_PreviousTreeState != currentTreeData.m_State)
                         {
@@ -209,6 +231,48 @@ namespace Tree_Controller.Systems
 
                             buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentDeciduousTreeData);
                         }
+                    }
+                }
+            }
+        }
+
+#if BURST
+        [BurstCompile]
+#endif
+        private struct RemoveDecidousDataJob : IJobChunk
+        {
+            [ReadOnly]
+            public EntityTypeHandle m_EntityType;
+            public ComponentTypeHandle<Game.Objects.Tree> m_TreeType;
+            public ComponentTypeHandle<DeciduousData> m_DeciduousTreeDataType;
+            public EntityCommandBuffer.ParallelWriter buffer;
+            [ReadOnly]
+            public ComponentTypeHandle<PrefabRef> m_PrefabRefType;
+            [ReadOnly]
+            public ComponentLookup<Evergreen> m_EvergreenLookup;
+
+            public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
+            {
+                NativeArray<Entity> entityNativeArray = chunk.GetNativeArray(m_EntityType);
+                NativeArray<Game.Objects.Tree> treeNativeArray = chunk.GetNativeArray(ref m_TreeType);
+                NativeArray<DeciduousData> deciduousTreeNativeArray = chunk.GetNativeArray(ref m_DeciduousTreeDataType);
+                NativeArray<PrefabRef> prefabRefNativeArray = chunk.GetNativeArray(ref m_PrefabRefType);
+                for (int i = 0; i < chunk.Count; i++)
+                {
+                    Entity currentEntity = entityNativeArray[i];
+                    Game.Objects.Tree currentTreeData = treeNativeArray[i];
+                    DeciduousData currentDeciduousTreeData = deciduousTreeNativeArray[i];
+                    PrefabRef prefabRef = prefabRefNativeArray[i];
+                    if (m_EvergreenLookup.HasComponent(prefabRef.m_Prefab))
+                    {
+                        if (currentDeciduousTreeData.m_PreviousTreeState != TreeState.Dead && currentTreeData.m_State == TreeState.Dead)
+                        {
+                            currentTreeData.m_State = currentDeciduousTreeData.m_PreviousTreeState;
+                            buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentTreeData);
+                            buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
+                        }
+
+                        buffer.RemoveComponent<DeciduousData>(unfilteredChunkIndex, currentEntity);
                     }
                 }
             }

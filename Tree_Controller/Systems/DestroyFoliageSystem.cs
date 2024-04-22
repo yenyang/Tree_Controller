@@ -52,7 +52,7 @@ namespace Tree_Controller.Systems
         {
             m_Log.Info($"{nameof(DestroyFoliageSystem)}.{nameof(OnUpdate)} invoked.");
             m_allFoliageQuery = SystemAPI.QueryBuilder()
-                .WithAllRW<Tree, Plant>()
+                .WithAnyRW<Tree, Plant>()
                 .WithNone<Owner, Deleted>()
                 .Build();
             RequireForUpdate(m_allFoliageQuery);

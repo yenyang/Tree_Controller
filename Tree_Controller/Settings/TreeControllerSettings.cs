@@ -17,6 +17,7 @@ namespace Tree_Controller.Settings
     public class TreeControllerSettings : ModSetting
     {
         private ReloadFoliageColorDataSystem m_ReloadFoliageColorDataSystem;
+        private DestroyFoliageSystem m_DestroyFoliageSystem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TreeControllerSettings"/> class.
@@ -26,6 +27,7 @@ namespace Tree_Controller.Settings
             : base(mod)
         {
             SetDefaults();
+            RegisterEventListener();
         }
 
         /// <summary>
@@ -141,6 +143,22 @@ namespace Tree_Controller.Settings
             }
         }
 
+        /// <summary>
+        /// Sets a value indicating whether: a button for destroying all foliage in the current world.
+        /// </summary>
+        [SettingsUIButton]
+        [SettingsUIConfirmation]
+        public bool DestroyFoliageSettings
+        {
+            set
+            {
+                m_DestroyFoliageSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<DestroyFoliageSystem>();
+                m_DestroyFoliageSystem.Enabled = true;
+                m_DestroyFoliageSystem.Update();
+                m_DestroyFoliageSystem.Enabled = false;
+            }
+        }
+
         /// <inheritdoc/>
         public override void SetDefaults()
         {
@@ -150,6 +168,24 @@ namespace Tree_Controller.Settings
             ColorVariationSet = ColorVariationSetYYTC.Vanilla;
             UseDeadModelDuringWinter = false;
             AgeSelectionTechnique = AgeSelectionOptions.RandomWeighted;
+        }
+
+        /// <summary>
+        /// Attach event listener method to inherited event delegate.
+        /// </summary>
+        public void RegisterEventListener()
+        {
+            // Listen to event when any settings are applied.
+            onSettingsApplied += Setting_SettingsAppliedListener;
+        }
+
+        /// <summary>
+        /// Method delegate for handling onSettingsApplied events.
+        /// </summary>
+        /// <param name="setting">Setting object.</param>
+        public void Setting_SettingsAppliedListener(Setting setting)
+        {
+            TreeControllerMod.Instance.Logger.Debug($"Setting triggered or updated: {setting}.");
         }
     }
 }

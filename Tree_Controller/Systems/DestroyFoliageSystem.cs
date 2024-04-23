@@ -23,7 +23,6 @@ namespace Tree_Controller.Systems
     public partial class DestroyFoliageSystem : GameSystemBase
     {
         private EndFrameBarrier m_EndFrameBarrier;
-        private TimeSystem m_TimeSystem;
         private EntityQuery m_allFoliageQuery;
         private ILog m_Log;
 
@@ -39,8 +38,7 @@ namespace Tree_Controller.Systems
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_EndFrameBarrier = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<EndFrameBarrier>();
-            m_TimeSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TimeSystem>();
+            m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
 
             // Disable system for safety reasons, only enable explictly during triggered action.
             Enabled = false;
@@ -75,6 +73,9 @@ namespace Tree_Controller.Systems
             Dependency = jobHandle;
 
             m_Log.Debug($"{nameof(DestroyFoliageSystem)}.{nameof(OnUpdate)} parallel job submitted.");
+
+            // Disable system for safety reasons, only enable explictly during triggered action.
+            Enabled = false;
         }
 
 #if BURST

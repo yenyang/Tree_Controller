@@ -154,8 +154,6 @@ namespace Tree_Controller.Settings
             {
                 m_DestroyFoliageSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<DestroyFoliageSystem>();
                 m_DestroyFoliageSystem.Enabled = true;
-                m_DestroyFoliageSystem.Update();
-                m_DestroyFoliageSystem.Enabled = false;
             }
         }
 

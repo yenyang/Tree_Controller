@@ -10,7 +10,7 @@ namespace Tree_Controller.Systems
     using Game;
     using Game.Common;
     using Game.Objects;
-    using Game.Simulation;
+    using Game.Tools;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
     using Unity.Collections;
@@ -22,7 +22,7 @@ namespace Tree_Controller.Systems
     /// </summary>
     public partial class DestroyFoliageSystem : GameSystemBase
     {
-        private EndFrameBarrier m_EndFrameBarrier;
+        private ToolOutputBarrier m_ToolOutputBarrier;
         private EntityQuery m_allFoliageQuery;
         private ILog m_Log;
 
@@ -38,7 +38,8 @@ namespace Tree_Controller.Systems
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
+
+            m_ToolOutputBarrier = World.GetOrCreateSystemManaged<ToolOutputBarrier>();
 
             // Disable system for safety reasons, only enable explictly during triggered action.
             Enabled = false;
@@ -65,11 +66,11 @@ namespace Tree_Controller.Systems
             DestroyFoliageEntitiesJob destroyFoliageEntitiesJob = new ()
             {
                 m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
+                buffer = m_ToolOutputBarrier.CreateCommandBuffer().AsParallelWriter(),
             };
 
             JobHandle jobHandle = JobChunkExtensions.ScheduleParallel(destroyFoliageEntitiesJob, m_allFoliageQuery, Dependency);
-            m_EndFrameBarrier.AddJobHandleForProducer(jobHandle);
+            m_ToolOutputBarrier.AddJobHandleForProducer(jobHandle);
             Dependency = jobHandle;
 
             m_Log.Debug($"{nameof(DestroyFoliageSystem)}.{nameof(OnUpdate)} parallel job submitted.");

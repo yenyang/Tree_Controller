@@ -39,9 +39,9 @@ namespace Tree_Controller.Tools
         protected override void OnCreate()
         {
             base.OnCreate();
-            m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
-            m_TreeControllerTool = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerTool>();
-            m_TreeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
+            m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
+            m_TreeControllerTool = World.GetOrCreateSystemManaged<TreeControllerTool>();
+            m_TreeControllerUISystem = World.GetOrCreateSystemManaged<TreeControllerUISystem>();
             m_ToolModeTooltip = new StringTooltip();
         }
 

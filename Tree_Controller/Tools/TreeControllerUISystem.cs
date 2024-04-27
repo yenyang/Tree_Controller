@@ -337,18 +337,16 @@ namespace Tree_Controller.Tools
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
-            m_PrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
-            m_ObjectToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ObjectToolSystem>();
-            m_TreeObjectDefinitionSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeObjectDefinitionSystem>();
+            m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
+            m_TreeObjectDefinitionSystem = World.GetOrCreateSystemManaged<TreeObjectDefinitionSystem>();
             m_UiView = GameManager.instance.userInterface.view.View;
-            m_TreeControllerTool = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerTool>();
+            m_TreeControllerTool = World.GetOrCreateSystemManaged<TreeControllerTool>();
             m_ContentFolder = Path.Combine(EnvPath.kUserDataPath, "ModsData", "Mods_Yenyang_Tree_Controller", "CustomSets");
             System.IO.Directory.CreateDirectory(m_ContentFolder);
-            ToolSystem toolSystem = m_ToolSystem; // I don't know why vanilla game did this.
-            m_ToolSystem.EventToolChanged = (Action<ToolBaseSystem>)Delegate.Combine(toolSystem.EventToolChanged, new Action<ToolBaseSystem>(OnToolChanged));
-            ToolSystem toolSystem2 = m_ToolSystem;
-            toolSystem2.EventPrefabChanged = (Action<PrefabBase>)Delegate.Combine(toolSystem2.EventPrefabChanged, new Action<PrefabBase>(OnPrefabChanged));
+            m_ToolSystem.EventToolChanged += OnToolChanged;
+            m_ToolSystem.EventPrefabChanged += OnPrefabChanged;
             m_PrefabSetsLookup = new Dictionary<string, List<PrefabID>>()
             {
                 { "YYTC-wild-deciduous-trees", m_VanillaDeciduousPrefabIDs },

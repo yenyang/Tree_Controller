@@ -21,8 +21,6 @@ namespace Tree_Controller.Tools
     using Game.Rendering;
     using Game.Tools;
     using Tree_Controller;
-    using Tree_Controller.Settings;
-    using Tree_Controller.Systems;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
     using Unity.Collections;
@@ -283,10 +281,10 @@ namespace Tree_Controller.Tools
             m_ApplyAction = InputManager.instance.FindAction("Tool", "Apply");
             m_SecondaryApplyAction = InputManager.instance.FindAction("Tool", "Secondary Apply");
             m_Log.Info($"[{nameof(TreeControllerTool)}] {nameof(OnCreate)}");
-            m_ToolOutputBarrier = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolOutputBarrier>();
-            m_OverlayRenderSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<OverlayRenderSystem>();
-            m_ObjectToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ObjectToolSystem>();
-            m_TreeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
+            m_ToolOutputBarrier = World.GetOrCreateSystemManaged<ToolOutputBarrier>();
+            m_OverlayRenderSystem = World.GetOrCreateSystemManaged<OverlayRenderSystem>();
+            m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
+            m_TreeControllerUISystem = World.GetOrCreateSystemManaged<TreeControllerUISystem>();
             m_SelectedTreePrefabEntities = new NativeList<Entity>(0, Allocator.Persistent);
             base.OnCreate();
 
@@ -927,6 +925,9 @@ namespace Tree_Controller.Tools
             }
         }
 
+#if BURST
+        [BurstCompile]
+#endif
         private struct TreeCircleRenderJob : IJob
         {
             public OverlayRenderSystem.Buffer m_OverlayBuffer;
@@ -941,6 +942,9 @@ namespace Tree_Controller.Tools
             }
         }
 
+#if BURST
+        [BurstCompile]
+#endif
         private struct ToolRadiusJob : IJob
         {
             public OverlayRenderSystem.Buffer m_OverlayBuffer;

@@ -283,10 +283,10 @@ namespace Tree_Controller.Tools
             m_ApplyAction = InputManager.instance.FindAction("Tool", "Apply");
             m_SecondaryApplyAction = InputManager.instance.FindAction("Tool", "Secondary Apply");
             m_Log.Info($"[{nameof(TreeControllerTool)}] {nameof(OnCreate)}");
-            m_ToolOutputBarrier = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolOutputBarrier>();
-            m_OverlayRenderSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<OverlayRenderSystem>();
-            m_ObjectToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ObjectToolSystem>();
-            m_TreeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
+            m_ToolOutputBarrier = World.GetOrCreateSystemManaged<ToolOutputBarrier>();
+            m_OverlayRenderSystem = World.GetOrCreateSystemManaged<OverlayRenderSystem>();
+            m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
+            m_TreeControllerUISystem = World.GetOrCreateSystemManaged<TreeControllerUISystem>();
             m_SelectedTreePrefabEntities = new NativeList<Entity>(0, Allocator.Persistent);
             base.OnCreate();
 

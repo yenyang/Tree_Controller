@@ -42,10 +42,10 @@ namespace Tree_Controller.Systems
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_TimeSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TimeSystem>();
-            m_SimulationSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<SimulationSystem>();
-            m_EndFrameBarrier = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<EndFrameBarrier>();
-            m_SafelyRemoveSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<SafelyRemoveSystem>();
+            m_TimeSystem = World.GetOrCreateSystemManaged<TimeSystem>();
+            m_SimulationSystem = World.GetOrCreateSystemManaged<SimulationSystem>();
+            m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
+            m_SafelyRemoveSystem = World.GetOrCreateSystemManaged<SafelyRemoveSystem>();
             m_Log.Info($"{nameof(LumberSystem)} created!");
         }
 

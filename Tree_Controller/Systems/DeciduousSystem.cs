@@ -57,11 +57,11 @@ namespace Tree_Controller.Systems
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_EndFrameBarrier = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<EndFrameBarrier>();
-            m_SimulationSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<SimulationSystem>();
-            m_PrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
-            m_ClimateSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ClimateSystem>();
-            m_SafelyRemoveSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<SafelyRemoveSystem>();
+            m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
+            m_SimulationSystem = World.GetOrCreateSystemManaged<SimulationSystem>();
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_ClimateSystem = World.GetOrCreateSystemManaged<ClimateSystem>();
+            m_SafelyRemoveSystem = World.GetOrCreateSystemManaged<SafelyRemoveSystem>();
             m_Log.Info($"{nameof(DeciduousSystem)} created!");
 
 

@@ -84,8 +84,8 @@ namespace Tree_Controller.Systems
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_PrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
-            m_ClimateSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ClimateSystem>();
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_ClimateSystem = World.GetOrCreateSystemManaged<ClimateSystem>();
             m_Log.Info($"{typeof(ReloadFoliageColorDataSystem)}.{nameof(OnCreate)}");
             m_ColorVariationSet = TreeControllerMod.Instance.Settings.ColorVariationSet;
             m_VanillaColorSets = new ();

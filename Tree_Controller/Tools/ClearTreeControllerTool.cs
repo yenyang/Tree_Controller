@@ -26,7 +26,7 @@ namespace Tree_Controller.Tools
         /// <inheritdoc/>
         protected override void OnCreate()
         {
-            m_ToolOutputBarrier = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolOutputBarrier>();
+            m_ToolOutputBarrier = World.GetOrCreateSystemManaged<ToolOutputBarrier>();
             m_Log = TreeControllerMod.Instance.Logger;
             base.OnCreate();
         }

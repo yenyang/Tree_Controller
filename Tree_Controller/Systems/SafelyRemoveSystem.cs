@@ -38,8 +38,8 @@ namespace Tree_Controller.Systems
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_EndFrameBarrier = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<EndFrameBarrier>();
-            m_TimeSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TimeSystem>();
+            m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
+            m_TimeSystem = World.GetOrCreateSystemManaged<TimeSystem>();
             Enabled = false;
             m_Log.Info($"{nameof(SafelyRemoveSystem)}.{nameof(OnCreate)}");
         }

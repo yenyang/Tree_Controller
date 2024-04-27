@@ -53,11 +53,11 @@ namespace Tree_Controller.Systems
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_ToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
-            m_TreeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
-            m_ObjectToolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ObjectToolSystem>();
-            m_PrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
-            m_TreeControllerTool = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerTool>();
+            m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
+            m_TreeControllerUISystem = World.GetOrCreateSystemManaged<TreeControllerUISystem>();
+            m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_TreeControllerTool = World.GetOrCreateSystemManaged<TreeControllerTool>();
             m_Log.Info($"[{nameof(TreeObjectDefinitionSystem)}] {nameof(OnCreate)}");
         }
 

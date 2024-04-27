@@ -31,7 +31,7 @@ namespace Tree_Controller.Systems
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_LumberSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<LumberSystem>();
+            m_LumberSystem = World.GetOrCreateSystemManaged<LumberSystem>();
             m_Log.Info($"{nameof(DetectAreaChangeSystem)} created!");
 
             m_UpdatedAreaQuery = GetEntityQuery(new EntityQueryDesc[]

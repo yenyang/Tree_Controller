@@ -33,6 +33,8 @@ For brushing vegetation this mod adds choice of age(s) for trees and wild bushes
 * Evergreen (Pine and Spruce)
 * Wild bushes 
 
+Settings button to remove all trees and plants that are not part of a road, building, park, etc. Intended for those that want to start a new map but redo the trees and bushes themselves. (Contributed by phillycheeze)
+
 ## Custom sets
 Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click the custom set button to save a custom set. Once a set has been saved, click the custom set button to select that set. Hold Ctrl while switching themes to maintain the custom set.
 
@@ -63,9 +65,10 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
 # Credits 
 * yenyang - Mod Author
 * Chameleon TBN - Testing, Feedback, Icons, and Logo
+* phillycheese - Code Contribution
 * Algernon - Help with UI, Cooperative Development and Code Sharing, Collaboration regarding line tool.
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing
 * T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Nullpinter - Localization support
-* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg and edouardtherrien24 (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st (Korean)
+* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st (Korean)
 * Tigon Ologdring, code:witch - Testing, Feedback

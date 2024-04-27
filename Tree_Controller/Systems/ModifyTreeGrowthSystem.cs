@@ -42,9 +42,9 @@ namespace Tree_Controller.Systems
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_TreeGrowthSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeGrowthSystem>();
-            m_ClimateSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ClimateSystem>();
-            m_PrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
+            m_TreeGrowthSystem = World.GetOrCreateSystemManaged<TreeGrowthSystem>();
+            m_ClimateSystem = World.GetOrCreateSystemManaged<ClimateSystem>();
+            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_Log.Info($"[{nameof(ModifyTreeGrowthSystem)}] {nameof(OnCreate)}");
         }
 

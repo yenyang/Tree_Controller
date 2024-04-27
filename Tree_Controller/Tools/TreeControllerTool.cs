@@ -21,8 +21,6 @@ namespace Tree_Controller.Tools
     using Game.Rendering;
     using Game.Tools;
     using Tree_Controller;
-    using Tree_Controller.Settings;
-    using Tree_Controller.Systems;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
     using Unity.Collections;
@@ -927,6 +925,9 @@ namespace Tree_Controller.Tools
             }
         }
 
+#if BURST
+        [BurstCompile]
+#endif
         private struct TreeCircleRenderJob : IJob
         {
             public OverlayRenderSystem.Buffer m_OverlayBuffer;
@@ -941,6 +942,9 @@ namespace Tree_Controller.Tools
             }
         }
 
+#if BURST
+        [BurstCompile]
+#endif
         private struct ToolRadiusJob : IJob
         {
             public OverlayRenderSystem.Buffer m_OverlayBuffer;

@@ -103,7 +103,8 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog># Update V1.3.0
 * Added Settings button to remove all trees and plants that are not part of a road, building, park, etc. (Contributed by phillycheeze)
-* Updated Localization</ChangeLog>
+* Updated Localization
+* Removed text scaling from CSS</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

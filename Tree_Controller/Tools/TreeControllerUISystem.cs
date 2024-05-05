@@ -669,7 +669,6 @@ namespace Tree_Controller.Tools
 
         private void UnselectPrefabs()
         {
-            // This script creates the Tree Controller object if it doesn't exist.
             NativeList<Entity> m_VegetationPrefabEntities = m_VegetationQuery.ToEntityListAsync(Allocator.Temp, out JobHandle jobHandle);
             jobHandle.Complete();
 
@@ -677,6 +676,7 @@ namespace Tree_Controller.Tools
             {
                 if (m_PrefabSystem.TryGetPrefab(e, out PrefabBase prefab))
                 {
+                    // This script creates the Tree Controller object if it doesn't exist.
                     m_UiView.ExecuteScript("if (yyTreeController == null) var yyTreeController = {};");
 
                     // This script searches through all img and adds removes selected if the src of that image contains the name of the prefab and is not the active prefab.

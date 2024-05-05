@@ -165,21 +165,19 @@ namespace Tree_Controller.Tools
         /// <inheritdoc/>
         public override bool TrySetPrefab(PrefabBase prefab)
         {
-            if (m_ToolSystem.activeTool != this)
-            {
-                return false;
-            }
-
             Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
             if (EntityManager.HasComponent<Vegetation>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
                 bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
-                if (!ctrlKeyPressed && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
+                if ((!ctrlKeyPressed && !m_TreeControllerUISystem.RecentlySelectedPrefabSet) || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode != ObjectToolSystem.Mode.Brush))
                 {
                     ClearSelectedTreePrefabs();
                     SelectTreePrefab(prefab);
                 }
-                else if (m_SelectedTreePrefabEntities.Contains(prefabEntity) && m_SelectedTreePrefabEntities.Length > 1 && !m_TreeControllerUISystem.UpdateSelectionSet && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
+                else if (m_SelectedTreePrefabEntities.Contains(prefabEntity)
+                    && m_SelectedTreePrefabEntities.Length > 1
+                    && !m_TreeControllerUISystem.UpdateSelectionSet
+                    && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
                 {
                     UnselectTreePrefab(prefab);
                     if (m_OriginallySelectedPrefab == prefab)
@@ -204,15 +202,10 @@ namespace Tree_Controller.Tools
                     m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(TrySetPrefab)} setting originallySelectedPrefab to {prefab.name}.");
                 }
 
-
-                /*
-                if (!m_TreeControllerUISystem.UpdateSelectionSet)
+                if (m_ToolSystem.activeTool == this)
                 {
-                    m_ToolSystem.EventPrefabChanged?.Invoke(prefab);
+                    return true;
                 }
-                */
-
-                return true;
             }
 
             return false;
@@ -271,6 +264,26 @@ namespace Tree_Controller.Tools
             }
 
             return Entity.Null;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
+            m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(OnGameLoadingComplete)} Old Tool Order:");
+            foreach (ToolBaseSystem toolBaseSystem in m_ToolSystem.tools)
+            {
+                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(OnGameLoadingComplete)} {toolBaseSystem.toolID}");
+            }
+
+            m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(OnGameLoadingComplete)} New Order:");
+            m_ToolSystem.tools.Remove(this);
+            m_ToolSystem.tools.Insert(0, this);
+
+            foreach (ToolBaseSystem toolBaseSystem in m_ToolSystem.tools)
+            {
+                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(OnGameLoadingComplete)} {toolBaseSystem.toolID}");
+            }
         }
 
         /// <inheritdoc/>

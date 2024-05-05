@@ -9,6 +9,7 @@ namespace Tree_Controller.Tools
     using System.Collections.Generic;
     using System.IO;
     using System.Xml.Serialization;
+    using Colossal.Annotations;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
     using Colossal.UI.Binding;
@@ -122,6 +123,8 @@ namespace Tree_Controller.Tools
         private bool m_RecentlySelectedPrefabSet = false;
         private bool m_MultiplePrefabsSelected = false;
         private int m_FrameCount = 0;
+        [CanBeNull]
+        private PrefabBase m_TrySetPrefabNextFrame;
 
         /// <summary>
         /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.
@@ -169,6 +172,11 @@ namespace Tree_Controller.Tools
         /// Gets a value indicating whether gets a bool for whether there are any ages selected.
         /// </summary>
         public bool AtLeastOneAgeSelected { get => m_SelectedAges.value != 0; }
+
+        /// <summary>
+        /// Sets a value indicating what to try to set prefab to next frame.
+        /// </summary>
+        public PrefabBase TrySetPrefabNextFrame { set => m_TrySetPrefabNextFrame = value; }
 
         /// <summary>
         /// Resets the selected prefab set.
@@ -391,6 +399,15 @@ namespace Tree_Controller.Tools
         protected override void OnUpdate()
         {
             List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
+
+            if (m_TrySetPrefabNextFrame != null)
+            {
+                m_ToolSystem.ActivatePrefabTool(m_TrySetPrefabNextFrame);
+                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnUpdate)} ActivatedPrefabTool {m_TrySetPrefabNextFrame.name}.");
+                m_TrySetPrefabNextFrame = null;
+                return;
+            }
+
             if ((m_ToolSystem.activeTool == m_TreeControllerTool || m_ToolSystem.activeTool.toolID == "Line Tool" || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush)) && m_UiView != null)
             {
                 // This script creates the Tree Controller object if it doesn't exist.

@@ -180,13 +180,17 @@ namespace Tree_Controller.Tools
                     && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
                 {
                     UnselectTreePrefab(prefab);
-                    if (m_OriginallySelectedPrefab == prefab)
+                    m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(TrySetPrefab)} Toolsystem:{m_ToolSystem.activePrefab.name} PrefabChange:{prefab.name} ObjectToolSystem:{m_ObjectToolSystem.GetPrefab().name}");
+                    List<PrefabBase> list = GetSelectedPrefabs();
+                    if (!list.Contains(prefab))
                     {
                         foreach (Entity e in m_SelectedTreePrefabEntities)
                         {
                             if (m_PrefabSystem.TryGetPrefab(e, out PrefabBase nextPrefab))
                             {
                                 m_OriginallySelectedPrefab = nextPrefab;
+                                m_TreeControllerUISystem.TrySetPrefabNextFrame = nextPrefab;
+                                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(TrySetPrefab)} trying to set prefab to {nextPrefab.name}");
                                 break;
                             }
                         }

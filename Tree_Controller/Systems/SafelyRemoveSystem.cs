@@ -91,11 +91,11 @@ namespace Tree_Controller.Systems
                     Entity currentEntity = entityNativeArray[i];
                     Game.Objects.Tree currentTreeData = treeNativeArray[i];
                     DeciduousData currentDeciduousTreeData = deciduousTreeNativeArray[i];
-                    buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity, default);
                     if (currentTreeData.m_State == TreeState.Dead && currentDeciduousTreeData.m_TechnicallyDead == false)
                     {
                         currentTreeData.m_State = currentDeciduousTreeData.m_PreviousTreeState;
                         buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentTreeData);
+                        buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity, default);
                     }
 
                     buffer.RemoveComponent<DeciduousData>(unfilteredChunkIndex, currentEntity);

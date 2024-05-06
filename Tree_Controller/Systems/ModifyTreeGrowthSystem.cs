@@ -2,9 +2,11 @@
 // Copyright (c) Yenyangs Mods. MIT License. All rights reserved.
 // </copyright>
 
+#define BURST
 namespace Tree_Controller.Systems
 {
     using Colossal.Logging;
+    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
     using Game.Prefabs;
@@ -12,7 +14,11 @@ namespace Tree_Controller.Systems
     using Game.Simulation;
     using Game.Tools;
     using Tree_Controller.Utils;
+    using Unity.Burst;
+    using Unity.Burst.Intrinsics;
+    using Unity.Collections;
     using Unity.Entities;
+    using Unity.Jobs;
 
     /// <summary>
     /// System overrides query for TreeGrowthSystem. Not compatible with other mods that alter this query.
@@ -20,15 +26,16 @@ namespace Tree_Controller.Systems
     public partial class ModifyTreeGrowthSystem : GameSystemBase
     {
         private TreeGrowthSystem m_TreeGrowthSystem;
-        private EntityQuery m_DefaultTreeGrowthQuery;
-        private EntityQuery m_DisableTreeGrowthQuery;
-        private EntityQuery m_WinterDeciduousTreeGrowthQuery;
-        private bool m_Run = true;
-        private bool m_TreeGrowthDisabled = false;
+        private EntityQuery m_ModifiedTreeGrowthQuery;
         private ClimateSystem m_ClimateSystem;
         private PrefabSystem m_PrefabSystem;
         private FoliageUtils.Season m_Season = FoliageUtils.Season.Spring;
         private ILog m_Log;
+        private EntityQuery m_DisabledTreeGrowthQuery;
+        private EntityQuery m_DeciduousWinterTreeGrowthQuery;
+        private EntityQuery m_RegularTreeGrowthQuery;
+        private EntityQuery m_LumberQuery;
+        private EndFrameBarrier m_EndFrameBarrier;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModifyTreeGrowthSystem"/> class.
@@ -45,27 +52,52 @@ namespace Tree_Controller.Systems
             m_TreeGrowthSystem = World.GetOrCreateSystemManaged<TreeGrowthSystem>();
             m_ClimateSystem = World.GetOrCreateSystemManaged<ClimateSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_Log.Info($"[{nameof(ModifyTreeGrowthSystem)}] {nameof(OnCreate)}");
+        }
+
+        /// <inheritdoc/>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
+            if (mode == GameMode.Game)
+            {
+                m_ModifiedTreeGrowthQuery = SystemAPI.QueryBuilder()
+                    .WithAll<UpdateFrame>()
+                    .WithAllRW<Game.Objects.Tree>()
+                    .WithNone<Deleted, Temp, Overridden, NoTreeGrowth>()
+                    .Build();
+
+                m_TreeGrowthSystem.SetMemberValue("m_TreeQuery", m_ModifiedTreeGrowthQuery);
+                m_Log.Info($"[{nameof(ModifyTreeGrowthSystem)}] {nameof(OnUpdate)} ModifiedTreeGrowthQuery Activated.");
+                m_TreeGrowthSystem.RequireForUpdate(m_ModifiedTreeGrowthQuery);
+            }
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            m_DefaultTreeGrowthQuery = SystemAPI.QueryBuilder()
-                .WithAll<UpdateFrame>()
-                .WithAllRW<Game.Objects.Tree>()
+            m_DisabledTreeGrowthQuery = SystemAPI.QueryBuilder()
+                .WithAll<Game.Objects.Tree>()
+                .WithNone<Deleted, Temp, Overridden, Lumber, NoTreeGrowth>()
+                .Build();
+
+            m_DeciduousWinterTreeGrowthQuery = SystemAPI.QueryBuilder()
+                .WithAll<Game.Objects.Tree, DeciduousData>()
+                .WithNone<Deleted, Temp, Overridden, Lumber, NoTreeGrowth>()
+                .Build();
+
+            m_RegularTreeGrowthQuery = SystemAPI.QueryBuilder()
+                .WithAll<Game.Objects.Tree, NoTreeGrowth>()
                 .WithNone<Deleted, Temp, Overridden>()
                 .Build();
-            m_DisableTreeGrowthQuery = SystemAPI.QueryBuilder()
-                .WithAll<UpdateFrame, Lumber>()
-                .WithAllRW<Game.Objects.Tree>()
+
+            m_LumberQuery = SystemAPI.QueryBuilder()
+                .WithAll<Game.Objects.Tree, Lumber, NoTreeGrowth>()
                 .WithNone<Deleted, Temp, Overridden>()
                 .Build();
-            m_WinterDeciduousTreeGrowthQuery = SystemAPI.QueryBuilder()
-                .WithAll<UpdateFrame>()
-                .WithAllRW<Game.Objects.Tree>()
-                .WithNone<Deleted, Temp, Overridden, DeciduousData>()
-                .Build();
+
+            RequireAnyForUpdate(m_DisabledTreeGrowthQuery, m_DeciduousWinterTreeGrowthQuery, m_RegularTreeGrowthQuery, m_LumberQuery);
 
             Entity currentClimate = m_ClimateSystem.currentClimate;
             if (currentClimate == Entity.Null)
@@ -77,38 +109,104 @@ namespace Tree_Controller.Systems
 
             FoliageUtils.Season lastSeason = m_Season;
             m_Season = FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.m_NameID);
-            if (lastSeason != m_Season)
+
+            if (!m_LumberQuery.IsEmptyIgnoreFilter)
             {
-                m_Run = true;
+                RemoveNoTreeGrowthJob removeNoTreeGrowthJob = new ()
+                {
+                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                    buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
+                };
+
+                JobHandle lumberJob = JobChunkExtensions.ScheduleParallel(removeNoTreeGrowthJob, m_LumberQuery, Dependency);
+                m_EndFrameBarrier.AddJobHandleForProducer(lumberJob);
+                Dependency = lumberJob;
             }
 
-            if (!m_Run && TreeControllerMod.Instance.Settings.DisableTreeGrowth == m_TreeGrowthDisabled)
+            if (!m_DisabledTreeGrowthQuery.IsEmptyIgnoreFilter && TreeControllerMod.Instance.Settings.DisableTreeGrowth)
+            {
+                AddNoTreeGrowthJob addNoTreeGrowthJob = new ()
+                {
+                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                    buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
+                };
+
+                JobHandle jobHandle = JobChunkExtensions.ScheduleParallel(addNoTreeGrowthJob, m_DisabledTreeGrowthQuery, Dependency);
+                m_EndFrameBarrier.AddJobHandleForProducer(jobHandle);
+                Dependency = jobHandle;
+                return;
+            }
+            else if (TreeControllerMod.Instance.Settings.DisableTreeGrowth)
             {
                 return;
             }
 
-            if (TreeControllerMod.Instance.Settings.DisableTreeGrowth)
+            if (!m_RegularTreeGrowthQuery.IsEmptyIgnoreFilter && (!TreeControllerMod.Instance.Settings.UseDeadModelDuringWinter || m_Season != FoliageUtils.Season.Winter))
             {
-                m_TreeGrowthSystem.SetMemberValue("m_TreeQuery", m_DisableTreeGrowthQuery);
-                m_Log.Info($"[{nameof(ModifyTreeGrowthSystem)}] {nameof(OnUpdate)} DisableTreeGrowthQuery Activated.");
-                m_TreeGrowthSystem.RequireForUpdate(m_DisableTreeGrowthQuery);
-            }
-            else if (m_Season != FoliageUtils.Season.Winter)
-            {
-                m_TreeGrowthSystem.SetMemberValue("m_TreeQuery", m_DefaultTreeGrowthQuery);
-                m_Log.Info($"[{nameof(ModifyTreeGrowthSystem)}] {nameof(OnUpdate)} m_DefaultTreeGrowthQuery Activated.");
-                m_TreeGrowthSystem.RequireForUpdate(m_DefaultTreeGrowthQuery);
-            }
-            else
-            {
-                m_TreeGrowthSystem.SetMemberValue("m_TreeQuery", m_WinterDeciduousTreeGrowthQuery);
-                m_Log.Info($"[{nameof(ModifyTreeGrowthSystem)}] {nameof(OnUpdate)} m_WinterDeciduousTreeGrowthQuery Activated.");
-                m_TreeGrowthSystem.RequireForUpdate(m_WinterDeciduousTreeGrowthQuery);
+                RemoveNoTreeGrowthJob removeNoTreeGrowthJob = new ()
+                {
+                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                    buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
+                };
+
+                JobHandle jobHandle = JobChunkExtensions.ScheduleParallel(removeNoTreeGrowthJob, m_RegularTreeGrowthQuery, Dependency);
+                m_EndFrameBarrier.AddJobHandleForProducer(jobHandle);
+                Dependency = jobHandle;
+                return;
             }
 
-            m_TreeGrowthDisabled = TreeControllerMod.Instance.Settings.DisableTreeGrowth;
-            m_Run = false;
+            if (!m_DeciduousWinterTreeGrowthQuery.IsEmptyIgnoreFilter && TreeControllerMod.Instance.Settings.UseDeadModelDuringWinter && m_Season == FoliageUtils.Season.Winter)
+            {
+                AddNoTreeGrowthJob addNoTreeGrowthJob = new ()
+                {
+                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                    buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
+                };
 
+                JobHandle jobHandle = JobChunkExtensions.ScheduleParallel(addNoTreeGrowthJob, m_DeciduousWinterTreeGrowthQuery, Dependency);
+                m_EndFrameBarrier.AddJobHandleForProducer(jobHandle);
+                Dependency = jobHandle;
+            }
+        }
+
+#if BURST
+        [BurstCompile]
+#endif
+        private struct RemoveNoTreeGrowthJob : IJobChunk
+        {
+            [ReadOnly]
+            public EntityTypeHandle m_EntityType;
+            public EntityCommandBuffer.ParallelWriter buffer;
+
+            public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
+            {
+                NativeArray<Entity> entityNativeArray = chunk.GetNativeArray(m_EntityType);
+                for (int i = 0; i < chunk.Count; i++)
+                {
+                    Entity currentEntity = entityNativeArray[i];
+                    buffer.RemoveComponent<NoTreeGrowth>(unfilteredChunkIndex, currentEntity);
+                }
+            }
+        }
+
+#if BURST
+        [BurstCompile]
+#endif
+        private struct AddNoTreeGrowthJob : IJobChunk
+        {
+            [ReadOnly]
+            public EntityTypeHandle m_EntityType;
+            public EntityCommandBuffer.ParallelWriter buffer;
+
+            public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
+            {
+                NativeArray<Entity> entityNativeArray = chunk.GetNativeArray(m_EntityType);
+                for (int i = 0; i < chunk.Count; i++)
+                {
+                    Entity currentEntity = entityNativeArray[i];
+                    buffer.AddComponent<NoTreeGrowth>(unfilteredChunkIndex, currentEntity);
+                }
+            }
         }
     }
 }

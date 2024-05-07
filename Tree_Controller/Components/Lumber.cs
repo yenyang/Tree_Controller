@@ -8,7 +8,7 @@ namespace Tree_Controller
     using Unity.Entities;
 
     /// <summary>
-    /// A component that is used to disable tree growth globally by adding to query.
+    /// A component that is used to ensure tree growth for lumber industry.
     /// </summary>
     public struct Lumber : IComponentData, IQueryTypeParameter, IEmptySerializable
     {

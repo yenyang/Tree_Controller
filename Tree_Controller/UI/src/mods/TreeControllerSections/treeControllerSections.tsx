@@ -4,14 +4,12 @@ import { tool } from "cs2/bindings";
 import mod from "../../../mod.json";
 import { VanillaComponentResolver } from "../VanillaComponentResolver/VanillaComponentResolver";
 import { useLocalization } from "cs2/l10n";
-import clearAgesSrc from "./AllYYTC.svg";
-import brushSrc from "./BrushYYTC.svg";
 import styles from "./treeController.module.scss";
 import { useState } from "react";
 import { Icon } from "cs2/ui";
 import locale from "../lang/en-US.json";
 
-export enum Ages 
+enum Ages 
 {
     None = 0,
     Child = 1,
@@ -22,15 +20,14 @@ export enum Ages
     All = 32,
 }
 
-export enum ToolMode 
-{
-    Plop = 0,
+enum ToolMode 
+{    Plop = 0,
     Brush = 1,
     ChangeAge = 2,
     ChangeType = 3,
 }
 
-export enum Selection
+enum Selection
 {
     Single = 0,
     BuildingOrNet = 1,
@@ -39,70 +36,71 @@ export enum Selection
 }
 
 // These contain the coui paths to Unified Icon Library svg assets
-export const couiStandard =                         "coui://uil/Standard/";
-export const ageChangSrc =          couiStandard +  "ReplaceTreeAge.svg";
-export const prefabChangeSrc =      couiStandard +  "Replace.svg";
-export const buildingOrNetSrc =     couiStandard +  "HouseandNetwork.svg";
-export const radiusSrc =            couiStandard +  "Circle.svg";
-export const wholeMapSrc    =       couiStandard +  "MapGrid.svg";
-export const childSrc =             couiStandard +  "TreeSapling.svg";
-export const teenSrc =              couiStandard +  "TreeTeen.svg";
-export const adultSrc =             couiStandard +  "TreeAdult.svg";
-export const elderlySrc =           couiStandard +  "TreeElderly.svg";
-export const deadSrc =              couiStandard +  "TreeDead.svg";
-export const arrowDownSrc =         couiStandard +  "ArrowDownThickStroke.svg";
-export const arrowUpSrc =           couiStandard +  "ArrowUpThickStroke.svg";
-export const deciduousSrc =         couiStandard +  "TreesDeciduous.svg";
-export const evergreenSrc =         couiStandard +  "TreesNeedle.svg";
-export const bushesSrc =            couiStandard +  "Bushes.svg";
-export const diskSaveSrc =          couiStandard +  "DiskSave.svg";
-export const randomRotationSrc =    couiStandard +  "Dice.svg";
+const couiStandard =                         "coui://uil/Standard/";
+const ageChangSrc =          couiStandard +  "ReplaceTreeAge.svg";
+const prefabChangeSrc =      couiStandard +  "Replace.svg";
+const buildingOrNetSrc =     couiStandard +  "HouseandNetwork.svg";
+const radiusSrc =            couiStandard +  "Circle.svg";
+const wholeMapSrc    =       couiStandard +  "MapGrid.svg";
+const childSrc =             couiStandard +  "TreeSapling.svg";
+const teenSrc =              couiStandard +  "TreeTeen.svg";
+const adultSrc =             couiStandard +  "TreeAdult.svg";
+const elderlySrc =           couiStandard +  "TreeElderly.svg";
+const deadSrc =              couiStandard +  "TreeDead.svg";
+const arrowDownSrc =         couiStandard +  "ArrowDownThickStroke.svg";
+const arrowUpSrc =           couiStandard +  "ArrowUpThickStroke.svg";
+const deciduousSrc =         couiStandard +  "TreesDeciduous.svg";
+const evergreenSrc =         couiStandard +  "TreesNeedle.svg";
+const bushesSrc =            couiStandard +  "Bushes.svg";
+const diskSaveSrc =          couiStandard +  "DiskSave.svg";
+const clearAgesSrc =        couiStandard + "StarAll.svg";
+const brushSrc =            couiStandard + "Trees.svg";
 
 // These establishes the binding with C# side. Without C# side game ui will crash.
-export const ToolMode$ =            bindValue<number> (mod.id, 'ToolMode');
-export const SelectedAges$ =        bindValue<number> (mod.id, 'SelectedAges');
-export const SelectionMode$ =       bindValue<number> (mod.id, 'SelectionMode');
-export const IsVegetation$ =        bindValue<boolean>(mod.id, 'IsVegetation');
-export const IsTree$ =              bindValue<boolean>(mod.id, 'IsTree');
-export const Radius$ =              bindValue<number>(mod.id, 'Radius');
-export const PrefabSet$ =           bindValue<string>(mod.id, 'PrefabSet');
+const ToolMode$ =            bindValue<number> (mod.id, 'ToolMode');
+const SelectedAges$ =        bindValue<number> (mod.id, 'SelectedAges');
+const SelectionMode$ =       bindValue<number> (mod.id, 'SelectionMode');
+const IsVegetation$ =        bindValue<boolean>(mod.id, 'IsVegetation');
+const IsTree$ =              bindValue<boolean>(mod.id, 'IsTree');
+const Radius$ =              bindValue<number>(mod.id, 'Radius');
+const PrefabSet$ =           bindValue<string>(mod.id, 'PrefabSet');
 
 // These are strings that will be used for event triggers.
-export const radiusDownID =             "radius-down-arrow";
-export const radiusUpID =               "radius-up-arrow";
-export const deciduousTreesID =         "YYTC-wild-deciduous-trees";
-export const evergreenTreesID =         "YYTC-evergreen-trees";
-export const wildBushesID =             "YYTC-wild-bushes";
-export const customSetID =              "YYTC-custom-set-";
+const radiusDownID =             "radius-down-arrow";
+const radiusUpID =               "radius-up-arrow";
+const deciduousTreesID =         "YYTC-wild-deciduous-trees";
+const evergreenTreesID =         "YYTC-evergreen-trees";
+const wildBushesID =             "YYTC-wild-bushes";
+const customSetID =              "YYTC-custom-set-";
 
 // This functions trigger an event on C# side and C# designates the method to implement.
-export function handleClick(eventName: string) 
+function handleClick(eventName: string) 
 {
     trigger(mod.id, eventName);
 }
 
 // This function triggers an event to change the tree controller tool mode to specified tool mode.
-export function changeToolMode(toolMode: ToolMode) {
+function changeToolMode(toolMode: ToolMode) {
     trigger(mod.id, "ChangeToolMode", toolMode);
 }
 
 // This function triggers an event to change the selected age.
-export function changeSelectedAge(age: Ages) {
+function changeSelectedAge(age: Ages) {
     trigger(mod.id, "ChangeSelectedAge", age);
 }
 
 // This function triggers an event to change the tree controller selection mode.
-export function changeSelectionMode(selectionMode: Selection) {
+function changeSelectionMode(selectionMode: Selection) {
     trigger(mod.id, "ChangeSelectionMode", selectionMode);
 }
 
 // This function triggers an event to change the prefab set.
-export function changePrefabSet(prefabSet: string) {
+function changePrefabSet(prefabSet: string) {
     trigger(mod.id, "ChangePrefabSet", prefabSet);
 }
 
 // This is working, but it's possible a better solution is possible.
-export function descriptionTooltip(tooltipTitle: string | null, tooltipDescription: string | null) : JSX.Element {
+function descriptionTooltip(tooltipTitle: string | null, tooltipDescription: string | null) : JSX.Element {
     return (
         <>
             <div className={VanillaComponentResolver.instance.descriptionTooltipTheme.title}>{tooltipTitle}</div>

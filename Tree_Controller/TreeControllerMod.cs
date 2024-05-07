@@ -103,7 +103,7 @@ namespace Tree_Controller
             updateSystem.UpdateBefore<DeciduousSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateBefore<ReloadFoliageColorDataSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAfter<ReloadFoliageColorDataSystem>(SystemUpdatePhase.PrefabUpdate);
-            updateSystem.UpdateBefore<ModifyTreeGrowthSystem>(SystemUpdatePhase.GameSimulation);
+            updateSystem.UpdateAt<ModifyTreeGrowthSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateBefore<SafelyRemoveSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateBefore<LumberSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAt<DetectAreaChangeSystem>(SystemUpdatePhase.ModificationEnd);

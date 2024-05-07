@@ -94,18 +94,17 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/tree-controller.1644992/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.3.0" />
+  <ModVersion Value="1.3.1" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.1.*" />
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.7" />
   <Dependency Id="75426" DisplayName="I18n EveryWhere" Version="1.1.1" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Update V1.3.0
-* Added Settings button to remove all trees and plants that are not part of a road, building, park, etc. (Contributed by phillycheeze)
-* Updated Localization
-* Removed text scaling from CSS
-* Optimized circle overlay rendering.</ChangeLog>
+  <ChangeLog># Patch V1.3.1
+* Fixed Tree Growth related issues such as Deciduous trees do not continue growing when going from Winter to Spring. 
+* Alters ToolSystem Tool list to put Tree Controller Tool first to clean up code and remove harmony patch. (Thanks Myna for the suggestion.)
+* Minor improvements to multiple vegetation prefab selection.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

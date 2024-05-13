@@ -12,13 +12,10 @@ namespace Tree_Controller.Systems
     using Colossal.Logging;
     using Colossal.PSI.Environment;
     using Game;
-    using Game.Areas;
-    using Game.Common;
     using Game.Prefabs;
     using Game.Prefabs.Climate;
     using Game.Rendering;
     using Game.Simulation;
-    using Game.Tools;
     using Tree_Controller.Settings;
     using Tree_Controller.Utils;
     using Unity.Collections;
@@ -54,9 +51,7 @@ namespace Tree_Controller.Systems
         };
 
         private PrefabSystem m_PrefabSystem;
-        private EntityQuery m_TreePrefabQuery;
-        private JobHandle treePrefabJobHandle;
-        private NativeList<Entity> m_TreePrefabEntities;
+        private EntityQuery m_PlantPrefabQuery;
         private TreeControllerSettings.ColorVariationSetYYTC m_ColorVariationSet;
         private bool m_Run = true;
         private Dictionary<TreeSeasonIdentifier, Game.Rendering.ColorSet> m_VanillaColorSets;
@@ -96,12 +91,12 @@ namespace Tree_Controller.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            m_TreePrefabQuery = SystemAPI.QueryBuilder()
-            .WithAll<TreeData>()
+            m_PlantPrefabQuery = SystemAPI.QueryBuilder()
+            .WithAll<PlantData>()
             .WithNone<PlaceholderObjectElement, Evergreen>()
             .Build();
 
-            RequireForUpdate(m_TreePrefabQuery);
+            RequireForUpdate(m_PlantPrefabQuery);
 
             Entity currentClimate = m_ClimateSystem.currentClimate;
             if (currentClimate == Entity.Null)
@@ -111,7 +106,7 @@ namespace Tree_Controller.Systems
 
             ClimatePrefab climatePrefab = m_PrefabSystem.GetPrefab<ClimatePrefab>(m_ClimateSystem.currentClimate);
 
-            if (m_TreePrefabQuery.IsEmptyIgnoreFilter)
+            if (m_PlantPrefabQuery.IsEmptyIgnoreFilter)
             {
                 return;
             }
@@ -128,9 +123,13 @@ namespace Tree_Controller.Systems
                 return;
             }
 
-            m_TreePrefabEntities = m_TreePrefabQuery.ToEntityListAsync(Allocator.Temp, out treePrefabJobHandle);
-            treePrefabJobHandle.Complete();
-            foreach (Entity e in m_TreePrefabEntities)
+
+            JobHandle plantPrefabJobHandle;
+            NativeList<Entity> plantPrefabEntities = m_PlantPrefabQuery.ToEntityListAsync(Allocator.Temp, out plantPrefabJobHandle);
+            plantPrefabJobHandle.Complete();
+
+
+            foreach (Entity e in plantPrefabEntities)
             {
                 if (!EntityManager.TryGetBuffer<SubMesh>(e, isReadOnly: false, out DynamicBuffer<SubMesh> subMeshBuffer))
                 {
@@ -207,7 +206,7 @@ namespace Tree_Controller.Systems
                     }
                 }
 
-                m_TreePrefabEntities.Dispose();
+                plantPrefabEntities.Dispose();
                 m_Run = false;
                 m_ColorVariationSet = TreeControllerMod.Instance.Settings.ColorVariationSet;
             }

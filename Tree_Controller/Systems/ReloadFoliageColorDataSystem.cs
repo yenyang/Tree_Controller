@@ -131,14 +131,14 @@ namespace Tree_Controller.Systems
 
             foreach (Entity e in plantPrefabEntities)
             {
-                if (!EntityManager.TryGetBuffer<SubMesh>(e, isReadOnly: false, out DynamicBuffer<SubMesh> subMeshBuffer))
+                if (!EntityManager.TryGetBuffer(e, isReadOnly: false, out DynamicBuffer<SubMesh> subMeshBuffer))
                 {
                     continue;
                 }
 
                 for (int i = 0; i <= 3; i++)
                 {
-                    if (!EntityManager.TryGetBuffer<ColorVariation>(subMeshBuffer[i].m_SubMesh, isReadOnly: false, out DynamicBuffer<ColorVariation> colorVariationBuffer))
+                    if (!EntityManager.TryGetBuffer(subMeshBuffer[i].m_SubMesh, isReadOnly: false, out DynamicBuffer<ColorVariation> colorVariationBuffer))
                     {
                         continue;
                     }
@@ -170,11 +170,21 @@ namespace Tree_Controller.Systems
                         }
 
                         ExportDefaultColorSet(treeSeasonIdentifier, currentColorVariation);
-                        bool setVanillaWinterToSpringColors = false;
-                        if (TreeControllerMod.Instance.Settings.UseDeadModelDuringWinter && m_Season == FoliageUtils.Season.Spring && treeSeasonIdentifier.m_Season == FoliageUtils.Season.Winter)
+                        bool setToDifferentSeason = false;
+                        if ((TreeControllerMod.Instance.Settings.UseDeadModelDuringWinter && m_Season == FoliageUtils.Season.Spring && treeSeasonIdentifier.m_Season == FoliageUtils.Season.Winter) || TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Spring)
                         {
                             treeSeasonIdentifier.m_Season = FoliageUtils.Season.Spring;
-                            setVanillaWinterToSpringColors = true;
+                            setToDifferentSeason = true;
+                        }
+                        else if (TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Autumn)
+                        {
+                            treeSeasonIdentifier.m_Season = FoliageUtils.Season.Autumn;
+                            setToDifferentSeason = true;
+                            currentColorVariation = colorVariationBuffer[2];
+                            if (!m_VanillaColorSets.ContainsKey(treeSeasonIdentifier))
+                            {
+                                m_VanillaColorSets.Add(treeSeasonIdentifier, currentColorVariation.m_ColorSet);
+                            }
                         }
 
                         if (TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Custom)
@@ -197,11 +207,11 @@ namespace Tree_Controller.Systems
                             colorVariationBuffer[j] = currentColorVariation;
                             m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Reset Colorset for {prefabID} in {treeSeasonIdentifier.m_Season}");
                         }
-                        else if (setVanillaWinterToSpringColors)
+                        else if (setToDifferentSeason)
                         {
                             currentColorVariation.m_ColorSet = m_VanillaColorSets[treeSeasonIdentifier];
                             colorVariationBuffer[j] = currentColorVariation;
-                            m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Reset Colorset for {prefabID} in {FoliageUtils.Season.Winter}");
+                            m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Reset Colorset {TreeControllerMod.Instance.Settings.ColorVariationSet} for {prefabID} in {(FoliageUtils.Season)j}");
                         }
                     }
                 }

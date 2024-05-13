@@ -46,6 +46,16 @@ namespace Tree_Controller.Settings
             Yenyangs,
 
             /// <summary>
+            /// Use Spring colors for every season.
+            /// </summary>
+            Spring,
+
+            /// <summary>
+            /// Use Autumn colors for every season.
+            /// </summary>
+            Autumn,
+
+            /// <summary>
             /// Load custom seasonal tree foliage colors.
             /// </summary>
             Custom,

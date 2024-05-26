@@ -11,7 +11,9 @@ namespace Tree_Controller.Systems
     using Colossal.Entities;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
+    using Colossal.Serialization.Entities;
     using Game;
+    using Game.Common;
     using Game.Prefabs;
     using Game.Prefabs.Climate;
     using Game.Rendering;
@@ -59,6 +61,8 @@ namespace Tree_Controller.Systems
         private FoliageUtils.Season m_Season = FoliageUtils.Season.Spring;
         private ILog m_Log;
         private string m_ContentFolder;
+        private EndFrameBarrier m_EndFrameBarrier;
+        private EntityQuery m_PlantQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReloadFoliageColorDataSystem"/> class.
@@ -82,22 +86,37 @@ namespace Tree_Controller.Systems
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_ClimateSystem = World.GetOrCreateSystemManaged<ClimateSystem>();
             m_Log.Info($"{typeof(ReloadFoliageColorDataSystem)}.{nameof(OnCreate)}");
+            m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_ColorVariationSet = TreeControllerMod.Instance.Settings.ColorVariationSet;
             m_VanillaColorSets = new ();
 
             m_ContentFolder = Path.Combine(EnvPath.kUserDataPath, "ModsData", "Mods_Yenyang_Tree_Controller");
-        }
 
-        /// <inheritdoc/>
-        protected override void OnUpdate()
-        {
             m_PlantPrefabQuery = SystemAPI.QueryBuilder()
-            .WithAll<PlantData>()
+            .WithAll<PlantData, SubMesh>()
             .WithNone<PlaceholderObjectElement, Evergreen>()
             .Build();
 
             RequireForUpdate(m_PlantPrefabQuery);
 
+            m_PlantQuery = SystemAPI.QueryBuilder()
+                .WithAll<Game.Objects.Plant>()
+                .WithNone<Deleted, Game.Common.Overridden, Game.Tools.Temp, Evergreen>()
+                .Build();
+        }
+
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
+            if (mode.IsGame())
+            {
+                Run = true;
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override void OnUpdate()
+        {
             Entity currentClimate = m_ClimateSystem.currentClimate;
             if (currentClimate == Entity.Null)
             {
@@ -105,11 +124,6 @@ namespace Tree_Controller.Systems
             }
 
             ClimatePrefab climatePrefab = m_PrefabSystem.GetPrefab<ClimatePrefab>(m_ClimateSystem.currentClimate);
-
-            if (m_PlantPrefabQuery.IsEmptyIgnoreFilter)
-            {
-                return;
-            }
 
             FoliageUtils.Season lastSeason = m_Season;
             m_Season = FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.m_NameID);
@@ -123,7 +137,7 @@ namespace Tree_Controller.Systems
                 return;
             }
 
-
+            EntityCommandBuffer buffer = m_EndFrameBarrier.CreateCommandBuffer();
             JobHandle plantPrefabJobHandle;
             NativeList<Entity> plantPrefabEntities = m_PlantPrefabQuery.ToEntityListAsync(Allocator.Temp, out plantPrefabJobHandle);
             plantPrefabJobHandle.Complete();
@@ -148,7 +162,7 @@ namespace Tree_Controller.Systems
 
                     if (colorVariationBuffer.Length < 4 || prefabBase.name.ToLower().Contains("palm"))
                     {
-                        EntityManager.AddComponent<Evergreen>(e);
+                        buffer.AddComponent<Evergreen>(e);
                         continue;
                     }
 
@@ -180,7 +194,7 @@ namespace Tree_Controller.Systems
                         {
                             treeSeasonIdentifier.m_Season = FoliageUtils.Season.Autumn;
                             setToDifferentSeason = true;
-                            currentColorVariation = colorVariationBuffer[2];
+                            currentColorVariation.m_ColorSet = colorVariationBuffer[2].m_ColorSet;
                             if (!m_VanillaColorSets.ContainsKey(treeSeasonIdentifier))
                             {
                                 m_VanillaColorSets.Add(treeSeasonIdentifier, currentColorVariation.m_ColorSet);
@@ -213,13 +227,20 @@ namespace Tree_Controller.Systems
                             colorVariationBuffer[j] = currentColorVariation;
                             m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Reset Colorset {TreeControllerMod.Instance.Settings.ColorVariationSet} for {prefabID} in {(FoliageUtils.Season)j}");
                         }
+
+                        if (currentColorVariation.m_ColorSet.m_Channel1 == currentColorVariation.m_ColorSet.m_Channel2 && currentColorVariation.m_ColorSet.m_Channel1 == currentColorVariation.m_ColorSet.m_Channel0)
+                        {
+                            m_Log.Warn(new Exception($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Colors Match!"));
+                        }
                     }
                 }
-
-                plantPrefabEntities.Dispose();
-                m_Run = false;
-                m_ColorVariationSet = TreeControllerMod.Instance.Settings.ColorVariationSet;
             }
+
+            plantPrefabEntities.Dispose();
+            m_Run = false;
+            m_ColorVariationSet = TreeControllerMod.Instance.Settings.ColorVariationSet;
+
+            buffer.AddComponent<BatchesUpdated>(m_PlantQuery, EntityQueryCaptureMode.AtPlayback);
         }
 
         /// <summary>

@@ -26,20 +26,21 @@ namespace Tree_Controller.Tools
         /// <inheritdoc/>
         protected override void OnCreate()
         {
+            base.OnCreate();
             m_ToolOutputBarrier = World.GetOrCreateSystemManaged<ToolOutputBarrier>();
             m_Log = TreeControllerMod.Instance.Logger;
-            base.OnCreate();
-        }
 
-        /// <inheritdoc/>
-        protected override void OnUpdate()
-        {
             m_RecentlyChangedQuery = SystemAPI.QueryBuilder()
                 .WithAll<RecentlyChanged>()
                 .Build();
 
             RequireForUpdate(m_RecentlyChangedQuery);
-            RemoveRecentlyChangedComponent removeRecentlyChangedComponentJob = new()
+        }
+
+        /// <inheritdoc/>
+        protected override void OnUpdate()
+        {
+            RemoveRecentlyChangedComponent removeRecentlyChangedComponentJob = new ()
             {
                 m_EntityType = SystemAPI.GetEntityTypeHandle(),
                 buffer = m_ToolOutputBarrier.CreateCommandBuffer().AsParallelWriter(),

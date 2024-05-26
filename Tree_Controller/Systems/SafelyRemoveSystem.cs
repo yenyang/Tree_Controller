@@ -42,21 +42,16 @@ namespace Tree_Controller.Systems
             m_TimeSystem = World.GetOrCreateSystemManaged<TimeSystem>();
             Enabled = false;
             m_Log.Info($"{nameof(SafelyRemoveSystem)}.{nameof(OnCreate)}");
+
+            m_DeciduousTreeQuery = SystemAPI.QueryBuilder()
+                .WithAllRW<DeciduousData, Tree>()
+                .Build();
+            RequireForUpdate(m_DeciduousTreeQuery);
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            m_DeciduousTreeQuery = SystemAPI.QueryBuilder()
-                .WithAllRW<DeciduousData, Tree>()
-                .Build();
-            RequireForUpdate(m_DeciduousTreeQuery);
-
-            if (m_DeciduousTreeQuery.IsEmptyIgnoreFilter)
-            {
-                return;
-            }
-
             TreeSeasonChangeJob treeSeasonChangeJob = new ()
             {
                 m_DeciduousTreeDataType = SystemAPI.GetComponentTypeHandle<DeciduousData>(),

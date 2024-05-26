@@ -54,6 +54,29 @@ namespace Tree_Controller.Systems
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_Log.Info($"[{nameof(ModifyTreeGrowthSystem)}] {nameof(OnCreate)}");
+
+
+            m_DisabledTreeGrowthQuery = SystemAPI.QueryBuilder()
+                .WithAll<Game.Objects.Tree>()
+                .WithNone<Deleted, Temp, Overridden, Lumber, NoTreeGrowth>()
+                .Build();
+
+            m_DeciduousWinterTreeGrowthQuery = SystemAPI.QueryBuilder()
+                .WithAll<Game.Objects.Tree, DeciduousData>()
+                .WithNone<Deleted, Temp, Overridden, Lumber, NoTreeGrowth>()
+                .Build();
+
+            m_RegularTreeGrowthQuery = SystemAPI.QueryBuilder()
+                .WithAll<Game.Objects.Tree, NoTreeGrowth>()
+                .WithNone<Deleted, Temp, Overridden>()
+                .Build();
+
+            m_LumberQuery = SystemAPI.QueryBuilder()
+                .WithAll<Game.Objects.Tree, Lumber, NoTreeGrowth>()
+                .WithNone<Deleted, Temp, Overridden>()
+                .Build();
+
+            RequireAnyForUpdate(m_DisabledTreeGrowthQuery, m_DeciduousWinterTreeGrowthQuery, m_RegularTreeGrowthQuery, m_LumberQuery);
         }
 
         /// <inheritdoc/>
@@ -77,28 +100,6 @@ namespace Tree_Controller.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            m_DisabledTreeGrowthQuery = SystemAPI.QueryBuilder()
-                .WithAll<Game.Objects.Tree>()
-                .WithNone<Deleted, Temp, Overridden, Lumber, NoTreeGrowth>()
-                .Build();
-
-            m_DeciduousWinterTreeGrowthQuery = SystemAPI.QueryBuilder()
-                .WithAll<Game.Objects.Tree, DeciduousData>()
-                .WithNone<Deleted, Temp, Overridden, Lumber, NoTreeGrowth>()
-                .Build();
-
-            m_RegularTreeGrowthQuery = SystemAPI.QueryBuilder()
-                .WithAll<Game.Objects.Tree, NoTreeGrowth>()
-                .WithNone<Deleted, Temp, Overridden>()
-                .Build();
-
-            m_LumberQuery = SystemAPI.QueryBuilder()
-                .WithAll<Game.Objects.Tree, Lumber, NoTreeGrowth>()
-                .WithNone<Deleted, Temp, Overridden>()
-                .Build();
-
-            RequireAnyForUpdate(m_DisabledTreeGrowthQuery, m_DeciduousWinterTreeGrowthQuery, m_RegularTreeGrowthQuery, m_LumberQuery);
-
             Entity currentClimate = m_ClimateSystem.currentClimate;
             if (currentClimate == Entity.Null)
             {

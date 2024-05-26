@@ -44,18 +44,18 @@ namespace Tree_Controller.Systems
             // Disable system for safety reasons, only enable explictly during triggered action.
             Enabled = false;
             m_Log.Info($"{nameof(DestroyFoliageSystem)}.{nameof(OnCreate)}");
+
+            m_allFoliageQuery = SystemAPI.QueryBuilder()
+                .WithAnyRW<Tree, Plant>()
+                .WithNone<Owner, Deleted>()
+                .Build();
+            RequireForUpdate(m_allFoliageQuery);
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
             m_Log.Info($"{nameof(DestroyFoliageSystem)}.{nameof(OnUpdate)} invoked.");
-            m_allFoliageQuery = SystemAPI.QueryBuilder()
-                .WithAnyRW<Tree, Plant>()
-                .WithNone<Owner, Deleted>()
-                .Build();
-            RequireForUpdate(m_allFoliageQuery);
-
             if (m_allFoliageQuery.IsEmptyIgnoreFilter)
             {
                 m_Log.Info($"{nameof(DestroyFoliageSystem)}.{nameof(OnUpdate)} invoked but no foliage found via query builder.");

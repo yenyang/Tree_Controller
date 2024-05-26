@@ -46,12 +46,6 @@ namespace Tree_Controller.Systems
             m_SimulationSystem = World.GetOrCreateSystemManaged<SimulationSystem>();
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_SafelyRemoveSystem = World.GetOrCreateSystemManaged<SafelyRemoveSystem>();
-            m_Log.Info($"{nameof(LumberSystem)} created!");
-        }
-
-        /// <inheritdoc/>
-        protected override void OnUpdate()
-        {
             m_WoodResourceQuery = SystemAPI.QueryBuilder()
                .WithAllRW<WoodResource>()
                .WithNone<Deleted, Temp>()
@@ -62,6 +56,12 @@ namespace Tree_Controller.Systems
                 .WithNone<Deleted, Temp>()
                 .Build();
 
+            m_Log.Info($"{nameof(LumberSystem)} created!");
+        }
+
+        /// <inheritdoc/>
+        protected override void OnUpdate()
+        {
             JobHandle lumberJobHandle = new ();
             if (!m_LumberQuery.IsEmptyIgnoreFilter)
             {

@@ -102,7 +102,10 @@ namespace Tree_Controller.Systems
                 return;
             }
 
-            ClimatePrefab climatePrefab = m_PrefabSystem.GetPrefab<ClimatePrefab>(m_ClimateSystem.currentClimate);
+            if (!m_PrefabSystem.TryGetPrefab(m_ClimateSystem.currentClimate, out ClimatePrefab climatePrefab))
+            {
+                return;
+            }
 
             uint updateFrame = SimulationUtils.GetUpdateFrame(m_SimulationSystem.frameIndex, 32, 16);
             m_DeciduousTreeQuery.ResetFilter();

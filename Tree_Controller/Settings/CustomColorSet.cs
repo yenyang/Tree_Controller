@@ -14,7 +14,7 @@ namespace Tree_Controller.Settings
     public class CustomColorSet
     {
         private ColorSet m_ColorSet;
-        private PrefabID m_PrefabID;
+        private string m_PrefabName;
         private FoliageUtils.Season m_Season;
         private int m_Version;
 
@@ -39,7 +39,21 @@ namespace Tree_Controller.Settings
             m_ColorSet.m_Channel0 = channel0;
             m_ColorSet.m_Channel1 = channel1;
             m_ColorSet.m_Channel2 = channel2;
-            m_PrefabID = prefabID;
+            m_PrefabName = prefabID.GetName();
+            m_Season = season;
+            m_Version = 1;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomColorSet"/> class.
+        /// </summary>
+        /// <param name="colorSet">set of colors</param>
+        /// <param name="prefabID">The prefab this applies to.</param>
+        /// <param name="season">season this applies to.</param>
+        public CustomColorSet(ColorSet colorSet, PrefabID prefabID, FoliageUtils.Season season)
+        {
+            m_ColorSet = colorSet;
+            m_PrefabName = prefabID.GetName();
             m_Season = season;
             m_Version = 1;
         }
@@ -54,12 +68,12 @@ namespace Tree_Controller.Settings
         }
 
         /// <summary>
-        /// Gets or sets a value for the prefab id.
+        /// Gets or sets a value for the prefab name.
         /// </summary>
-        public PrefabID PrefabID
+        public string PrefabName
         {
-            get { return m_PrefabID; }
-            set { m_PrefabID = value; }
+            get { return m_PrefabName; }
+            set { m_PrefabName = value; }
         }
 
         /// <summary>

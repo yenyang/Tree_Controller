@@ -1,6 +1,7 @@
 import { getModule } from "cs2/modding";
 import { Theme, FocusKey, UniqueFocusKey, Color } from "cs2/bindings";
 import { bindValue, trigger, useValue } from "cs2/api";
+import { ColorSet } from "mods/Domain/ColorSet";
 import { useLocalization } from "cs2/l10n";
 import { VanillaComponentResolver } from "mods/VanillaComponentResolver/VanillaComponentResolver";
 import mod from "../../../mod.json";
@@ -15,6 +16,8 @@ interface InfoSectionComponent {
 const uilStandard =                          "coui://uil/Standard/";
 const uilColored =                           "coui://uil/Colored/";
 const saveSrc =                     uilStandard +  "DiskSave.svg";
+
+const CurrentColorSet$ = bindValue<ColorSet>(mod.id, "CurrentColorSet");
 
 const InfoSectionTheme: Theme | any = getModule(
 	"game-ui/game/components/selected-info-panel/shared-components/info-section/info-section.module.scss",
@@ -41,6 +44,11 @@ function handleClick(eventName : string) {
     trigger(mod.id, eventName);
 }
 
+function changeColor(channel : number, newColor : Color) {
+    // This triggers an event on C# side and C# designates the method to implement.
+    trigger(mod.id, "ChangeColor", channel, newColor);
+}
+
 const FocusDisabled$: FocusKey = getModule(
 	"game-ui/common/focus/focus-key.ts",
 	"FOCUS_DISABLED"
@@ -50,9 +58,11 @@ export const SIPcolorFieldsComponent = (componentList: any): any => {
     // I believe you should not put anything here.
 	componentList["Tree_Controller.Systems.SelectedInfoPanelColorFieldsSystem"] = (e: InfoSectionComponent) => {
         // These get the value of the bindings.
-        let [colorField0, updateColorField0] = useState<Color>({r: 1, g: 1, b: 1, a:1});
-        let [colorField1, updateColorField1] = useState<Color>({r: 1, g: 1, b: 1, a:1});
-        let [colorField2, updateColorField2] = useState<Color>({r: 1, g: 1, b: 1, a:1});
+        const CurrentColorSet = useValue(CurrentColorSet$);
+
+        let [colorField0, updateColorField0] = useState<Color>(CurrentColorSet.Channel0);
+        let [colorField1, updateColorField1] = useState<Color>(CurrentColorSet.Channel1);
+        let [colorField2, updateColorField2] = useState<Color>(CurrentColorSet.Channel2);
         // translation handling. Translates using locale keys that are defined in C# or fallback string here.
         const { translate } = useLocalization();
 
@@ -70,7 +80,7 @@ export const SIPcolorFieldsComponent = (componentList: any): any => {
                             left={"Channel0"}
                             right=
                             {
-                                <VanillaComponentResolver.instance.ColorField value={colorField0} onChange={(e) => {console.log(e);updateColorField0(e)}}/>
+                                <VanillaComponentResolver.instance.ColorField value={colorField0} onChange={(e) => {updateColorField0(e); changeColor(0, e);}}/>
                             }
                             uppercase={false}
                             disableFocus={true}
@@ -81,7 +91,7 @@ export const SIPcolorFieldsComponent = (componentList: any): any => {
                             left={"Channel1"}
                             right=
                             {
-                                <VanillaComponentResolver.instance.ColorField value={colorField1} onChange={(e) => {console.log(e);updateColorField1(e)}}/>
+                                <VanillaComponentResolver.instance.ColorField value={colorField1} onChange={(e) => {updateColorField1(e); changeColor(1, e);}}/>
                             }
                             uppercase={false}
                             disableFocus={true}
@@ -92,7 +102,7 @@ export const SIPcolorFieldsComponent = (componentList: any): any => {
                             left={"Channel2"}
                             right=
                             {
-                                <VanillaComponentResolver.instance.ColorField value={colorField2} onChange={(e) => {console.log(e);updateColorField2(e)}}/>
+                                <VanillaComponentResolver.instance.ColorField value={colorField2} onChange={(e) => {updateColorField2(e); changeColor(2, e);}}/>
                             }
                             uppercase={false}
                             disableFocus={true}

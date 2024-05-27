@@ -12,7 +12,7 @@ namespace Tree_Controller.Utils
     {
         public ValueBindingHelper<T> CreateBinding<T>(string key, T initialValue)
         {
-            var helper = new ValueBindingHelper<T>(new(TreeControllerMod.Id, key, initialValue));
+            var helper = new ValueBindingHelper<T>(new(TreeControllerMod.Id, key, initialValue, new GenericUIWriter<T>()));
 
             AddBinding(helper.Binding);
 
@@ -21,28 +21,8 @@ namespace Tree_Controller.Utils
 
         public ValueBindingHelper<T> CreateBinding<T>(string key, string setterKey, T initialValue, Action<T> updateCallBack = null)
         {
-            var helper = new ValueBindingHelper<T>(new(TreeControllerMod.Id, key, initialValue), updateCallBack);
-            var trigger = new TriggerBinding<T>(TreeControllerMod.Id, setterKey, helper.UpdateCallback);
-
-            AddBinding(helper.Binding);
-            AddBinding(trigger);
-
-            return helper;
-        }
-
-        public ValueBindingHelper<T[]> CreateBinding<T>(string key, T[] initialValue) where T : IJsonWritable
-        {
-            var helper = new ValueBindingHelper<T[]>(new(TreeControllerMod.Id, key, initialValue, new ArrayWriter<T>(new ValueWriter<T>())));
-
-            AddBinding(helper.Binding);
-
-            return helper;
-        }
-
-        public ValueBindingHelper<T[]> CreateBinding<T>(string key, string setterKey, T[] initialValue, Action<T[]> updateCallBack = null) where T : IJsonWritable
-        {
-            var helper = new ValueBindingHelper<T[]>(new(TreeControllerMod.Id, key, initialValue, new ArrayWriter<T>(new ValueWriter<T>())), updateCallBack);
-            var trigger = new TriggerBinding<T[]>(TreeControllerMod.Id, setterKey, helper.UpdateCallback);
+            var helper = new ValueBindingHelper<T>(new(TreeControllerMod.Id, key, initialValue, new GenericUIWriter<T>()), updateCallBack);
+            var trigger = new TriggerBinding<T>(TreeControllerMod.Id, setterKey, helper.UpdateCallback, initialValue is Enum ? new EnumReader<T>() : null);
 
             AddBinding(helper.Binding);
             AddBinding(trigger);
@@ -52,16 +32,7 @@ namespace Tree_Controller.Utils
 
         public GetterValueBinding<T> CreateBinding<T>(string key, Func<T> getterFunc)
         {
-            var binding = new GetterValueBinding<T>(TreeControllerMod.Id, key, getterFunc);
-
-            AddBinding(binding);
-
-            return binding;
-        }
-
-        public GetterValueBinding<T[]> CreateBinding<T>(string key, Func<T[]> getterFunc) where T : IJsonWritable
-        {
-            var binding = new GetterValueBinding<T[]>(TreeControllerMod.Id, key, getterFunc, new ArrayWriter<T>(new ValueWriter<T>()));
+            var binding = new GetterValueBinding<T>(TreeControllerMod.Id, key, getterFunc, new GenericUIWriter<T>());
 
             AddBinding(binding);
 

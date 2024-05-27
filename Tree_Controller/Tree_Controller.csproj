@@ -140,8 +140,6 @@
 	<ItemGroup>
 	  <Folder Include="Properties\Previews\" />
 	  <Folder Include="UI\" />
-	  <Folder Include="Systems\" />
-	  <Folder Include="Settings\" />
 	</ItemGroup>
 
 	<ItemGroup>

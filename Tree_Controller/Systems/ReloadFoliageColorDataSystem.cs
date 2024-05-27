@@ -252,7 +252,7 @@ namespace Tree_Controller.Systems
         {
             if (m_ContentFolder != null)
             {
-                string foliageColorDataFolderPath = Path.Combine(m_ContentFolder, $"FoliageColorData/");
+                string foliageColorDataFolderPath = Path.Combine(m_ContentFolder, $"FoliageColorData/Custom/");
                 System.IO.Directory.CreateDirectory(foliageColorDataFolderPath);
                 string foliageColorDataFilePath = Path.Combine(foliageColorDataFolderPath, $"{treeSeasonIdentifier.m_PrefabID.GetName()}-{(int)treeSeasonIdentifier.m_Season}{treeSeasonIdentifier.m_Season}.csv");
 #if VERBOSE
@@ -287,7 +287,7 @@ namespace Tree_Controller.Systems
         {
             if (m_ContentFolder != null)
             {
-                string foliageColorDataFolderPath = Path.Combine(m_ContentFolder, $"FoliageColorData/");
+                string foliageColorDataFolderPath = Path.Combine(m_ContentFolder, $"FoliageColorData/Custom/");
                 System.IO.Directory.CreateDirectory(foliageColorDataFolderPath);
                 string foliageColorDataFilePath = Path.Combine(foliageColorDataFolderPath, $"{treeSeasonIdentifier.m_PrefabID.GetName()}-{(int)treeSeasonIdentifier.m_Season}{treeSeasonIdentifier.m_Season}.csv");
                 if (File.Exists(foliageColorDataFilePath))

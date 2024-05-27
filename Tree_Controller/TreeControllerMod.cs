@@ -23,6 +23,11 @@ namespace Tree_Controller
     public class TreeControllerMod : IMod
     {
         /// <summary>
+        /// An id used for bindings between UI and C#.
+        /// </summary>
+        public static readonly string Id = "Tree_Controller";
+
+        /// <summary>
         /// Gets the install folder for the mod.
         /// </summary>
         private static string m_modInstallFolder;
@@ -107,7 +112,7 @@ namespace Tree_Controller
             updateSystem.UpdateBefore<LumberSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAt<DetectAreaChangeSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<DestroyFoliageSystem>(SystemUpdatePhase.ToolUpdate);
-
+            updateSystem.UpdateAt<SelectedInfoPanelColorFieldsSystem>(SystemUpdatePhase.UIUpdate);
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} finished systems");
         }
 

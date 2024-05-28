@@ -37,5 +37,20 @@ namespace Tree_Controller.Domain
             Channel1 = color1;
             Channel2 = color2;
         }
+
+        /// <summary>
+        ///  Gets a vanilla color set.
+        /// </summary>
+        /// <returns>Vanilla Color set.</returns>
+        public ColorSet GetColorSet()
+        {
+            ColorSet colorSet = new ()
+            {
+                m_Channel0 = Channel0,
+                m_Channel1 = Channel1,
+                m_Channel2 = Channel2,
+            };
+            return colorSet;
+        }
     }
 }

@@ -6,6 +6,8 @@ import { useLocalization } from "cs2/l10n";
 import { VanillaComponentResolver } from "mods/VanillaComponentResolver/VanillaComponentResolver";
 import mod from "../../../mod.json";
 import { useState } from "react";
+import locale from "../lang/en-US.json";
+import { BalloonDirection } from "cs2/ui";
 
 interface InfoSectionComponent {
 	group: string;
@@ -16,8 +18,10 @@ interface InfoSectionComponent {
 const uilStandard =                          "coui://uil/Standard/";
 const uilColored =                           "coui://uil/Colored/";
 const saveSrc =                     uilStandard +  "DiskSave.svg";
+const resetSrc =                     uilStandard + "Reset.svg";
 
 const CurrentColorSet$ = bindValue<ColorSet>(mod.id, "CurrentColorSet");
+const MatchesSavedData$ = bindValue<boolean>(mod.id, "MatchesSavedColorSet")
 
 const InfoSectionTheme: Theme | any = getModule(
 	"game-ui/game/components/selected-info-panel/shared-components/info-section/info-section.module.scss",
@@ -54,33 +58,44 @@ const FocusDisabled$: FocusKey = getModule(
 	"FOCUS_DISABLED"
 );
 
+const descriptionToolTipStyle = getModule("game-ui/common/tooltip/description-tooltip/description-tooltip.module.scss", "classes");
+    
+
+// This is working, but it's possible a better solution is possible.
+function DescriptionTooltip(tooltipTitle: string | null, tooltipDescription: string | null) : JSX.Element {
+    return (
+        <>
+            <div className={descriptionToolTipStyle.title}>{tooltipTitle}</div>
+            <div className={descriptionToolTipStyle.content}>{tooltipDescription}</div>
+        </>
+    );
+}
+
 export const SIPcolorFieldsComponent = (componentList: any): any => {
     // I believe you should not put anything here.
 	componentList["Tree_Controller.Systems.SelectedInfoPanelColorFieldsSystem"] = (e: InfoSectionComponent) => {
         // These get the value of the bindings.
         const CurrentColorSet = useValue(CurrentColorSet$);
-
-        let [colorField0, updateColorField0] = useState<Color>(CurrentColorSet.Channel0);
-        let [colorField1, updateColorField1] = useState<Color>(CurrentColorSet.Channel1);
-        let [colorField2, updateColorField2] = useState<Color>(CurrentColorSet.Channel2);
-        // translation handling. Translates using locale keys that are defined in C# or fallback string here.
+        const MatchesSavedColorSet  = useValue(MatchesSavedData$);
+        
+        // translation handling. Translates using locale keys that are defined in C# or fallback string from en-US.json.
         const { translate } = useLocalization();
 
         return 	<InfoSection focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} disableFocus={true} className={InfoSectionTheme.infoSection}>
                         <InfoRow 
-                            left={"Tree Controller"}
-                            right={"Custom Color Variations"}
-                            tooltip={"For choosing custom seasonal foliage colors."}
+                            left={translate("Tree_Controller.SECTION_TITLE[InfoRowTitle]",locale["Tree_Controller.SECTION_TITLE[InfoRowTitle]"])}
+                            right={translate("Tree_Controller.SECTION_TITLE[InfoRowSubTitle]" ,locale["Tree_Controller.SECTION_TITLE[InfoRowSubTitle]"])}
+                            tooltip={translate("Tree_Controller.TOOLTIP_DESCRIPTION[InfoRowTooltip]" ,locale["Tree_Controller.TOOLTIP_DESCRIPTION[InfoRowTooltip]"])}
                             uppercase={true}
                             disableFocus={true}
                             subRow={false}
                             className={InfoRowTheme.infoRow}
                         ></InfoRow>
                         <InfoRow 
-                            left={"Channel0"}
+                            left={translate("Tree_Controller.SECTION_TITLE[Channel0]" , locale["Tree_Controller.SECTION_TITLE[Channel0]"])}
                             right=
                             {
-                                <VanillaComponentResolver.instance.ColorField value={colorField0} onChange={(e) => {updateColorField0(e); changeColor(0, e);}}/>
+                                <VanillaComponentResolver.instance.ColorField value={CurrentColorSet.Channel0} onChange={(e) => {changeColor(0, e);}}/>
                             }
                             uppercase={false}
                             disableFocus={true}
@@ -88,10 +103,10 @@ export const SIPcolorFieldsComponent = (componentList: any): any => {
                             className={InfoRowTheme.infoRow}
                         ></InfoRow>
                         <InfoRow 
-                            left={"Channel1"}
+                            left={translate("Tree_Controller.SECTION_TITLE[Channel1]" ,locale["Tree_Controller.SECTION_TITLE[Channel1]"])}
                             right=
                             {
-                                <VanillaComponentResolver.instance.ColorField value={colorField1} onChange={(e) => {updateColorField1(e); changeColor(1, e);}}/>
+                                <VanillaComponentResolver.instance.ColorField value={CurrentColorSet.Channel1} onChange={(e) => {changeColor(1, e);}}/>
                             }
                             uppercase={false}
                             disableFocus={true}
@@ -99,10 +114,10 @@ export const SIPcolorFieldsComponent = (componentList: any): any => {
                             className={InfoRowTheme.infoRow}
                         ></InfoRow>
                         <InfoRow 
-                            left={"Channel2"}
+                            left={translate("Tree_Controller.SECTION_TITLE[Channel2]",locale["Tree_Controller.SECTION_TITLE[Channel2]"])}
                             right=
                             {
-                                <VanillaComponentResolver.instance.ColorField value={colorField2} onChange={(e) => {updateColorField2(e); changeColor(2, e);}}/>
+                                <VanillaComponentResolver.instance.ColorField value={CurrentColorSet.Channel2} onChange={(e) => {changeColor(2, e);}}/>
                             }
                             uppercase={false}
                             disableFocus={true}
@@ -110,17 +125,30 @@ export const SIPcolorFieldsComponent = (componentList: any): any => {
                             className={InfoRowTheme.infoRow}
                         ></InfoRow>
                         <InfoRow 
-                            left={"Save"}
+                            left={translate("Tree_Controller.SECTION_TITLE[ResetAndSave]" ,locale["Tree_Controller.SECTION_TITLE[ResetAndSave]"])}
                             right=
                             {
-                                <VanillaComponentResolver.instance.ToolButton
-                                    src={saveSrc}
-                                    multiSelect = {false}   // I haven't tested any other value here
-                                    disabled = {false}      // I haven't tested any other value here
-                                    tooltip = {"Tooltip"}
-                                    className = {VanillaComponentResolver.instance.toolButtonTheme.button}
-                                    onSelect={() => handleClick("SaveColorSet")}
-                                />
+                                <>                                
+                                    <VanillaComponentResolver.instance.ToolButton
+                                        src={resetSrc}
+                                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                        multiSelect = {false}   // I haven't tested any other value here
+                                        disabled = {false}      // I haven't tested any other value here
+                                        tooltip = {DescriptionTooltip(translate("Tree_Controller.TOOLTIP_TITLE[Reset]" ,locale["Tree_Controller.TOOLTIP_TITLE[Reset]"]), translate("Tree_Controller.TOOLTIP_DESCRIPTION[Reset]",locale["Tree_Controller.TOOLTIP_DESCRIPTION[Reset]"]))}
+                                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                        onSelect={() => handleClick("ResetColorSet")}
+                                    />
+                                    <VanillaComponentResolver.instance.ToolButton
+                                        src={saveSrc}
+                                        focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}
+                                        selected = {MatchesSavedColorSet}
+                                        multiSelect = {false}   // I haven't tested any other value here
+                                        disabled = {false}      // I haven't tested any other value here
+                                        tooltip = {DescriptionTooltip( translate ("Tree_Controller.TOOLTIP_TITLE[Save]" ,locale["Tree_Controller.TOOLTIP_TITLE[Save]"]), translate("Tree_Controller.TOOLTIP_DESCRIPTION[Save]" ,locale["Tree_Controller.TOOLTIP_DESCRIPTION[Save]"]))}
+                                        className = {VanillaComponentResolver.instance.toolButtonTheme.button}
+                                        onSelect={() => handleClick("SaveColorSet")}
+                                    />
+                                </>
                             }
                             uppercase={false}
                             disableFocus={true}

@@ -246,18 +246,19 @@ namespace Tree_Controller.Systems
                         continue;
                     }
 
-                    for (int j = 0; j < 4; j++)
+                    for (int j = 0; j < colorVariationBuffer.Length; j++)
                     {
 #if VERBOSE
                         m_Log.Verbose($"{prefabID.GetName()} {(TreeState)(int)Math.Pow(2, i - 1)} {(FoliageUtils.Season)j} {colorVariationBuffer[j].m_ColorSet.m_Channel0} {colorVariationBuffer[j].m_ColorSet.m_Channel1} {colorVariationBuffer[j].m_ColorSet.m_Channel2}");
 #endif
+                        ColorVariation currentColorVariation = colorVariationBuffer[j];
+
                         TreeSeasonIdentifier treeSeasonIdentifier = new ()
                         {
                             m_PrefabID = prefabID,
-                            m_Season = (FoliageUtils.Season)j,
+                            m_Season = (FoliageUtils.Season)currentColorVariation.m_GroupID,
+                            m_Index = j,
                         };
-
-                        ColorVariation currentColorVariation = colorVariationBuffer[j];
                         if (!m_VanillaColorSets.ContainsKey(treeSeasonIdentifier))
                         {
                             m_VanillaColorSets.Add(treeSeasonIdentifier, currentColorVariation.m_ColorSet);
@@ -363,6 +364,7 @@ namespace Tree_Controller.Systems
         {
             public PrefabID m_PrefabID;
             public FoliageUtils.Season m_Season;
+            public int m_Index;
         }
     }
 }

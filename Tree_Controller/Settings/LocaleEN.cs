@@ -50,7 +50,7 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Vanilla), "Vanilla" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Spring), "Spring" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Autumn), "Autumn" },
-                { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Custom), "Custom" },
+                { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Custom), "Custom (Deprecated)" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.AgeSelectionOptions.RandomEqualWeight), "Equal Distribution" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.AgeSelectionOptions.RandomWeighted), "Forest Distribution" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "Age Selection Technique" },

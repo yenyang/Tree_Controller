@@ -25,6 +25,7 @@ namespace Tree_Controller.Systems
     using Unity.Collections;
     using Unity.Entities;
     using Unity.Jobs;
+    using static Game.Rendering.OverlayRenderSystem;
 
     /// <summary>
     /// Replaces colors of vanilla trees.
@@ -78,60 +79,6 @@ namespace Tree_Controller.Systems
         public bool Run { set => m_Run = value; }
 
         private Dictionary<TreeSeasonIdentifier, ColorSet> YenyangsColorSets => m_YenyangsColorSets;
-
-        /// <summary>
-        /// Tries to save a custom color set.
-        /// </summary>
-        /// <param name="colorSet">Set of 3 colors.</param>
-        /// <param name="prefabID">ID for the prefab.</param>
-        /// <param name="season">Season this affects.</param>
-        /// <returns>True if saved, false if error occured.</returns>
-        public bool TrySaveCustomColorSet(ColorSet colorSet, PrefabID prefabID, FoliageUtils.Season season)
-        {
-            string foliageColorDataFilePath = Path.Combine(m_ContentFolder, $"{prefabID.GetName()}-{(int)season}{season}.xml");
-            CustomColorSet customColorSet = new CustomColorSet(colorSet, prefabID, season);
-
-            try
-            {
-                XmlSerializer serTool = new XmlSerializer(typeof(CustomColorSet)); // Create serializer
-                using (System.IO.FileStream file = System.IO.File.Create(foliageColorDataFilePath)) // Create file
-                {
-                    serTool.Serialize(file, customColorSet); // Serialize whole properties
-                }
-
-                m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(TrySaveCustomColorSet)} saved color set for {prefabID}.");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                m_Log.Warn($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(TrySaveCustomColorSet)} Could not save values for {prefabID}. Encountered exception {ex}");
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Evaluates whether a color set for a prefab and season matches vanilla.
-        /// </summary>
-        /// <param name="colorSet">Comparison color set.</param>
-        /// <param name="prefabID">ID for prefab to check.</param>
-        /// <param name="season">Season being evaluated.</param>
-        /// <returns>True if match found. False if not.</returns>
-        public bool MatchesSavedColorSet(ColorSet colorSet, PrefabID prefabID, FoliageUtils.Season season)
-        {
-            if (!TryLoadCustomColorSet(prefabID, season, out CustomColorSet customColorSet))
-            {
-                return false;
-            }
-
-            ColorSet savedColorSet = customColorSet.ColorSet;
-
-            if (savedColorSet.m_Channel0 == colorSet.m_Channel0 && savedColorSet.m_Channel1 == colorSet.m_Channel1 && savedColorSet.m_Channel2 == colorSet.m_Channel2)
-            {
-                return true;
-            }
-
-            return false;
-        }
 
         /// <summary>
         /// Checks if vanilla color set has been recorded and returns it in out if available.
@@ -192,6 +139,60 @@ namespace Tree_Controller.Systems
             {
                 Run = true;
             }
+
+            EntityCommandBuffer buffer = m_EndFrameBarrier.CreateCommandBuffer();
+            JobHandle plantPrefabJobHandle;
+            NativeList<Entity> plantPrefabEntities = m_PlantPrefabQuery.ToEntityListAsync(Allocator.Temp, out plantPrefabJobHandle);
+            plantPrefabJobHandle.Complete();
+            foreach (Entity e in plantPrefabEntities)
+            {
+                if (!EntityManager.TryGetBuffer(e, isReadOnly: false, out DynamicBuffer<SubMesh> subMeshBuffer))
+                {
+                    continue;
+                }
+
+                for (int i = 0; i < Math.Min(4, subMeshBuffer.Length); i++)
+                {
+                    if (!EntityManager.TryGetBuffer(subMeshBuffer[i].m_SubMesh, isReadOnly: false, out DynamicBuffer<ColorVariation> colorVariationBuffer))
+                    {
+                        continue;
+                    }
+
+                    PrefabBase prefabBase = m_PrefabSystem.GetPrefab<PrefabBase>(e);
+                    PrefabID prefabID = prefabBase.GetPrefabID();
+
+                    if (colorVariationBuffer.Length < 4 || prefabBase.name.ToLower().Contains("palm"))
+                    {
+                        buffer.AddComponent<Evergreen>(e);
+                        continue;
+                    }
+
+                    for (int j = 0; j < colorVariationBuffer.Length; j++)
+                    {
+#if VERBOSE
+                        m_Log.Verbose($"{prefabID.GetName()} {(TreeState)(int)Math.Pow(2, i - 1)} {(FoliageUtils.Season)j} {colorVariationBuffer[j].m_ColorSet.m_Channel0} {colorVariationBuffer[j].m_ColorSet.m_Channel1} {colorVariationBuffer[j].m_ColorSet.m_Channel2}");
+#endif
+                        ColorVariation currentColorVariation = colorVariationBuffer[j];
+
+                        if (!FoliageUtils.TryGetSeasonFromColorGroupID(currentColorVariation.m_GroupID, out FoliageUtils.Season season))
+                        {
+                            continue;
+                        }
+
+                        TreeSeasonIdentifier treeSeasonIdentifier = new()
+                        {
+                            m_PrefabID = prefabID,
+                            m_Season = season,
+                            m_Index = j,
+                        };
+
+                        if (!m_VanillaColorSets.ContainsKey(treeSeasonIdentifier))
+                        {
+                            m_VanillaColorSets.Add(treeSeasonIdentifier, currentColorVariation.m_ColorSet);
+                        }
+                    }
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -240,30 +241,21 @@ namespace Tree_Controller.Systems
                     PrefabBase prefabBase = m_PrefabSystem.GetPrefab<PrefabBase>(e);
                     PrefabID prefabID = prefabBase.GetPrefabID();
 
-                    if (colorVariationBuffer.Length < 4 || prefabBase.name.ToLower().Contains("palm"))
-                    {
-                        buffer.AddComponent<Evergreen>(e);
-                        continue;
-                    }
-
                     for (int j = 0; j < colorVariationBuffer.Length; j++)
                     {
-#if VERBOSE
-                        m_Log.Verbose($"{prefabID.GetName()} {(TreeState)(int)Math.Pow(2, i - 1)} {(FoliageUtils.Season)j} {colorVariationBuffer[j].m_ColorSet.m_Channel0} {colorVariationBuffer[j].m_ColorSet.m_Channel1} {colorVariationBuffer[j].m_ColorSet.m_Channel2}");
-#endif
                         ColorVariation currentColorVariation = colorVariationBuffer[j];
 
-                        TreeSeasonIdentifier treeSeasonIdentifier = new ()
+                        if (!FoliageUtils.TryGetSeasonFromColorGroupID(currentColorVariation.m_GroupID, out FoliageUtils.Season season))
+                        {
+                            continue;
+                        }
+
+                        TreeSeasonIdentifier treeSeasonIdentifier = new()
                         {
                             m_PrefabID = prefabID,
-                            m_Season = (FoliageUtils.Season)currentColorVariation.m_GroupID,
+                            m_Season = season,
                             m_Index = j,
                         };
-                        if (!m_VanillaColorSets.ContainsKey(treeSeasonIdentifier))
-                        {
-                            m_VanillaColorSets.Add(treeSeasonIdentifier, currentColorVariation.m_ColorSet);
-                            TrySaveDefaultCustomColorSet(currentColorVariation.m_ColorSet, treeSeasonIdentifier.m_PrefabID, treeSeasonIdentifier.m_Season);
-                        }
 
                         bool setToDifferentSeason = false;
                         if ((TreeControllerMod.Instance.Settings.UseDeadModelDuringWinter && m_Season == FoliageUtils.Season.Spring && treeSeasonIdentifier.m_Season == FoliageUtils.Season.Winter)
@@ -284,16 +276,7 @@ namespace Tree_Controller.Systems
                             }
                         }
 
-                        if (TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Custom)
-                        {
-                            if (TryLoadCustomColorSet(treeSeasonIdentifier.m_PrefabID, treeSeasonIdentifier.m_Season, out CustomColorSet customColorSet))
-                            {
-                                currentColorVariation.m_ColorSet = customColorSet.ColorSet;
-                                colorVariationBuffer[j] = currentColorVariation;
-                                m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Imported Colorset for {prefabID} in {treeSeasonIdentifier.m_Season}");
-                            }
-                        }
-                        else if (TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Yenyangs && YenyangsColorSets.ContainsKey(treeSeasonIdentifier))
+                        if (TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Yenyangs && YenyangsColorSets.ContainsKey(treeSeasonIdentifier))
                         {
                             currentColorVariation.m_ColorSet = YenyangsColorSets[treeSeasonIdentifier];
                             colorVariationBuffer[j] = currentColorVariation;
@@ -320,44 +303,6 @@ namespace Tree_Controller.Systems
             m_ColorVariationSet = TreeControllerMod.Instance.Settings.ColorVariationSet;
 
             buffer.AddComponent<BatchesUpdated>(m_PlantQuery, EntityQueryCaptureMode.AtPlayback);
-        }
-
-        private bool TrySaveDefaultCustomColorSet(ColorSet colorSet, PrefabID prefabID, FoliageUtils.Season season)
-        {
-            string foliageColorDataFilePath = Path.Combine(m_ContentFolder, $"{prefabID.GetName()}-{(int)season}{season}.xml");
-
-            if (!File.Exists(foliageColorDataFilePath))
-            {
-                return TrySaveCustomColorSet(colorSet, prefabID, season);
-            }
-
-            return false;
-        }
-
-        private bool TryLoadCustomColorSet(PrefabID prefabID, FoliageUtils.Season season, out CustomColorSet result)
-        {
-            string foliageColorDataFilePath = Path.Combine(m_ContentFolder, $"{prefabID.GetName()}-{(int)season}{season}.xml");
-            result = default;
-            if (File.Exists(foliageColorDataFilePath))
-            {
-                try
-                {
-                    XmlSerializer serTool = new XmlSerializer(typeof(CustomColorSet)); // Create serializer
-                    using System.IO.FileStream readStream = new System.IO.FileStream(foliageColorDataFilePath, System.IO.FileMode.Open); // Open file
-                    result = (CustomColorSet)serTool.Deserialize(readStream); // Des-serialize to new Properties
-
-
-                    m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(TryLoadCustomColorSet)} loaded color set for {prefabID}.");
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    m_Log.Warn($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(TryLoadCustomColorSet)} Could not get default values for Set {prefabID}. Encountered exception {ex}");
-                    return false;
-                }
-            }
-
-            return false;
         }
 
         private struct TreeSeasonIdentifier

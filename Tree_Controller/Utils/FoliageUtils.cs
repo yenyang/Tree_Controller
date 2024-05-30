@@ -105,6 +105,7 @@ namespace Tree_Controller.Utils
                 season = (Season)index;
                 return true;
             }
+
             return false;
         }
     }

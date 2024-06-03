@@ -91,7 +91,6 @@ namespace Tree_Controller
             Settings = new (this);
             Settings.RegisterInOptionsUI();
             AssetDatabase.global.LoadSettings(nameof(TreeControllerMod), Settings, new TreeControllerSettings(this));
-            Settings.Contra = false;
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} finished loading settings.");
             GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} loaded localization for en-US.");

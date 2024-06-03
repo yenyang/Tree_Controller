@@ -19,7 +19,6 @@ namespace Tree_Controller.Systems
     using Game.Prefabs.Climate;
     using Game.Rendering;
     using Game.Simulation;
-    using Tree_Controller.Domain;
     using Tree_Controller.Settings;
     using Tree_Controller.Utils;
     using Unity.Collections;
@@ -276,6 +275,11 @@ namespace Tree_Controller.Systems
                             }
                         }
 
+                        if (File.Exists(GetAssetSeasonIdentifierFilePath(treeSeasonIdentifier)))
+                        {
+                            continue;
+                        }
+
                         if (TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Yenyangs && YenyangsColorSets.ContainsKey(treeSeasonIdentifier))
                         {
                             currentColorVariation.m_ColorSet = YenyangsColorSets[treeSeasonIdentifier];
@@ -303,6 +307,13 @@ namespace Tree_Controller.Systems
             m_ColorVariationSet = TreeControllerMod.Instance.Settings.ColorVariationSet;
 
             buffer.AddComponent<BatchesUpdated>(m_PlantQuery, EntityQueryCaptureMode.AtPlayback);
+        }
+
+        // Taken from Recolor mod.
+        private string GetAssetSeasonIdentifierFilePath(TreeSeasonIdentifier assetSeasonIdentifier)
+        {
+            string prefabType = assetSeasonIdentifier.m_PrefabID.ToString().Remove(assetSeasonIdentifier.m_PrefabID.ToString().IndexOf(':'));
+            return Path.Combine(m_ContentFolder, $"{prefabType}-{assetSeasonIdentifier.m_PrefabID.GetName()}-{assetSeasonIdentifier.m_Index}.xml");
         }
 
         private struct TreeSeasonIdentifier

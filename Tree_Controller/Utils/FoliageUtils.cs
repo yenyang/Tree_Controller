@@ -91,19 +91,21 @@ namespace Tree_Controller.Utils
         }
 
         /// <summary>
-        /// Gets season from color group id using reflection.
+        /// Gets season from color group id using a loop and consistency with color group ids equally season. May need adjustment later.
         /// </summary>
         /// <param name="colorGroupID">Color group ID from color variation</param>
         /// <param name="season">outputted season or spring if false.</param>
         /// <returns>true is converted, false if not.</returns>
         public static bool TryGetSeasonFromColorGroupID(ColorGroupID colorGroupID, out Season season)
         {
-            var index = colorGroupID.GetMemberValue("m_Index");
-            season = default;
-            if (index is int && (int)index > 0 && (int)index < 4)
+            season = Season.Spring;
+            for (int i = 0; i <= 3; i++)
             {
-                season = (Season)index;
-                return true;
+                if (colorGroupID == new ColorGroupID(i))
+                {
+                    season = (Season)i;
+                    return true;
+                }
             }
 
             return false;

@@ -312,7 +312,7 @@ namespace Tree_Controller.Tools
             m_ApplyAction = new InputAction($"{TreeControllerMod.Id}.ApplyAction");
             m_ApplyAction.AddBinding(UnityEngine.InputSystem.Mouse.current.leftButton);
             m_SecondaryApplyAction = new InputAction($"{TreeControllerMod.Id}.SecondaryApplyAction");
-            m_SecondaryApplyAction.AddBinding(UnityEngine.InputSystem.Mouse.current.leftButton);
+            m_SecondaryApplyAction.AddBinding(UnityEngine.InputSystem.Mouse.current.rightButton);
             m_Log.Info($"[{nameof(TreeControllerTool)}] {nameof(OnCreate)}");
             m_ToolOutputBarrier = World.GetOrCreateSystemManaged<ToolOutputBarrier>();
             m_OverlayRenderSystem = World.GetOrCreateSystemManaged<OverlayRenderSystem>();

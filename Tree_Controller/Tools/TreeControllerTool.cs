@@ -36,8 +36,8 @@ namespace Tree_Controller.Tools
     /// </summary>
     public partial class TreeControllerTool : ToolBaseSystem
     {
-        private ProxyAction m_ApplyAction;
-        private ProxyAction m_SecondaryApplyAction;
+        private InputAction m_ApplyAction;
+        private InputAction m_SecondaryApplyAction;
         private OverlayRenderSystem m_OverlayRenderSystem;
         private ToolOutputBarrier m_ToolOutputBarrier;
         private EntityQuery m_VegetationQuery;
@@ -309,8 +309,10 @@ namespace Tree_Controller.Tools
         {
             Enabled = false;
             m_Log = TreeControllerMod.Instance.Logger;
-            m_ApplyAction = InputManager.instance.FindAction("Tool", "Apply");
-            m_SecondaryApplyAction = InputManager.instance.FindAction("Tool", "Secondary Apply");
+            m_ApplyAction = new InputAction($"{TreeControllerMod.Id}.ApplyAction");
+            m_ApplyAction.AddBinding(UnityEngine.InputSystem.Mouse.current.leftButton);
+            m_SecondaryApplyAction = new InputAction($"{TreeControllerMod.Id}.SecondaryApplyAction");
+            m_SecondaryApplyAction.AddBinding(UnityEngine.InputSystem.Mouse.current.leftButton);
             m_Log.Info($"[{nameof(TreeControllerTool)}] {nameof(OnCreate)}");
             m_ToolOutputBarrier = World.GetOrCreateSystemManaged<ToolOutputBarrier>();
             m_OverlayRenderSystem = World.GetOrCreateSystemManaged<OverlayRenderSystem>();
@@ -348,16 +350,16 @@ namespace Tree_Controller.Tools
         /// <inheritdoc/>
         protected override void OnStartRunning()
         {
-            m_ApplyAction.shouldBeEnabled = true;
-            m_SecondaryApplyAction.shouldBeEnabled = true;
+            m_ApplyAction.Enable();
+            m_SecondaryApplyAction.Enable();
             m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(OnStartRunning)}");
         }
 
         /// <inheritdoc/>
         protected override void OnStopRunning()
         {
-            m_ApplyAction.shouldBeEnabled = false;
-            m_SecondaryApplyAction.shouldBeEnabled = false;
+            m_ApplyAction.Disable();
+            m_SecondaryApplyAction.Disable();
         }
 
         /// <inheritdoc/>

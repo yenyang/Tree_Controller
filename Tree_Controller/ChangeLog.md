@@ -3,4 +3,4 @@
 * New Color Variations set choices: Spring and Autumn for year round vanilla colors.
 * My curated color set has plants: cultivated bushes, potted plants, planters stay green during Autumn and Winter. 
 * Potted plants and planters with multiple color variations will not have flowers with spring colors or while using my curated color set during Autumn and Winter.
-* Custom color variation set has been removed. Will be replaced soon.
+* Custom color variation set has been forked into a new mod called: Recolor. Available now!

@@ -5,6 +5,7 @@
 
 namespace Tree_Controller.Utils
 {
+    using Game.Rendering;
     using System.Collections.Generic;
     using Tree_Controller;
 
@@ -87,6 +88,27 @@ namespace Tree_Controller.Utils
                 m_Channel2 = UnityEngine.Color.Lerp(colorSet1.m_Channel2, colorSet2.m_Channel2, balance),
             };
             return lerpedColorSet;
+        }
+
+        /// <summary>
+        /// Gets season from color group id using a loop and consistency with color group ids equally season. May need adjustment later.
+        /// </summary>
+        /// <param name="colorGroupID">Color group ID from color variation</param>
+        /// <param name="season">outputted season or spring if false.</param>
+        /// <returns>true is converted, false if not.</returns>
+        public static bool TryGetSeasonFromColorGroupID(ColorGroupID colorGroupID, out Season season)
+        {
+            season = Season.Spring;
+            for (int i = 0; i <= 3; i++)
+            {
+                if (colorGroupID == new ColorGroupID(i))
+                {
+                    season = (Season)i;
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

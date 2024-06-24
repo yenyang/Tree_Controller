@@ -23,6 +23,11 @@ namespace Tree_Controller
     public class TreeControllerMod : IMod
     {
         /// <summary>
+        /// An id used for bindings between UI and C#.
+        /// </summary>
+        public static readonly string Id = "Tree_Controller";
+
+        /// <summary>
         /// Gets the install folder for the mod.
         /// </summary>
         private static string m_modInstallFolder;
@@ -86,7 +91,6 @@ namespace Tree_Controller
             Settings = new (this);
             Settings.RegisterInOptionsUI();
             AssetDatabase.global.LoadSettings(nameof(TreeControllerMod), Settings, new TreeControllerSettings(this));
-            Settings.Contra = false;
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} finished loading settings.");
             GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} loaded localization for en-US.");
@@ -101,14 +105,12 @@ namespace Tree_Controller
             updateSystem.UpdateAt<ClearTreeControllerTool>(SystemUpdatePhase.ClearTool);
             updateSystem.UpdateBefore<FindTreesAndBushesSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateBefore<DeciduousSystem>(SystemUpdatePhase.GameSimulation);
-            updateSystem.UpdateBefore<ReloadFoliageColorDataSystem>(SystemUpdatePhase.GameSimulation);
-            updateSystem.UpdateAfter<ReloadFoliageColorDataSystem>(SystemUpdatePhase.PrefabUpdate);
+            updateSystem.UpdateAt<ReloadFoliageColorDataSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAt<ModifyTreeGrowthSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateBefore<SafelyRemoveSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateBefore<LumberSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAt<DetectAreaChangeSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<DestroyFoliageSystem>(SystemUpdatePhase.ToolUpdate);
-
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} finished systems");
         }
 

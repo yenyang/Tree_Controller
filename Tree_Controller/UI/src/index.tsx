@@ -12,6 +12,8 @@ const register: ModRegistrar = (moduleRegistry) => {
      // This extends mouse tool options to include all tree controller sections.
      moduleRegistry.extend("game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx", 'MouseToolOptions', TreeControllerComponent);
 
+
+     
      // This is just to verify using UI console that all the component registriations was completed.
      console.log(mod.id + " UI module registrations completed.");
 }

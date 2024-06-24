@@ -166,6 +166,21 @@ namespace Tree_Controller.Tools
         public override bool TrySetPrefab(PrefabBase prefab)
         {
             Entity prefabEntity = m_PrefabSystem.GetEntity(prefab);
+            if (m_ToolSystem.activePrefab != null)
+            {
+                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(TrySetPrefab)} Toolsystem:{m_ToolSystem.activePrefab.name}");
+            }
+
+            if (prefab != null)
+            {
+                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(TrySetPrefab)} PrefabChange:{prefab.name} ");
+            }
+
+            if (m_ObjectToolSystem.GetPrefab() != null)
+            {
+                m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(TrySetPrefab)} ObjectToolSystem:{m_ObjectToolSystem.GetPrefab().name}");
+            }
+
             if (EntityManager.HasComponent<Vegetation>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
                 bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
@@ -180,7 +195,6 @@ namespace Tree_Controller.Tools
                     && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
                 {
                     UnselectTreePrefab(prefab);
-                    m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(TrySetPrefab)} Toolsystem:{m_ToolSystem.activePrefab.name} PrefabChange:{prefab.name} ObjectToolSystem:{m_ObjectToolSystem.GetPrefab().name}");
                     List<PrefabBase> list = GetSelectedPrefabs();
                     if (!list.Contains(prefab))
                     {

@@ -1,6 +1,6 @@
-﻿Tools and systems for changing ages, types, colors, growth and seasonal behaviors for trees and wild bushes.
+﻿Tools and systems for changing ages, types, colors, growth and seasonal behaviors for trees, bushes, and plants.
 
-Improvements to plopping and brushing trees and wild bushes including: age choices (Plop fully grown trees), and forest brushes.
+Improvements to plopping and brushing trees and bushes including: age choices (Plop fully grown trees), and forest brushes.
 
 Video Demo available on YouTube.
 
@@ -52,9 +52,8 @@ Deciduous tree growth is paused during winter. Specialized lumber industry areas
 Please note, you must either disable this option or press the 'Safely Remove Button' to remove the mod safely during winter.
 During any other season the mod can be readily removed. If you do not enable this option the mod can be readily removed.
 
-Includes the option to use and create custom seasonal foliage colors. You can assign RGB values in CSV files that will be created in a folder the first time you run the mod.
-The folder is located at %AppData%...\LocalLow\Colossal Order\Cities Skylines II\ModsData\Mods_Yenyang_Tree_Controller\FoliageColorData\ .
-Don't bother altering with the Alpha value at this time. Cultivated city bushes are not included in seasonal foliage colors, but I am interested in modding this aspect.
+The mod has sets of seasonal color variations for trees and plants including a curated set by me and year round spring and autumn colors.
+Custom color variations set has been removed and will be replaced soon in a new mod called Recolor.
 
 ## Collaboration
 Algernon and I have collaborated to allow for age, sets, and multiple vegetation types selection using Line Tool.
@@ -70,5 +69,5 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing
 * T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Nullpinter - Localization support
-* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st (Korean)
+* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi and Stefano (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st (Korean)
 * Tigon Ologdring, code:witch - Testing, Feedback

@@ -46,9 +46,14 @@ namespace Tree_Controller.Settings
             Yenyangs,
 
             /// <summary>
-            /// Load custom seasonal tree foliage colors.
+            /// Use Spring colors for every season.
             /// </summary>
-            Custom,
+            Spring,
+
+            /// <summary>
+            /// Use Autumn colors for every season.
+            /// </summary>
+            Autumn,
         }
 
         /// <summary>
@@ -94,20 +99,6 @@ namespace Tree_Controller.Settings
         public bool RandomRotation { get; set; }
 
         /// <summary>
-        /// Sets a value indicating whether . A button for triggering csv reload.
-        /// </summary>
-        [SettingsUIButton]
-        [SettingsUIConfirmation]
-        public bool ReloadCSVsButton
-        {
-            set
-            {
-                m_ReloadFoliageColorDataSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ReloadFoliageColorDataSystem>();
-                m_ReloadFoliageColorDataSystem.Run = true;
-            }
-        }
-
-        /// <summary>
         /// Sets a value indicating whether the mod needs to safely remove components and reset models.
         /// </summary>
         [SettingsUIButton]
@@ -121,12 +112,6 @@ namespace Tree_Controller.Settings
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether: Used to force saving of Modsettings if settings would result in empty Json.
-        /// </summary>
-        [SettingsUIHidden]
-        public bool Contra { get; set; }
-
-        /// <summary>
         /// Sets a value indicating whether: a button for Resetting the settings for the Mod.
         /// </summary>
         [SettingsUIButton]
@@ -138,7 +123,6 @@ namespace Tree_Controller.Settings
                 bool rotation = RandomRotation;
                 SetDefaults();
                 RandomRotation = rotation;
-                Contra = false;
                 ApplyAndSave();
             }
         }
@@ -160,7 +144,6 @@ namespace Tree_Controller.Settings
         /// <inheritdoc/>
         public override void SetDefaults()
         {
-            Contra = true;
             RandomRotation = true;
             DisableTreeGrowth = false;
             ColorVariationSet = ColorVariationSetYYTC.Vanilla;

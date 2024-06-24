@@ -12,7 +12,6 @@ namespace Tree_Controller.Systems
     using Game.Common;
     using Game.Objects;
     using Game.Prefabs;
-    using Game.Rendering;
     using Game.Simulation;
     using Game.Tools;
     using System;
@@ -62,18 +61,18 @@ namespace Tree_Controller.Systems
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_SafelyRemoveSystem = World.GetOrCreateSystemManaged<SafelyRemoveSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_TreeQuery = SystemAPI.QueryBuilder()
+                .WithAll<UpdateFrame, Game.Prefabs.PrefabRef, Game.Objects.Tree>()
+                .WithNone<Deleted, Temp, Evergreen, DeciduousData, Overridden, Lumber>()
+                .Build();
+
+            RequireForUpdate(m_TreeQuery);
             m_Log.Info($"{nameof(FindTreesAndBushesSystem)} created!");
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            m_TreeQuery = SystemAPI.QueryBuilder()
-                .WithAll<UpdateFrame, Game.Prefabs.PrefabRef, Game.Objects.Tree>()
-                .WithNone<Deleted, Temp, Evergreen, DeciduousData, Overridden, Lumber>()
-                .Build();
-            RequireForUpdate(m_TreeQuery);
-
             if (!m_TreeQuery.IsEmptyIgnoreFilter && TreeControllerMod.Instance.Settings.UseDeadModelDuringWinter)
             {
                 uint updateFrame = SimulationUtils.GetUpdateFrame(m_SimulationSystem.frameIndex, 32, 16);

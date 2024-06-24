@@ -59,12 +59,7 @@ namespace Tree_Controller.Systems
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_TreeControllerTool = World.GetOrCreateSystemManaged<TreeControllerTool>();
             m_Log.Info($"[{nameof(TreeObjectDefinitionSystem)}] {nameof(OnCreate)}");
-        }
 
-
-        /// <inheritdoc/>
-        protected override void OnUpdate()
-        {
             m_ObjectDefinitionQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<CreationDefinition, Game.Tools.ObjectDefinition>()
                 .WithAll<Updated>()
@@ -72,6 +67,12 @@ namespace Tree_Controller.Systems
                 .Build();
 
             RequireForUpdate(m_ObjectDefinitionQuery);
+        }
+
+
+        /// <inheritdoc/>
+        protected override void OnUpdate()
+        {
             NativeArray<Entity> entities = m_ObjectDefinitionQuery.ToEntityArray(Allocator.Temp);
 
             foreach (Entity entity in entities)

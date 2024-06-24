@@ -6,6 +6,7 @@ namespace Tree_Controller.Settings
 {
     using System.Collections.Generic;
     using Colossal;
+    using Colossal.IO.AssetDatabase.Internal;
 
     /// <summary>
     /// Localization for <see cref="TreeControllerSettings"/> in English.
@@ -32,10 +33,7 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.DisableTreeGrowth)), "Disable Tree Growth" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.DisableTreeGrowth)), "Disable tree growth for the entire map except for lumber industry." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.ColorVariationSet)), "Color Variation Set" },
-                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.ColorVariationSet)), "Sets of seasonal colors for Trees and Wild bushes. Vanilla is the base game. Yenyang's is my curated colors. Custom uses CSV files in the mod folder." },
-                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.ReloadCSVsButton)), "Reload CSVs" },
-                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.ReloadCSVsButton)), "After confirmation this will reload CSV files." },
-                { m_Setting.GetOptionWarningLocaleID(nameof(TreeControllerSettings.ReloadCSVsButton)), "Reload CSV files?" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.ColorVariationSet)), "Sets of seasonal colors for Trees, bushes, and plants. Vanilla is the base game. Yenyang's is my curated colors. Spring is green year round. Autumn is fall colors year round. Custom has been moved to a new mod called Recolor." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.SafelyRemoveButton)), "Safely Remove" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.SafelyRemoveButton)), "Removes Tree Controller mod components and resets tree and bush model states. Only necessary during Winter and very end of Autumn. Must use reset button to undo setting change." },
                 { m_Setting.GetOptionWarningLocaleID(nameof(TreeControllerSettings.SafelyRemoveButton)), "Remove Tree Controller mod components and reset tree and bush model states?" },
@@ -47,7 +45,8 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetOptionWarningLocaleID(nameof(TreeControllerSettings.ResetModSettings)), "Reset Tree Controller Settings?" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Yenyangs), "Yenyang's" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Vanilla), "Vanilla" },
-                { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Custom), "Custom" },
+                { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Spring), "Spring" },
+                { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Autumn), "Autumn" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.AgeSelectionOptions.RandomEqualWeight), "Equal Distribution" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.AgeSelectionOptions.RandomWeighted), "Forest Distribution" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "Age Selection Technique" },
@@ -103,6 +102,17 @@ namespace Tree_Controller.Settings
                 { "YY_TREE_CONTROLLER[custom-set-5]", "Custom Set 5" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]", "Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click this button to save a custom set. Once a set has been saved, click this button to select that set. Hold Ctrl while switching themes to maintain the custom set." },
                 { "YY_TREE_CONTROLLER[change]", "Change" },
+                { SectionLabel("InfoRowTitle"), "Tree Controller" },
+                { SectionLabel("InfoRowSubTitle"), "Custom Color Variations" },
+                { TooltipDescriptionKey("InfoRowTooltip"), "For choosing custom seasonal foliage colors." },
+                { SectionLabel("Channel0"), "Channel0" },
+                { SectionLabel("Channel1"), "Channel1" },
+                { SectionLabel("Channel2"), "Channel2" },
+                { SectionLabel("ResetAndSave"), "Reset / Save" },
+                { TooltipTitleKey("Reset"), "Reset Seasonal Colors" },
+                { TooltipDescriptionKey("Reset"), "Resets and saves the colors back to the original colors for this season and vegetation asset." },
+                { TooltipTitleKey("Save"), "Save Seasonal Colors" },
+                { TooltipDescriptionKey("Save"), "Saves the colors for this season and vegetation asset to an XML file located in a folder at %AppData%\\LocalLow\\Colossal Order\\Cities Skylines II \\ModsData\\Mods_Yenyang_Tree_Controller \\FoliageColorData\\Custom. Triggers a color refresh on all vegetation of the same type." },
             };
         }
 
@@ -115,6 +125,22 @@ namespace Tree_Controller.Settings
         /// <inheritdoc/>
         public void Unload()
         {
+        }
+
+        private string TooltipDescriptionKey(string key)
+        {
+            return $"{TreeControllerMod.Id}.TOOLTIP_DESCRIPTION[{key}]";
+        }
+
+        private string SectionLabel(string key)
+        {
+            return $"{TreeControllerMod.Id}.SECTION_TITLE[{key}]";
+        }
+
+
+        private string TooltipTitleKey(string key)
+        {
+            return $"{TreeControllerMod.Id}.TOOLTIP_TITLE[{key}]";
         }
     }
 }

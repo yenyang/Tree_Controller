@@ -83,25 +83,29 @@ namespace Tree_Controller.Systems
                     },
                 },
             });
+
+            m_TreePrefabQuery = SystemAPI.QueryBuilder()
+                .WithAll<TreeData>()
+                .WithNone<PlaceholderObjectElement, Evergreen>()
+                .Build();
+
+            RequireForUpdate(m_TreePrefabQuery);
             RequireForUpdate(m_DeciduousTreeQuery);
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            m_TreePrefabQuery = SystemAPI.QueryBuilder()
-                .WithAll<TreeData>()
-                .WithNone<PlaceholderObjectElement, Evergreen>()
-                .Build();
-            RequireForUpdate(m_TreePrefabQuery);
-
             Entity currentClimate = m_ClimateSystem.currentClimate;
             if (currentClimate == Entity.Null)
             {
                 return;
             }
 
-            ClimatePrefab climatePrefab = m_PrefabSystem.GetPrefab<ClimatePrefab>(m_ClimateSystem.currentClimate);
+            if (!m_PrefabSystem.TryGetPrefab(m_ClimateSystem.currentClimate, out ClimatePrefab climatePrefab))
+            {
+                return;
+            }
 
             uint updateFrame = SimulationUtils.GetUpdateFrame(m_SimulationSystem.frameIndex, 32, 16);
             m_DeciduousTreeQuery.ResetFilter();

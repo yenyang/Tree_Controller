@@ -1,4 +1,5 @@
-import { FocusKey, Theme, UniqueFocusKey } from "cs2/bindings";
+import { BalloonDirection, Color, FocusKey, Theme, UniqueFocusKey } from "cs2/bindings";
+import { InputAction } from "cs2/input";
 import { ModuleRegistry } from "cs2/modding";
 import { HTMLAttributes, ReactNode } from "react";
 
@@ -34,6 +35,20 @@ type PropsDescriptionTooltip =
     children?: string | JSX.Element | JSX.Element[]
 }
 
+type PropsColorField = {
+    focusKey?: FocusKey;
+    disabled?: boolean;
+    value?: Color; // 'Color' imported from bindings.d.ts, UnityEngine.Color in C#
+    className?: string;
+    selectAction?: InputAction;
+    alpha?: any;
+    popupDirection?: BalloonDirection;
+    onChange?: (e: Color) => void;
+    onClick?: (e: any) => void;
+    onMouseEnter?: (e: any) => void;
+    onMouseLeave?: (e: any) => void;
+}
+
 // This is an array of the different components and sass themes that are appropriate for your UI. You need to figure out which ones you need from the registry.
 const registryIndex = {
     Section: ["game-ui/game/components/tool-options/mouse-tool-options/mouse-tool-options.tsx", "Section"],
@@ -45,7 +60,7 @@ const registryIndex = {
     useUniqueFocusKey: ["game-ui/common/focus/focus-key.ts", "useUniqueFocusKey"],
     assetGridTheme: ["game-ui/game/components/asset-menu/asset-grid/asset-grid.module.scss", "classes"],  
     descriptionTooltipTheme: ["game-ui/common/tooltip/description-tooltip/description-tooltip.module.scss", "classes"],
-    
+    ColorField: ["game-ui/common/input/color-picker/color-field/color-field.tsx", 'ColorField'],
 }
 
 export class VanillaComponentResolver {
@@ -71,11 +86,13 @@ export class VanillaComponentResolver {
     // Replace the names, props, and strings as needed for your mod.
     public get Section(): (props: PropsSection) => JSX.Element { return this.cachedData["Section"] ?? this.updateCache("Section") }
     public get ToolButton(): (props: PropsToolButton) => JSX.Element { return this.cachedData["ToolButton"] ?? this.updateCache("ToolButton") }
+    public get ColorField(): (props: PropsColorField) => JSX.Element { return this.cachedData["ColorField"] ?? this.updateCache("ColorField") }
 
     public get toolButtonTheme(): Theme | any { return this.cachedData["toolButtonTheme"] ?? this.updateCache("toolButtonTheme") }
     public get mouseToolOptionsTheme(): Theme | any { return this.cachedData["mouseToolOptionsTheme"] ?? this.updateCache("mouseToolOptionsTheme") }
     public get assetGridTheme(): Theme | any { return this.cachedData["assetGridTheme"] ?? this.updateCache("assetGridTheme") }
     public get descriptionTooltipTheme(): Theme | any { return this.cachedData["descriptionTooltipTheme"] ?? this.updateCache("descriptionTooltipTheme") }
+
 
     public get FOCUS_DISABLED(): UniqueFocusKey { return this.cachedData["FOCUS_DISABLED"] ?? this.updateCache("FOCUS_DISABLED") }
     public get FOCUS_AUTO(): UniqueFocusKey { return this.cachedData["FOCUS_AUTO"] ?? this.updateCache("FOCUS_AUTO") }

@@ -111,8 +111,8 @@ namespace Tree_Controller.Tools
         private Dictionary<string, List<PrefabID>> m_PrefabSetsLookup;
         private string m_ContentFolder;
         private EntityQuery m_VegetationQuery;
-        private Entity m_ThemeEntity = Entity.Null;
         private ValueBinding<int> m_ToolMode;
+        private List<Entity> m_ThemeEntities;
         private ValueBinding<int> m_SelectionMode;
         private ValueBinding<int> m_SelectedAges;
         private ValueBinding<float> m_Radius;
@@ -136,21 +136,20 @@ namespace Tree_Controller.Tools
         }
 
         /// <summary>
+        /// Gets or sets a value indicating the list of theme entities selected.
+        /// </summary>
+        public List<Entity> ThemeEntities
+        {
+            get => m_ThemeEntities;
+            set => m_ThemeEntities = value;
+        }
+
+        /// <summary>
         /// Gets a value indicating whether a prefab set was recently selected.
         /// </summary>
         public bool RecentlySelectedPrefabSet
         {
             get => m_RecentlySelectedPrefabSet;
-        }
-
-
-        /// <summary>
-        /// Gets or sets a value indicating the theme entity.
-        /// </summary>
-        public Entity ThemeEntity
-        {
-            get => m_ThemeEntity;
-            set => m_ThemeEntity = value;
         }
 
         /// <summary>
@@ -350,6 +349,7 @@ namespace Tree_Controller.Tools
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_TreeObjectDefinitionSystem = World.GetOrCreateSystemManaged<TreeObjectDefinitionSystem>();
             m_UiView = GameManager.instance.userInterface.view.View;
+            m_ThemeEntities = new List<Entity>();
             m_TreeControllerTool = World.GetOrCreateSystemManaged<TreeControllerTool>();
             m_ContentFolder = Path.Combine(EnvPath.kUserDataPath, "ModsData", "Mods_Yenyang_Tree_Controller", "CustomSets");
             System.IO.Directory.CreateDirectory(m_ContentFolder);
@@ -406,6 +406,12 @@ namespace Tree_Controller.Tools
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnUpdate)} ActivatedPrefabTool {m_TrySetPrefabNextFrame.name}.");
                 m_TrySetPrefabNextFrame = null;
                 return;
+            }
+
+            if (m_UiView is null)
+            {
+                m_Log.Info($"{nameof(TreeControllerUISystem)}.{nameof(OnUpdate)} m_UiView is null. Tried to reset it.");
+                m_UiView = GameManager.instance.userInterface.view.View;
             }
 
             if ((m_ToolSystem.activeTool == m_TreeControllerTool || m_ToolSystem.activeTool.toolID == "Line Tool" || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush)) && m_UiView != null)

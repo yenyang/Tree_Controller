@@ -8,6 +8,7 @@ namespace Tree_Controller.Patches
     using Game.Tools;
     using Game.UI.InGame;
     using HarmonyLib;
+    using System.Collections.Generic;
     using Tree_Controller.Tools;
     using Unity.Entities;
 
@@ -20,17 +21,18 @@ namespace Tree_Controller.Patches
         /// <summary>
         /// Patches ToolbarUISystemApplyPatch so that additionally selected prefabs can also show as selected.
         /// </summary>
-        /// <param name="themeEntity">Theme entity for prefab selection.</param>
+        /// <param name="themes">list of themes</param>
+        /// <param name="packs">list of pcaks</param>=
         /// <param name="assetMenuEntity">Not needed assetMenuEntity.</param>
         /// <param name="assetCategoryEntity">Not needed assetCategoryEntity.</param>
         /// <param name="assetEntity">Not needed assetEntity.</param>
-        public static void Postfix(Entity themeEntity, Entity assetMenuEntity, Entity assetCategoryEntity, Entity assetEntity)
+        public static void Postfix(List<Entity> themes, List<Entity> packs, Entity assetMenuEntity, Entity assetCategoryEntity, Entity assetEntity)
         {
             TreeControllerTool treeControllerTool = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerTool>();
             ToolSystem toolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             ObjectToolSystem objectToolSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ObjectToolSystem>();
             TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
-            if (toolSystem.activeTool != treeControllerTool && toolSystem.activeTool != objectToolSystem && toolSystem.activeTool.toolID != "Line Tool")
+            if (toolSystem.activeTool != treeControllerTool && toolSystem.activeTool != objectToolSystem && toolSystem.activeTool.toolID != null && toolSystem.activeTool.toolID != "Line Tool")
             {
                 return;
             }
@@ -51,26 +53,26 @@ namespace Tree_Controller.Patches
                         return;
                     }
 
-                    if (prefabSystem.EntityManager.HasComponent<Vegetation>(prefabEntity) && treeControllerUISystem.ThemeEntity != themeEntity)
+                    if (prefabSystem.EntityManager.HasComponent<Vegetation>(prefabEntity) && treeControllerUISystem.ThemeEntities.Count != themes.Count)
                     {
-                        if (treeControllerUISystem.ThemeEntity != Entity.Null)
+                        if (treeControllerUISystem.ThemeEntities.Count != 0)
                         {
                             treeControllerUISystem.UpdateSelectionSet = true;
                         }
 
-                        treeControllerUISystem.ThemeEntity = themeEntity;
+                        treeControllerUISystem.ThemeEntities = themes;
                         TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} Setting UpdateSelectionSet to true while using {toolSystem.activeTool.toolID}.");
                     }
                 }
             }
-            else if (treeControllerUISystem.ThemeEntity != themeEntity)
+            else if (treeControllerUISystem.ThemeEntities.Count != themes.Count)
             {
-                if (treeControllerUISystem.ThemeEntity != Entity.Null)
+                if (treeControllerUISystem.ThemeEntities.Count != 0)
                 {
                     treeControllerUISystem.UpdateSelectionSet = true;
                 }
 
-                treeControllerUISystem.ThemeEntity = themeEntity;
+                treeControllerUISystem.ThemeEntities = themes;
                 TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} Setting UpdateSelectionSet to true while using {toolSystem.activeTool.toolID}.");
             }
         }

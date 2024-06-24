@@ -5,10 +5,7 @@
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.DisableTreeGrowth]": "Disable Tree Growth",
   "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.DisableTreeGrowth]": "Disable tree growth for the entire map except for lumber industry.",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.ColorVariationSet]": "Color Variation Set",
-  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.ColorVariationSet]": "Sets of seasonal colors for Trees and Wild bushes. Vanilla is the base game. Yenyang's is my curated colors. Spring is green year round. Autumn is fall colors year round. Custom uses CSV files in the mod folder.",
-  "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.ReloadCSVsButton]": "Reload CSVs",
-  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.ReloadCSVsButton]": "After confirmation this will reload CSV files.",
-  "Options.WARNING[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.ReloadCSVsButton]": "Reload CSV files?",
+  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.ColorVariationSet]": "Sets of seasonal colors for Trees, bushes, and plants. Vanilla is the base game. Yenyang's is my curated colors. Spring is green year round. Autumn is fall colors year round. Custom has been moved to a new mod called Recolor.",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.SafelyRemoveButton]": "Safely Remove",
   "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.SafelyRemoveButton]": "Removes Tree Controller mod components and resets tree and bush model states. Only necessary during Winter and very end of Autumn. Must use reset button to undo setting change.",
   "Options.WARNING[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.SafelyRemoveButton]": "Remove Tree Controller mod components and reset tree and bush model states?",
@@ -22,7 +19,6 @@
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Vanilla]": "Vanilla",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Spring]": "Spring",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Autumn]": "Autumn",
-  "Options.Tree_Controller.Tree_Controller.TreeControllerMod.COLORVARIATIONSETYYTC[Custom]": "Custom",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomEqualWeight]": "Equal Distribution",
   "Options.Tree_Controller.Tree_Controller.TreeControllerMod.AGESELECTIONOPTIONS[RandomWeighted]": "Forest Distribution",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.AgeSelectionTechnique]": "Age Selection Technique",
@@ -86,7 +82,7 @@
   "Tree_Controller.SECTION_TITLE[Channel2]": "Channel2",
   "Tree_Controller.SECTION_TITLE[ResetAndSave]": "Reset / Save",
   "Tree_Controller.TOOLTIP_TITLE[Reset]": "Reset Seasonal Colors",
-  "Tree_Controller.TOOLTIP_DESCRIPTION[Reset]": "Resets and saves the colors to the original colors for this season and vegetation asset.",
+  "Tree_Controller.TOOLTIP_DESCRIPTION[Reset]": "Resets and saves the colors back to the original colors for this season and vegetation asset.",
   "Tree_Controller.TOOLTIP_TITLE[Save]": "Save Seasonal Colors",
   "Tree_Controller.TOOLTIP_DESCRIPTION[Save]": "Saves the colors for this season and vegetation asset to an XML file located in a folder at %AppData%\\LocalLow\\Colossal Order\\Cities Skylines II \\ModsData\\Mods_Yenyang_Tree_Controller \\FoliageColorData\\Custom. Triggers a color refresh on all vegetation of the same type."
 }

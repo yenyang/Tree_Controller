@@ -53,7 +53,7 @@ Please note, you must either disable this option or press the 'Safely Remove But
 During any other season the mod can be readily removed. If you do not enable this option the mod can be readily removed.
 
 The mod has sets of seasonal color variations for trees and plants including a curated set by me and year round spring and autumn colors.
-Custom color variations set has been forked to a new mod called Recolor.
+Custom color variations set has been removed and will be replaced soon in a new mod called Recolor.
 
 ## Collaboration
 Algernon and I have collaborated to allow for age, sets, and multiple vegetation types selection using Line Tool.

@@ -6,7 +6,6 @@ namespace Tree_Controller.Settings
 {
     using System.Collections.Generic;
     using Colossal;
-    using Colossal.IO.AssetDatabase.Internal;
 
     /// <summary>
     /// Localization for <see cref="TreeControllerSettings"/> in English.
@@ -102,17 +101,6 @@ namespace Tree_Controller.Settings
                 { "YY_TREE_CONTROLLER[custom-set-5]", "Custom Set 5" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]", "Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click this button to save a custom set. Once a set has been saved, click this button to select that set. Hold Ctrl while switching themes to maintain the custom set." },
                 { "YY_TREE_CONTROLLER[change]", "Change" },
-                { SectionLabel("InfoRowTitle"), "Tree Controller" },
-                { SectionLabel("InfoRowSubTitle"), "Custom Color Variations" },
-                { TooltipDescriptionKey("InfoRowTooltip"), "For choosing custom seasonal foliage colors." },
-                { SectionLabel("Channel0"), "Channel0" },
-                { SectionLabel("Channel1"), "Channel1" },
-                { SectionLabel("Channel2"), "Channel2" },
-                { SectionLabel("ResetAndSave"), "Reset / Save" },
-                { TooltipTitleKey("Reset"), "Reset Seasonal Colors" },
-                { TooltipDescriptionKey("Reset"), "Resets and saves the colors back to the original colors for this season and vegetation asset." },
-                { TooltipTitleKey("Save"), "Save Seasonal Colors" },
-                { TooltipDescriptionKey("Save"), "Saves the colors for this season and vegetation asset to an XML file located in a folder at %AppData%\\LocalLow\\Colossal Order\\Cities Skylines II \\ModsData\\Mods_Yenyang_Tree_Controller \\FoliageColorData\\Custom. Triggers a color refresh on all vegetation of the same type." },
             };
         }
 

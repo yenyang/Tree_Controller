@@ -37,15 +37,17 @@ enum Selection
 
 // These contain the coui paths to Unified Icon Library svg assets
 const couiStandard =                         "coui://uil/Standard/";
+const gameStandard =                           "Media/Tools/Vegetation Options/";
 const ageChangSrc =          couiStandard +  "ReplaceTreeAge.svg";
 const prefabChangeSrc =      couiStandard +  "Replace.svg";
 const buildingOrNetSrc =     couiStandard +  "HouseandNetwork.svg";
 const radiusSrc =            couiStandard +  "Circle.svg";
 const wholeMapSrc    =       couiStandard +  "MapGrid.svg";
-const childSrc =             couiStandard +  "TreeSapling.svg";
-const teenSrc =              couiStandard +  "TreeTeen.svg";
-const adultSrc =             couiStandard +  "TreeAdult.svg";
-const elderlySrc =           couiStandard +  "TreeElderly.svg";
+const childSrc =             gameStandard + "TreeChild.svg";
+const teenSrc =              gameStandard +  "TreeTeen.svg";
+const adultSrc =             gameStandard +  "TreeAdult.svg";
+const singleSrc =           couiStandard + "TreeAdult.svg";
+const elderlySrc =           gameStandard +  "TreeElderly.svg";
 const deadSrc =              couiStandard +  "TreeDead.svg";
 const arrowDownSrc =         couiStandard +  "ArrowDownThickStroke.svg";
 const arrowUpSrc =           couiStandard +  "ArrowUpThickStroke.svg";
@@ -279,7 +281,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                     )}
                     { treeControllerToolActive && (
                     <VanillaComponentResolver.instance.Section title={translate("YY_TREE_CONTROLLER[Selection]",locale["YY_TREE_CONTROLLER[Selection]"])}>
-                        <VanillaComponentResolver.instance.ToolButton  selected={SelectionMode == Selection.Single}         tooltip={descriptionTooltip(singleTreeTooltipTitle, singleTreeTooltipDescription)}          onSelect={() => changeSelectionMode(Selection.Single)}             src={adultSrc}            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={SelectionMode == Selection.Single}         tooltip={descriptionTooltip(singleTreeTooltipTitle, singleTreeTooltipDescription)}          onSelect={() => changeSelectionMode(Selection.Single)}             src={singleSrc}            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={SelectionMode == Selection.BuildingOrNet}  tooltip={descriptionTooltip(buildingOrNetTooltipTitle, buildingOrNetTooltipDescription)}    onSelect={() => changeSelectionMode(Selection.BuildingOrNet)}      src={buildingOrNetSrc}    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={SelectionMode == Selection.Radius}         tooltip={descriptionTooltip(radiusTooltipTitle, radiusTooltipDescription)}                  onSelect={() => changeSelectionMode(Selection.Radius)}             src={radiusSrc}           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={SelectionMode == Selection.Map}            tooltip={descriptionTooltip(wholeMapTooltipTitle, wholeMapTooltipDescription)}              onSelect={() => changeSelectionMode(Selection.Map)}                src={wholeMapSrc}         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
@@ -300,7 +302,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                     )}
                     { treeControllerToolActive && (
                     <VanillaComponentResolver.instance.Section title={translate("Toolbar.TOOL_MODE_TITLE", "Tool Mode")}>
-                            <VanillaComponentResolver.instance.ToolButton  selected={CurrentToolMode == ToolMode.Plop}    tooltip={descriptionTooltip(createTooltipTitle, createTooltipDescription)}        onSelect={() => changeToolMode(ToolMode.Plop)}     src={adultSrc}      focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                            <VanillaComponentResolver.instance.ToolButton  selected={CurrentToolMode == ToolMode.Plop}    tooltip={descriptionTooltip(createTooltipTitle, createTooltipDescription)}        onSelect={() => changeToolMode(ToolMode.Plop)}     src={singleSrc}      focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                             <VanillaComponentResolver.instance.ToolButton  selected={CurrentToolMode == ToolMode.Brush}    tooltip={descriptionTooltip(brushTooltipTitle, brushTooltipDescription)}         onSelect={() => changeToolMode(ToolMode.Brush)}    src={brushSrc}      focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                     </VanillaComponentResolver.instance.Section>                
                     )}

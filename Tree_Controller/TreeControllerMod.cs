@@ -6,13 +6,17 @@
 namespace Tree_Controller
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
+    using Colossal;
     using Colossal.IO.AssetDatabase;
     using Colossal.Logging;
     using Game;
     using Game.Modding;
     using Game.SceneFlow;
     using HarmonyLib;
+    using Newtonsoft.Json;
     using Tree_Controller.Settings;
     using Tree_Controller.Systems;
     using Tree_Controller.Tools;
@@ -104,6 +108,21 @@ namespace Tree_Controller
             AssetDatabase.global.LoadSettings(nameof(TreeControllerMod), Settings, new TreeControllerSettings(this));
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} finished loading settings.");
             GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
+
+#if DEBUG
+            Logger.Info($"{nameof(TreeControllerMod)}.{nameof(OnLoad)} Exporting localization");
+            var localeDict = new LocaleEN(Settings).ReadEntries(new List<IDictionaryEntryError>(), new Dictionary<string, int>()).ToDictionary(pair => pair.Key, pair => pair.Value);
+            var str = JsonConvert.SerializeObject(localeDict, Formatting.Indented);
+            try
+            {
+                File.WriteAllText($"C:\\Users\\TJ\\source\\repos\\{TreeControllerMod.Id}\\{TreeControllerMod.Id}\\UI\\src\\mods\\lang\\en-US.json", str);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.ToString());
+            }
+#endif
+
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} loaded localization for en-US.");
             Logger.Info($"{nameof(TreeControllerMod)}.{nameof(OnLoad)} Injecting Harmony Patches.");
             m_Harmony = new Harmony("Mods_Yenyang_Tree_Controller");

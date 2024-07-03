@@ -23,6 +23,16 @@ namespace Tree_Controller
     public class TreeControllerMod : IMod
     {
         /// <summary>
+        /// Fake keybind action for apply.
+        /// </summary>
+        public const string ApplyMimicAction = "ApplyMimic";
+
+        /// <summary>
+        /// Fake keybind action for secondary apply.
+        /// </summary>
+        public const string SecondaryApplyMimicAction = "SecondaryApplyMimic";
+
+        /// <summary>
         /// An id used for bindings between UI and C#.
         /// </summary>
         public static readonly string Id = "Tree_Controller";
@@ -89,6 +99,7 @@ namespace Tree_Controller
 #endif
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)}");
             Settings = new (this);
+            Settings.RegisterKeyBindings();
             Settings.RegisterInOptionsUI();
             AssetDatabase.global.LoadSettings(nameof(TreeControllerMod), Settings, new TreeControllerSettings(this));
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} finished loading settings.");

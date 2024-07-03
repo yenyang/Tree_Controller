@@ -1,6 +1,4 @@
-﻿Tools and systems for changing ages, types, colors, growth and seasonal behaviors for trees, bushes, and plants.
-
-Improvements to plopping and brushing trees and bushes including: age choices (Plop fully grown trees), and forest brushes.
+﻿Tools and systems for changing ages, types, colors, growth and seasonal behaviors for trees, bushes, and plants. Forest brushes.
 
 Video Demo available on YouTube.
 
@@ -26,9 +24,7 @@ Includes a tree controller tool that lets you change the age or types of existin
 Please note that changing types of trees for networks is not persistant and revert as soon as anything touches the network. 
 You cannot change types of trees using 'Single Tree' nor 'Whole Building or Net'. Eventually I may remove the ability to alter types of trees with 'Radius' and 'Whole Map'.
 
-For plopping trees and wild bushes this mod adds choice of age(s) and the option to enable random rotation.
-
-For brushing vegetation this mod adds choice of age(s) for trees and wild bushes and sets of vegetation for forest brushes. Some pre-made sets are:
+For brushing vegetation this mod has sets of vegetation for forest brushes. Some pre-made sets are:
 * Deciduous (Exluding Apple and Poplar)
 * Evergreen (Pine and Spruce)
 * Wild bushes 
@@ -56,7 +52,7 @@ The mod has sets of seasonal color variations for trees and plants including a c
 Custom color variations set has been removed and will be replaced soon in a new mod called Recolor.
 
 ## Collaboration
-Algernon and I have collaborated to allow for age, sets, and multiple vegetation types selection using Line Tool.
+Algernon and I have collaborated to allow for sets and multiple vegetation types selection using Line Tool.
 
 # Support
 I will respond on the code modding channels on Cities: Skylines Modding Discord.

@@ -4,11 +4,9 @@
 
 namespace Tree_Controller.Systems
 {
-    using System;
     using System.Collections.Generic;
     using Colossal.Entities;
     using Colossal.Logging;
-    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
     using Game.Objects;
@@ -74,7 +72,7 @@ namespace Tree_Controller.Systems
         protected override void OnUpdate()
         {
             NativeArray<Entity> entities = m_ObjectDefinitionQuery.ToEntityArray(Allocator.Temp);
-
+            m_Log.Debug(entities.Length);
             foreach (Entity entity in entities)
             {
                 if (!EntityManager.TryGetComponent(entity, out CreationDefinition currentCreationDefinition))
@@ -88,24 +86,20 @@ namespace Tree_Controller.Systems
                     entities.Dispose();
                     return;
                 }
-
+                
                 Unity.Mathematics.Random random = new ((uint)(Mathf.Abs(currentObjectDefinition.m_Position.x) + Mathf.Abs(currentObjectDefinition.m_Position.z)) * 1000);
-                Entity prefabEntity = currentCreationDefinition.m_Prefab;
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush) || m_ToolSystem.activeTool.toolID == "Line Tool")
                 {
-                    prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
+                    Entity prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
                     if (prefabEntity != Entity.Null)
                     {
                         currentCreationDefinition.m_Prefab = prefabEntity;
                         EntityManager.SetComponentData(entity, currentCreationDefinition);
+                        m_Log.Debug("swapped prefab");
                     }
                 }
 
-                if (!EntityManager.HasComponent(prefabEntity, ComponentType.ReadOnly<TreeData>()))
-                {
-                    return;
-                }
-
+                /*
                 TreeState nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random);
                 if (BrushTreeStateAges.ContainsKey(nextTreeState))
                 {
@@ -117,6 +111,7 @@ namespace Tree_Controller.Systems
                 }
 
                 EntityManager.SetComponentData(entity, currentObjectDefinition);
+                */
             }
 
             entities.Dispose();

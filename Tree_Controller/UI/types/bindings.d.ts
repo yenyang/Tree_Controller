@@ -518,7 +518,8 @@ declare module "cs2/bindings" {
   	XP = "xp",
   	Temperature = "temperature",
   	NetElevation = "netElevation",
-  	ScreenFrequency = "screenFrequency"
+  	ScreenFrequency = "screenFrequency",
+  	Custom = "custom"
   }
   export enum LocElementType {
   	Bounds = "Game.UI.Localization.LocalizedBounds",
@@ -653,6 +654,9 @@ declare module "cs2/bindings" {
   	Health = "Health"
   }
   export interface LeisureProviderEffect {
+  	providers: LeisureProvider[];
+  }
+  export interface LeisureProvider {
   	type: string;
   	efficiency: number;
   }
@@ -717,6 +721,10 @@ declare module "cs2/bindings" {
   }
   export type PathSegment = string | number;
   export type Path = PathSegment[];
+  export interface BaseWidget {
+  	disabled?: boolean;
+  	hidden?: boolean;
+  }
   export interface WidgetIdentifier {
   	group: string;
   	path: Path;
@@ -743,10 +751,8 @@ declare module "cs2/bindings" {
   export interface Group extends Named, TooltipTarget {
   	tooltipPos?: TooltipPos;
   }
-  export interface Field<T> extends Named, TooltipTarget, WidgetTutorialTarget {
+  export interface Field<T> extends BaseWidget, Named, TooltipTarget, WidgetTutorialTarget {
   	value: T;
-  	disabled?: boolean;
-  	hidden?: boolean;
   }
   export type ToggleField = Field<boolean>;
   export interface IntInputField extends Field<number> {
@@ -763,6 +769,8 @@ declare module "cs2/bindings" {
   	unit?: string | null;
   	scaleDragVolume?: boolean;
   	updateOnDragEnd: boolean;
+  	separateThousands?: boolean;
+  	signed?: boolean;
   }
   export interface FloatInputField extends Field<number> {
   	min?: number;
@@ -781,6 +789,9 @@ declare module "cs2/bindings" {
   	updateOnDragEnd: boolean;
   }
   export interface FloatSliderField extends FloatSliderFieldBase<number> {
+  	separateThousands?: boolean;
+  	maxValueWithFraction?: number;
+  	signed?: boolean;
   }
   export interface ColorField extends Field<Color> {
   	hdr?: boolean;
@@ -1124,6 +1135,7 @@ declare module "cs2/bindings" {
   	toolOptionsElevationIncrease: string;
   	toolOptionsElevationStep: string;
   	toolOptionsModes: string;
+  	toolOptionsVegatationAge: string;
   	toolOptionsModesComplexCurve: string;
   	toolOptionsModesContinuous: string;
   	toolOptionsModesGrid: string;
@@ -1136,6 +1148,7 @@ declare module "cs2/bindings" {
   	toolOptionsParallelModeOffsetIncrease: string;
   	toolOptionsSnapping: string;
   	toolOptionsThemes: string;
+  	toolOptionsAssetPacks: string;
   	toolOptionsUnderground: string;
   	transportationOverviewPanel: string;
   	transportationOverviewPanelButton: string;
@@ -1406,16 +1419,18 @@ declare module "cs2/bindings" {
   const maxFollowedCitizens$: ValueBinding<number>;
   function followCitizen(citizen: Entity): void;
   function unfollowCitizen(citizen: Entity): void;
-  const mapTileSelectionEnabled$: ValueBinding<boolean>;
+  const mapTilePanelVisible$: ValueBinding<boolean>;
+  const mapTileViewActive$: ValueBinding<boolean>;
   const buildableLand$: ValueBinding<MapTileResource>;
   const availableWater$: ValueBinding<MapTileResource>;
   const resources$$1: ValueBinding<MapTileResource[]>;
   const purchasePrice$: ValueBinding<number>;
+  const purchaseUpkeep$: ValueBinding<number>;
   const purchaseFlags$: ValueBinding<number>;
   const permits$: ValueBinding<number>;
   const permitCost$: ValueBinding<number>;
-  function setMapTileSelectionEnabled(enabled: boolean): void;
-  function disableMapTileSelection(): void;
+  function setMapTileViewActive(enabled: boolean): void;
+  function disableMapTileView(): void;
   function purchaseMapTiles(): void;
   export interface MapTileResource {
   	id: string;
@@ -2678,19 +2693,39 @@ declare module "cs2/bindings" {
   	icon: string;
   	highlight: boolean;
   }
+  export interface AssetPack {
+  	entity: Entity;
+  	name: string;
+  	icon: string;
+  	highlight: boolean;
+  }
+  export enum AgeMask {
+  	Disabled = 0,
+  	Child = 1,
+  	Teen = 2,
+  	Adult = 4,
+  	Elderly = 8
+  }
   const toolbarGroups$: ValueBinding<ToolbarGroup[]>;
   const assetCategories$: MapBinding<Entity, AssetCategory[]>;
   const assets$: MapBinding<Entity, Asset$1[]>;
   const themes$$1: ValueBinding<Theme$1[]>;
-  const selectedTheme$: ValueBinding<Entity>;
+  const selectedThemes$: ValueBinding<Entity[]>;
+  const vegetationAges$: ValueBinding<Theme$1[]>;
+  const assetPacks$: ValueBinding<AssetPack[]>;
+  const selectedAssetPacks$: ValueBinding<Entity[]>;
   const selectedAssetMenu$: ValueBinding<Entity>;
   const selectedAssetCategory$: ValueBinding<Entity>;
   const selectedAsset$: ValueBinding<Entity>;
-  const selectTheme: (theme: Entity) => void;
+  const ageMask$: ValueBinding<number>;
+  const setAgeMask: (ageMask: number) => void;
+  const setSelectedThemes: (themes: Entity[]) => void;
+  const setSelectedAssetPacks: (packs: Entity[]) => void;
   const selectAssetMenu: (assetMenu: Entity) => void;
   const selectAssetCategory: (assetCategory: Entity) => void;
   const selectAsset: (asset: Entity) => void;
   const clearAssetSelection: () => void;
+  const toggleToolOptions: (isActive: boolean) => void;
   const population$$1: ValueBinding<number>;
   const populationDelta$: ValueBinding<number>;
   const money$: ValueBinding<number>;
@@ -2963,7 +2998,7 @@ declare module "cs2/bindings" {
   	export { FollowedCitizen, LifePathDetails, LifePathEvent, LifePathItem, LifePathItemType, LifePathItems, followCitizen, followedCitizens$, lifePathDetails$, lifePathItems$, maxFollowedCitizens$, unfollowCitizen };
   }
   export namespace map {
-  	export { MapTileResource, MapTileStatus, availableWater$, buildableLand$, disableMapTileSelection, mapTileSelectionEnabled$, permitCost$, permits$, purchaseFlags$, purchaseMapTiles, purchasePrice$, resources$$1 as resources$, setMapTileSelectionEnabled };
+  	export { MapTileResource, MapTileStatus, availableWater$, buildableLand$, disableMapTileView, mapTilePanelVisible$, mapTileViewActive$, permitCost$, permits$, purchaseFlags$, purchaseMapTiles, purchasePrice$, purchaseUpkeep$, resources$$1 as resources$, setMapTileViewActive };
   }
   export namespace photo {
   	export { PhotoModeWidget, PhotoModeWidgets, PhotoWidgetType, Tab, adjustments$, cinematicCameraVisible$, group$1 as group, orbitCameraActive$, overlayHidden$, resetCamera, root, selectTab, selectedTab$, setOverlayHidden, tabs$, takeScreenshot, toggleCinematicCamera, toggleOrbitCameraActive };
@@ -2975,7 +3010,7 @@ declare module "cs2/bindings" {
   	export { ManualUITagsConfiguration, PrefabDetails, Theme, UnlockingRequirements, emptyPrefabDetails, manualUITags$, prefabDetails$, themes$ };
   }
   export namespace prefabEffects {
-  	export { AdjustHappinessEffect, CityModifier, CityModifierEffect, CityModifierType, LeisureProviderEffect, LocalModifier, LocalModifierEffect, LocalModifierType, PrefabEffect, PrefabEffectType, PrefabEffects };
+  	export { AdjustHappinessEffect, CityModifier, CityModifierEffect, CityModifierType, LeisureProvider, LeisureProviderEffect, LocalModifier, LocalModifierEffect, LocalModifierType, PrefabEffect, PrefabEffectType, PrefabEffects };
   }
   export namespace prefabProperties {
   	export { CONSUMPTION_PROPERTY, ConsumptionProperty, ELECTRICITY_PROPERTY, ElectricityProperty, POLLUTION_PROPERTY, Pollution, PollutionProperty, PrefabProperties, PrefabProperty, TRANSPORT_STOP_PROPERTY, TransportStopProperty, UPKEEPNUMBER2_PROPERTY, UPKEEPNUMBER_PROPERTY, UpkeepNumber2Property, UpkeepNumberProperty, Voltage };
@@ -3014,7 +3049,7 @@ declare module "cs2/bindings" {
   	export { AREA_TOOL, BULLDOZE_TOOL, Brush, DEFAULT_TOOL, NET_TOOL, OBJECT_TOOL, ROUTE_TOOL, SELECTION_TOOL, TERRAIN_TOOL, Tool, ToolMode, UPGRADE_TOOL, ZONE_TOOL, activeTool$, allSnapMask$, allowBrush$, availableSnapMask$, brushAngle$, brushSize$, brushSizeMax$, brushSizeMin$, brushStrength$, brushes$, bulldozeConfirmationRequested$, changeElevation, color$, colorSupported$, confirmBulldoze, elevation$, elevationDown, elevationDownDisabled$, elevationRange$, elevationScroll, elevationStep$, elevationUp, elevationUpDisabled$, isEditor$, parallelMode$, parallelModeSupported$, parallelOffset$, selectBrush, selectTool, selectToolMode, selectedBrush$, selectedSnapMask$, setBrushAngle, setBrushSize, setBrushStrength, setColor, setElevationStep, setParallelOffset, setSelectedSnapMask, setUndergroundMode, snapOptionNames$, toggleParallelMode, undergroundMode$, undergroundModeSupported$ };
   }
   export namespace toolbar$1 {
-  	export { Asset$1 as Asset, AssetCategory, Theme$1 as Theme, ToolbarGroup, ToolbarItem, ToolbarItemType, assetCategories$, assets$, clearAssetSelection, selectAsset, selectAssetCategory, selectAssetMenu, selectTheme, selectedAsset$, selectedAssetCategory$, selectedAssetMenu$, selectedTheme$, themes$$1 as themes$, toolbarGroups$ };
+  	export { AgeMask, Asset$1 as Asset, AssetCategory, AssetPack, Theme$1 as Theme, ToolbarGroup, ToolbarItem, ToolbarItemType, ageMask$, assetCategories$, assetPacks$, assets$, clearAssetSelection, selectAsset, selectAssetCategory, selectAssetMenu, selectedAsset$, selectedAssetCategory$, selectedAssetMenu$, selectedAssetPacks$, selectedThemes$, setAgeMask, setSelectedAssetPacks, setSelectedThemes, themes$$1 as themes$, toggleToolOptions, toolbarGroups$, vegetationAges$ };
   }
   export namespace toolbarBottom {
   	export { cityName$, money$, moneyDelta$, moneyTrendThresholds$, population$$1 as population$, populationDelta$, populationTrendThresholds$, setCityName, unlimitedMoney$ };

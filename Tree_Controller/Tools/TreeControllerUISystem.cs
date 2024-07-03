@@ -424,6 +424,19 @@ namespace Tree_Controller.Tools
                     m_UpdateSelectionSet = true;
                 }
 
+                if (m_IsTree.value == true && m_ToolSystem.activePrefab != null && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) && !EntityManager.HasComponent<TreeData>(prefabEntity))
+                {
+                    foreach (PrefabBase prefabBase in selectedPrefabs)
+                    {
+                        if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity currentPrefabEntity) && EntityManager.HasComponent<TreeData>(currentPrefabEntity))
+                        {
+                            m_TrySetPrefabNextFrame = prefabBase;
+                            m_UpdateSelectionSet = true;
+                            break;
+                        }
+                    }
+                }
+
                 if (m_UpdateSelectionSet && m_FrameCount <= 5)
                 {
                     if (m_FrameCount < 5)

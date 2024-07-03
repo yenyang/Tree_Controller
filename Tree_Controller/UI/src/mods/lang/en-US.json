@@ -73,16 +73,5 @@
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-4]": "Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click this button to save a custom set. Once a set has been saved, click this button to select that set. Hold Ctrl while switching themes to maintain the custom set.",
   "YY_TREE_CONTROLLER[custom-set-5]": "Custom Set 5",
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]": "Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click this button to save a custom set. Once a set has been saved, click this button to select that set. Hold Ctrl while switching themes to maintain the custom set.",
-  "YY_TREE_CONTROLLER[change]": "Change",
-  "Tree_Controller.SECTION_TITLE[InfoRowTitle]": "Tree Controller",
-  "Tree_Controller.SECTION_TITLE[InfoRowSubTitle]": "Custom Color Variations",
-  "Tree_Controller.TOOLTIP_DESCRIPTION[InfoRowTooltip]": "For choosing custom seasonal foliage colors.",
-  "Tree_Controller.SECTION_TITLE[Channel0]": "Channel0",
-  "Tree_Controller.SECTION_TITLE[Channel1]": "Channel1",
-  "Tree_Controller.SECTION_TITLE[Channel2]": "Channel2",
-  "Tree_Controller.SECTION_TITLE[ResetAndSave]": "Reset / Save",
-  "Tree_Controller.TOOLTIP_TITLE[Reset]": "Reset Seasonal Colors",
-  "Tree_Controller.TOOLTIP_DESCRIPTION[Reset]": "Resets and saves the colors back to the original colors for this season and vegetation asset.",
-  "Tree_Controller.TOOLTIP_TITLE[Save]": "Save Seasonal Colors",
-  "Tree_Controller.TOOLTIP_DESCRIPTION[Save]": "Saves the colors for this season and vegetation asset to an XML file located in a folder at %AppData%\\LocalLow\\Colossal Order\\Cities Skylines II \\ModsData\\Mods_Yenyang_Tree_Controller \\FoliageColorData\\Custom. Triggers a color refresh on all vegetation of the same type."
+  "YY_TREE_CONTROLLER[change]": "Change"
 }

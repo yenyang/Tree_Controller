@@ -5,6 +5,7 @@
 namespace Tree_Controller.Settings
 {
     using Colossal.IO.AssetDatabase;
+    using Game.Input;
     using Game.Modding;
     using Game.Settings;
     using Tree_Controller.Systems;
@@ -14,6 +15,8 @@ namespace Tree_Controller.Settings
     /// The mod settings for the Anarchy Mod.
     /// </summary>
     [FileLocation("Mods_Yenyang_Tree_Controller")]
+    [SettingsUIMouseAction(TreeControllerMod.ApplyMimicAction, "TreeControllerTool")]
+    [SettingsUIMouseAction(TreeControllerMod.SecondaryApplyMimicAction, "TreeControllerTool")]
     public class TreeControllerSettings : ModSetting
     {
         private ReloadFoliageColorDataSystem m_ReloadFoliageColorDataSystem;
@@ -140,6 +143,20 @@ namespace Tree_Controller.Settings
                 m_DestroyFoliageSystem.Enabled = true;
             }
         }
+
+        /// <summary>
+        /// Gets or sets hidden keybinding for apply action.
+        /// </summary>
+        [SettingsUIMouseBinding(TreeControllerMod.ApplyMimicAction)]
+        [SettingsUIHidden]
+        public ProxyBinding ApplyMimic { get; set; }
+
+        /// <summary>
+        /// Gets or sets hidden keybinding for secondary apply action.
+        /// </summary>
+        [SettingsUIMouseBinding(TreeControllerMod.SecondaryApplyMimicAction)]
+        [SettingsUIHidden]
+        public ProxyBinding SecondaryApplyMimic { get; set; }
 
         /// <inheritdoc/>
         public override void SetDefaults()

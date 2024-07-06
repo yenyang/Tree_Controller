@@ -86,32 +86,33 @@ namespace Tree_Controller.Systems
                     entities.Dispose();
                     return;
                 }
-                
+
+                Entity prefabEntity = currentCreationDefinition.m_Prefab;
                 Unity.Mathematics.Random random = new ((uint)(Mathf.Abs(currentObjectDefinition.m_Position.x) + Mathf.Abs(currentObjectDefinition.m_Position.z)) * 1000);
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush) || m_ToolSystem.activeTool.toolID == "Line Tool")
                 {
-                    Entity prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
+                    prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
                     if (prefabEntity != Entity.Null)
                     {
                         currentCreationDefinition.m_Prefab = prefabEntity;
                         EntityManager.SetComponentData(entity, currentCreationDefinition);
-                        m_Log.Debug("swapped prefab");
                     }
                 }
 
-                /*
-                TreeState nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random);
-                if (BrushTreeStateAges.ContainsKey(nextTreeState))
+                if (m_ToolSystem.actionMode.IsEditor() && EntityManager.HasComponent<TreeData>(prefabEntity))
                 {
-                    currentObjectDefinition.m_Age = BrushTreeStateAges[nextTreeState];
-                }
-                else
-                {
-                    currentObjectDefinition.m_Age = ObjectUtils.TREE_AGE_PHASE_CHILD + ObjectUtils.TREE_AGE_PHASE_TEEN;
-                }
+                    TreeState nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random);
+                    if (BrushTreeStateAges.ContainsKey(nextTreeState))
+                    {
+                        currentObjectDefinition.m_Age = BrushTreeStateAges[nextTreeState];
+                    }
+                    else
+                    {
+                        currentObjectDefinition.m_Age = ObjectUtils.TREE_AGE_PHASE_CHILD + ObjectUtils.TREE_AGE_PHASE_TEEN;
+                    }
 
-                EntityManager.SetComponentData(entity, currentObjectDefinition);
-                */
+                    EntityManager.SetComponentData(entity, currentObjectDefinition);
+                }
             }
 
             entities.Dispose();

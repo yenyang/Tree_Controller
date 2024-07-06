@@ -158,6 +158,11 @@ namespace Tree_Controller.Settings
         [SettingsUIHidden]
         public ProxyBinding SecondaryApplyMimic { get; set; }
 
+        /// <summary>
+        /// Gets a value indicating the version.
+        /// </summary>
+        public string Version => TreeControllerMod.Instance.Version;
+
         /// <inheritdoc/>
         public override void SetDefaults()
         {

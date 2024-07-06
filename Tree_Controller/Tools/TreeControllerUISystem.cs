@@ -12,12 +12,15 @@ namespace Tree_Controller.Tools
     using Colossal.Annotations;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
+    using Colossal.Serialization.Entities;
     using Colossal.UI.Binding;
+    using Game;
     using Game.Objects;
     using Game.Prefabs;
     using Game.SceneFlow;
     using Game.Tools;
     using Game.UI;
+    using Tree_Controller.Extensions;
     using Tree_Controller.Settings;
     using Tree_Controller.Systems;
     using Unity.Collections;
@@ -28,7 +31,7 @@ namespace Tree_Controller.Tools
     /// <summary>
     /// UI system for Object Tool while using tree prefabs.
     /// </summary>
-    public partial class TreeControllerUISystem : UISystemBase
+    public partial class TreeControllerUISystem : ExtendedUISystemBase
     {
         private const string ModId = "Tree_Controller";
 
@@ -119,6 +122,7 @@ namespace Tree_Controller.Tools
         private ValueBinding<bool> m_IsVegetation;
         private ValueBinding<bool> m_IsTree;
         private ValueBinding<string> m_SelectedPrefabSet;
+        private ValueBindingHelper<bool> m_IsEditor;
         private bool m_UpdateSelectionSet = false;
         private bool m_RecentlySelectedPrefabSet = false;
         private bool m_MultiplePrefabsSelected = false;
@@ -340,6 +344,19 @@ namespace Tree_Controller.Tools
         }
 
         /// <inheritdoc/>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
+            if (mode.IsEditor())
+            {
+                m_IsEditor.Value = true;
+            } else
+            {
+                m_IsEditor.Value = false;
+            }
+        }
+
+        /// <inheritdoc/>
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -380,6 +397,7 @@ namespace Tree_Controller.Tools
             AddBinding(m_IsTree = new ValueBinding<bool>(ModId, "IsTree", false));
             AddBinding(m_Radius = new ValueBinding<float>(ModId, "Radius", 100f));
             AddBinding(m_SelectedPrefabSet = new ValueBinding<string>(ModId, "PrefabSet", string.Empty));
+            m_IsEditor = CreateBinding("IsEditor", false);
 
             // This section handles trigger bindings which listen for triggers from UI and then start an event.
             AddBinding(new TriggerBinding<int>(ModId, "ChangeToolMode", ChangeToolMode));

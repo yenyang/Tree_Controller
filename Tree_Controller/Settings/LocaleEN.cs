@@ -50,6 +50,8 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.AgeSelectionOptions.RandomWeighted), "Forest Distribution" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "Age Selection Technique" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "When multiple Tree Ages are selected, one will be selected using this option. Equal Distribution is just a random selection. Forest Distribution randomly selects using the editor's approximation for a forest." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerMod.Version)), "Version" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerMod.Version)), $"Version number for the Tree Controller mod installed." },
                 { "Options.TOOLTIPYYTC[WholeMapApply]", "Right Click to Apply." },
                 { "YY_TREE_CONTROLLER[Selection]", "Selection" },
                 { "YY_TREE_CONTROLLER[Age]", "Age" },

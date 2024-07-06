@@ -9,6 +9,7 @@ namespace Tree_Controller
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using Colossal;
     using Colossal.IO.AssetDatabase;
     using Colossal.Logging;
@@ -57,7 +58,6 @@ namespace Tree_Controller
             private set;
         }
 
-
         /// <summary>
         /// Gets the Install Folder for the mod as a string.
         /// </summary>
@@ -75,6 +75,11 @@ namespace Tree_Controller
                 return m_modInstallFolder;
             }
         }
+
+        /// <summary>
+        /// Gets the version of the mod.
+        /// </summary>
+        internal string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
 
         /// <summary>
         ///  Gets or sets the Mod Settings.

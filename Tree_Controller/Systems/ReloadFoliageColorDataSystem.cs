@@ -8,6 +8,7 @@ namespace Tree_Controller.Systems
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Reflection;
     using System.Xml.Serialization;
     using Colossal.Entities;
     using Colossal.Logging;
@@ -20,6 +21,7 @@ namespace Tree_Controller.Systems
     using Game.Prefabs.Climate;
     using Game.Rendering;
     using Game.Simulation;
+    using Game.Tools;
     using Tree_Controller.Settings;
     using Tree_Controller.Utils;
     using Unity.Collections;
@@ -33,7 +35,9 @@ namespace Tree_Controller.Systems
     /// </summary>
     public partial class ReloadFoliageColorDataSystem : GameSystemBase
     {
-        private readonly Dictionary<TreeSeasonIdentifier, Game.Rendering.ColorSet> m_YenyangsColorSets = new ()
+        private const string ColorPainterID = "ColorPainterTool";
+
+        private readonly Dictionary<SeasonIdentifier, Game.Rendering.ColorSet> m_YenyangsColorSets = new ()
         {
             { new () { m_PrefabID = new ("StaticObjectPrefab", "AppleTree01"), m_Season = FoliageUtils.Season.Spring, m_Index = 0 }, new () { m_Channel0 = new (0.409f, 0.509f, 0.344f, 1.000f), m_Channel1 = new (0.335f, 0.462f, 0.265f, 1.000f), m_Channel2 = new (0.945f, 0.941f, 0.957f, 1.000f) } },
             { new () { m_PrefabID = new ("StaticObjectPrefab", "AppleTree01"), m_Season = FoliageUtils.Season.Summer, m_Index = 1 }, new () { m_Channel0 = new (0.409f, 0.509f, 0.344f, 1.000f), m_Channel1 = new (0.335f, 0.462f, 0.265f, 1.000f), m_Channel2 = new (0.625f, 0.141f, 0.098f, 1.000f) } },
@@ -59,15 +63,16 @@ namespace Tree_Controller.Systems
         private EntityQuery m_PlantPrefabQuery;
         private TreeControllerSettings.ColorVariationSetYYTC m_ColorVariationSet;
         private bool m_Run = true;
-        private Dictionary<TreeSeasonIdentifier, Game.Rendering.ColorSet> m_VanillaColorSets;
-        private Dictionary<TreeSeasonIdentifier, Game.Rendering.ColorSet> m_SpringColorSets;
-        private Dictionary<TreeSeasonIdentifier, Game.Rendering.ColorSet> m_AutumnColorSets;
+        private Dictionary<SeasonIdentifier, Game.Rendering.ColorSet> m_VanillaColorSets;
+        private Dictionary<SeasonIdentifier, Game.Rendering.ColorSet> m_SpringColorSets;
+        private Dictionary<SeasonIdentifier, Game.Rendering.ColorSet> m_AutumnColorSets;
         private ClimateSystem m_ClimateSystem;
         private FoliageUtils.Season m_Season = FoliageUtils.Season.Spring;
         private ILog m_Log;
         private string m_ContentFolder;
         private EndFrameBarrier m_EndFrameBarrier;
         private EntityQuery m_PlantQuery;
+        private ToolBaseSystem m_ColorPainterTool;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReloadFoliageColorDataSystem"/> class.
@@ -81,7 +86,7 @@ namespace Tree_Controller.Systems
         /// </summary>
         public bool Run { set => m_Run = value; }
 
-        private Dictionary<TreeSeasonIdentifier, ColorSet> YenyangsColorSets => m_YenyangsColorSets;
+        private Dictionary<SeasonIdentifier, ColorSet> YenyangsColorSets => m_YenyangsColorSets;
 
         /// <inheritdoc/>
         protected override void OnCreate()
@@ -114,6 +119,23 @@ namespace Tree_Controller.Systems
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
             base.OnGameLoadingComplete(purpose, mode);
+
+            if (World.GetOrCreateSystemManaged<ToolSystem>().tools.Find(x => x.toolID.Equals(ColorPainterID)) is ToolBaseSystem colorPainterTool)
+            {
+                // Found it
+                m_Log.Info($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnGameLoadingComplete)} found Color Painter Tool.");
+                MethodInfo colorPainterHasCustomColorVariation = colorPainterTool.GetType().GetMethod("HasCustomColorVariation");
+                if (colorPainterHasCustomColorVariation is not null)
+                {
+                    m_ColorPainterTool = colorPainterTool;
+                    m_Log.Info($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnGameLoadingComplete)} saved Color Painter Tool");
+                }
+            }
+            else
+            {
+                m_Log.Info($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnGameLoadingComplete)} Color Painter Tool tool not found");
+            }
+
             if (mode.IsGame())
             {
                 Run = true;
@@ -146,7 +168,7 @@ namespace Tree_Controller.Systems
                         continue;
                     }
 
-                    PrefabBase prefabBase = m_PrefabSystem.GetPrefab<PrefabBase>(e);
+                    PrefabBase prefabBase = m_PrefabSystem.GetPrefab<PrefabBase>(subMeshBuffer[i].m_SubMesh);
                     PrefabID prefabID = prefabBase.GetPrefabID();
 
                     if (colorVariationBuffer.Length < 4 || prefabBase.name.ToLower().Contains("palm"))
@@ -170,7 +192,7 @@ namespace Tree_Controller.Systems
 
                         m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnGameLoadingComplete)} season is {season}.");
 
-                        TreeSeasonIdentifier treeSeasonIdentifier = new ()
+                        SeasonIdentifier treeSeasonIdentifier = new ()
                         {
                             m_PrefabID = prefabID,
                             m_Season = season,
@@ -261,8 +283,10 @@ namespace Tree_Controller.Systems
                         continue;
                     }
 
-                    PrefabBase prefabBase = m_PrefabSystem.GetPrefab<PrefabBase>(e);
-                    PrefabID prefabID = prefabBase.GetPrefabID();
+                    PrefabBase meshPrefabBase = m_PrefabSystem.GetPrefab<PrefabBase>(subMeshBuffer[i].m_SubMesh);
+                    PrefabID meshPrefabID = meshPrefabBase.GetPrefabID();
+                    PrefabBase treePrefabBase = m_PrefabSystem.GetPrefab<PrefabBase>(e);
+                    PrefabID treePrefabID = treePrefabBase.GetPrefabID();
 
                     for (int j = 0; j < colorVariationBuffer.Length; j++)
                     {
@@ -273,37 +297,62 @@ namespace Tree_Controller.Systems
                             continue;
                         }
 
-                        TreeSeasonIdentifier treeSeasonIdentifier = new ()
+                        SeasonIdentifier meshSeasonIdentifier = new ()
                         {
-                            m_PrefabID = prefabID,
+                            m_PrefabID = meshPrefabID,
                             m_Season = season,
                             m_Index = j,
                         };
 
-                        if (File.Exists(GetAssetSeasonIdentifierFilePath(treeSeasonIdentifier)))
+                        SeasonIdentifier treeSeasonIdentifier = new ()
+                        {
+                            m_PrefabID = treePrefabID,
+                            m_Season = season,
+                            m_Index = j,
+                        };
+
+                        if (File.Exists(GetAssetSeasonIdentifierFilePath(meshSeasonIdentifier)))
                         {
                             continue;
                         }
 
-                        if ((TreeControllerMod.Instance.Settings.UseDeadModelDuringWinter && m_Season == FoliageUtils.Season.Spring && treeSeasonIdentifier.m_Season == FoliageUtils.Season.Winter && TreeControllerMod.Instance.Settings.ColorVariationSet != TreeControllerSettings.ColorVariationSetYYTC.Autumn)
-                            || (TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Spring && (season == FoliageUtils.Season.Autumn || season == FoliageUtils.Season.Winter))
-                            || ((TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Yenyangs && !EntityManager.HasComponent<TreeData>(e) && !m_YenyangsColorSets.ContainsKey(treeSeasonIdentifier)) && (season == FoliageUtils.Season.Autumn || season == FoliageUtils.Season.Winter)))
+                        if (m_ColorPainterTool is not null)
                         {
-                            if (m_SpringColorSets.ContainsKey(treeSeasonIdentifier))
+                            MethodInfo hasCustomColorVariation = m_ColorPainterTool.GetType().GetMethod("HasCustomColorVariation");
+                            object results = hasCustomColorVariation.Invoke(m_ColorPainterTool, new object[] { subMeshBuffer[i].m_SubMesh, j });
+                            if ((bool)results)
                             {
-                                currentColorVariation.m_ColorSet = m_SpringColorSets[treeSeasonIdentifier];
+                                if (m_PrefabSystem.TryGetPrefab(subMeshBuffer[i].m_SubMesh, out PrefabBase prefab))
+                                {
+                                    m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}{nameof(OnUpdate)} {prefab.name} Has Custom color variation.");
+                                } else
+                                {
+                                    m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}{nameof(OnUpdate)} Has Custom color variation. couldn't get prefab.");
+                                }
+
+                                continue;
+                            }
+                        }
+
+                        if ((TreeControllerMod.Instance.Settings.UseDeadModelDuringWinter && m_Season == FoliageUtils.Season.Spring && meshSeasonIdentifier.m_Season == FoliageUtils.Season.Winter && TreeControllerMod.Instance.Settings.ColorVariationSet != TreeControllerSettings.ColorVariationSetYYTC.Autumn)
+                            || (TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Spring && (season == FoliageUtils.Season.Autumn || season == FoliageUtils.Season.Winter))
+                            || ((TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Yenyangs && !EntityManager.HasComponent<TreeData>(e) && !m_YenyangsColorSets.ContainsKey(meshSeasonIdentifier)) && (season == FoliageUtils.Season.Autumn || season == FoliageUtils.Season.Winter)))
+                        {
+                            if (m_SpringColorSets.ContainsKey(meshSeasonIdentifier))
+                            {
+                                currentColorVariation.m_ColorSet = m_SpringColorSets[meshSeasonIdentifier];
                                 colorVariationBuffer[j] = currentColorVariation;
-                                m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} set to spring Colorset {TreeControllerMod.Instance.Settings.ColorVariationSet} for {prefabID} in index {j} : {treeSeasonIdentifier.m_Season}");
+                                m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} set to spring Colorset {TreeControllerMod.Instance.Settings.ColorVariationSet} for {meshPrefabID} in index {j} : {meshSeasonIdentifier.m_Season}");
                                 continue;
                             }
                         }
                         else if (TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Autumn)
                         {
-                            if (m_AutumnColorSets.ContainsKey(treeSeasonIdentifier))
+                            if (m_AutumnColorSets.ContainsKey(meshSeasonIdentifier))
                             {
-                                currentColorVariation.m_ColorSet = m_AutumnColorSets[treeSeasonIdentifier];
+                                currentColorVariation.m_ColorSet = m_AutumnColorSets[meshSeasonIdentifier];
                                 colorVariationBuffer[j] = currentColorVariation;
-                                m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} set to autumn Colorset {TreeControllerMod.Instance.Settings.ColorVariationSet} for {prefabID} in index {j} : {treeSeasonIdentifier.m_Season}");
+                                m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} set to autumn Colorset {TreeControllerMod.Instance.Settings.ColorVariationSet} for {meshPrefabID} in index {j} : {meshSeasonIdentifier.m_Season}");
                                 continue;
                             }
                         }
@@ -312,17 +361,17 @@ namespace Tree_Controller.Systems
                         {
                             currentColorVariation.m_ColorSet = YenyangsColorSets[treeSeasonIdentifier];
                             colorVariationBuffer[j] = currentColorVariation;
-                            m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Changed Colorset for {prefabID} in {treeSeasonIdentifier.m_Season}");
+                            m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Changed Colorset for {meshPrefabID} in {treeSeasonIdentifier.m_Season}");
                         }
-                        else if (m_VanillaColorSets.ContainsKey(treeSeasonIdentifier))
+                        else if (m_VanillaColorSets.ContainsKey(meshSeasonIdentifier))
                         {
-                            currentColorVariation.m_ColorSet = m_VanillaColorSets[treeSeasonIdentifier];
+                            currentColorVariation.m_ColorSet = m_VanillaColorSets[meshSeasonIdentifier];
                             colorVariationBuffer[j] = currentColorVariation;
-                            m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Reset Colorset for {prefabID} in {treeSeasonIdentifier.m_Season}");
+                            m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Reset Colorset for {meshPrefabID} in {meshSeasonIdentifier.m_Season}");
                         }
                         else
                         {
-                            m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Did nothing for: {TreeControllerMod.Instance.Settings.ColorVariationSet} for {prefabID} in index {j} : {treeSeasonIdentifier.m_Season}");
+                            m_Log.Debug($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Did nothing for: {TreeControllerMod.Instance.Settings.ColorVariationSet} for {meshPrefabID} in index {j} : {meshSeasonIdentifier.m_Season}");
                         }
                     }
                 }
@@ -336,13 +385,13 @@ namespace Tree_Controller.Systems
         }
 
         // Taken from Recolor mod.
-        private string GetAssetSeasonIdentifierFilePath(TreeSeasonIdentifier assetSeasonIdentifier)
+        private string GetAssetSeasonIdentifierFilePath(SeasonIdentifier assetSeasonIdentifier)
         {
             string prefabType = assetSeasonIdentifier.m_PrefabID.ToString().Remove(assetSeasonIdentifier.m_PrefabID.ToString().IndexOf(':'));
             return Path.Combine(m_ContentFolder, $"{prefabType}-{assetSeasonIdentifier.m_PrefabID.GetName()}-{assetSeasonIdentifier.m_Index}.xml");
         }
 
-        private struct TreeSeasonIdentifier
+        private struct SeasonIdentifier
         {
             public PrefabID m_PrefabID;
             public FoliageUtils.Season m_Season;

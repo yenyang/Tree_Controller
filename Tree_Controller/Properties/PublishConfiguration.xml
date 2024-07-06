@@ -97,7 +97,9 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <Dependency Id="75426" DisplayName="I18n EveryWhere" Version="1.1.3" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog># Patch V1.4.2
-* Removed unnecessary Newtonsoft DLL shipped with previous version.</ChangeLog>
+* Removed unnecessary Newtonsoft DLL shipped with previous version.
+* Add version to options page.
+* Compatibility preparation for Recolor mod.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

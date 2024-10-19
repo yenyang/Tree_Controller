@@ -42,11 +42,6 @@ namespace Tree_Controller
         /// </summary>
         public static readonly string Id = "Tree_Controller";
 
-        /// <summary>
-        /// Gets the install folder for the mod.
-        /// </summary>
-        private static string m_modInstallFolder;
-
         private Harmony m_Harmony;
 
         /// <summary>
@@ -56,24 +51,6 @@ namespace Tree_Controller
         {
             get;
             private set;
-        }
-
-        /// <summary>
-        /// Gets the Install Folder for the mod as a string.
-        /// </summary>
-        public static string ModInstallFolder
-        {
-            get
-            {
-                if (m_modInstallFolder is null)
-                {
-                    var thisFullName = Instance.GetType().Assembly.FullName;
-                    ExecutableAsset thisInfo = AssetDatabase.global.GetAsset(SearchFilter<ExecutableAsset>.ByCondition(x => x.definition?.FullName == thisFullName)) ?? throw new Exception("This mod info was not found!!!!");
-                    m_modInstallFolder = Path.GetDirectoryName(thisInfo.GetMeta().path);
-                }
-
-                return m_modInstallFolder;
-            }
         }
 
         /// <summary>

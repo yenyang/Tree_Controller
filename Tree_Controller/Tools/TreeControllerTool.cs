@@ -346,18 +346,8 @@ namespace Tree_Controller.Tools
             RequireForUpdate(m_VegetationQuery);
 
             m_ApplyAction = TreeControllerMod.Instance.Settings.GetAction(TreeControllerMod.ApplyMimicAction);
-            var builtInApplyAction = InputManager.instance.FindAction(InputManager.kToolMap, "Apply");
-            var ActionApplyBinding = m_ApplyAction.bindings.FirstOrDefault(b => b.group == nameof(Mouse));
-            var builtInApplyBinding = builtInApplyAction.bindings.FirstOrDefault(b => b.group == nameof(Mouse));
-            var applyWatcher = new ProxyBinding.Watcher(builtInApplyBinding, binding => SetMimic(ActionApplyBinding, binding));
-            SetMimic(ActionApplyBinding, applyWatcher.binding);
 
             m_SecondaryApplyAction = TreeControllerMod.Instance.Settings.GetAction(TreeControllerMod.SecondaryApplyMimicAction);
-            var builtInSecondaryApplyAction = InputManager.instance.FindAction(InputManager.kToolMap, "Secondary Apply");
-            var ActionSecondaryApplyBinding = m_SecondaryApplyAction.bindings.FirstOrDefault(b => b.group == nameof(Mouse));
-            var builtInSecondaryApplyBinding = builtInSecondaryApplyAction.bindings.FirstOrDefault(b => b.group == nameof(Mouse));
-            var secondaryApplyWatcher = new ProxyBinding.Watcher(builtInSecondaryApplyBinding, binding => SetMimic(ActionSecondaryApplyBinding, binding));
-            SetMimic(ActionSecondaryApplyBinding, secondaryApplyWatcher.binding);
         }
 
         /// <inheritdoc/>
@@ -591,14 +581,6 @@ namespace Tree_Controller.Tools
         protected override void OnDestroy()
         {
             base.OnDestroy();
-        }
-
-        private void SetMimic(ProxyBinding mimic, ProxyBinding buildIn)
-        {
-            var newMimicBinding = mimic.Copy();
-            newMimicBinding.path = buildIn.path;
-            newMimicBinding.modifiers = buildIn.modifiers;
-            InputManager.instance.SetBinding(newMimicBinding, out _);
         }
 
         /// <summary>

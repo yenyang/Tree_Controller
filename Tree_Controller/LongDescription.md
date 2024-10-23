@@ -11,8 +11,11 @@ I18n Everywhere (Soft dependency required for loading languages other than Engli
 If you want to say thank you with a donation you can do so on Paypal.
 
 ## Translations
-I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the discord link. CSL2:CODEMODS -> mods-wip -> Tree Controller: Translations.
-Fully or Partially Supported Languages: German, Spanish, Italian, Brazilian Portuguese, Chinese Simplified, Polish, French, Japanese, Korean, and Russian.
+I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the crowdin or discord link. CSL2:CODEMODS -> mods-wip -> Tree Controller: Translations.
+Fully or Partially Supported Languages: German, Spanish, Italian, Brazilian Portuguese, Chinese Simplified, Polish, French, Japanese, Korean, Russian, Chinese Traditional and European Portuguese.
+
+## Supplemental Mods
+European Portuguese Localization (Only needed for European Portuguese Translations)
 
 # Detailed Description:
 Includes a tree controller tool that lets you change the age or types of existing trees and/or bushes on the following selections:
@@ -65,5 +68,5 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing
 * T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Nullpinter - Localization support
-* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi and Furios (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak, Morgan (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st (Korean), _hayrynenart and SivenesisI (Russian)
+* Localization: Hendrix (German), Nyoko and Citadino (Spanish), Mazi and Furios (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak, Morgan (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st (Korean), _hayrynenart and SivenesisI (Russian), allegretic (Chinese Traditional), Ti4goc (European Portuguese)
 * Tigon Ologdring, code:witch - Testing, Feedback

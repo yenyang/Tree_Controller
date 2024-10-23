@@ -148,6 +148,7 @@ namespace Tree_Controller.Settings
         /// Gets or sets hidden keybinding for apply action.
         /// </summary>
         [SettingsUIMouseBinding(TreeControllerMod.ApplyMimicAction)]
+        [SettingsUIBindingMimic(InputManager.kToolMap, "Apply")]
         [SettingsUIHidden]
         public ProxyBinding ApplyMimic { get; set; }
 
@@ -155,6 +156,7 @@ namespace Tree_Controller.Settings
         /// Gets or sets hidden keybinding for secondary apply action.
         /// </summary>
         [SettingsUIMouseBinding(TreeControllerMod.SecondaryApplyMimicAction)]
+        [SettingsUIBindingMimic(InputManager.kToolMap, "Secondary Apply")]
         [SettingsUIHidden]
         public ProxyBinding SecondaryApplyMimic { get; set; }
 

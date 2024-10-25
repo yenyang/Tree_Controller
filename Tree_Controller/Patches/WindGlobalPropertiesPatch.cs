@@ -1,38 +1,39 @@
-﻿using Game.Rendering;
+﻿// <copyright file="WindGlobalPropertiesPatch.cs" company="Yenyangs Mods. MIT License">
+// Copyright (c) Yenyangs Mods. MIT License. All rights reserved.
+// </copyright>
+
+using Game.Rendering;
 using HarmonyLib;
-using TreeWindsController;
+using Tree_Controller;
 using UnityEngine.Rendering;
 
+/// <summary>
+/// Patches Wind Control Set Global Properties to control wind parameters.
+/// </summary>
 [HarmonyPatch(typeof(WindControl), "SetGlobalProperties")]
 public static class WindGlobalPropertiesPatch
 {
-    static void Prefix(CommandBuffer cmd, WindVolumeComponent wind)
+    /// <summary>
+    /// Prefix Patch to control wind parameters.
+    /// </summary>
+    /// <param name="cmd">command buffer.</param>
+    /// <param name="wind">wind volume component.</param>
+    public static void Prefix(CommandBuffer cmd, WindVolumeComponent wind)
     {
         // Disable all wind if the wind system is disabled
-        if (!WindControlSystem.Instance.windEnabled)
+        if (!TreeControllerMod.Instance.Settings.WindEnabled)
         {
             wind.windGlobalStrengthScale.Override(0);
             wind.windGlobalStrengthScale2.Override(0);
             return; // Skip further updates if wind is disabled
         }
 
-        // Apply global wind settings directly from WindControlSystem
-        var globalSettings = WindControlSystem.Instance.globalSettings;
-
         // Override the wind volume properties with the user-controlled values
-        wind.windGlobalStrengthScale.Override(globalSettings.globalStrengthScale.value);
-        wind.windGlobalStrengthScale2.Override(globalSettings.globalStrengthScale2.value);
-        wind.windDirection.Override(globalSettings.windDirection.value);
-        wind.windDirectionVariance.Override(globalSettings.windDirectionVariance.value);
-        wind.windDirectionVariancePeriod.Override(globalSettings.windDirectionVariancePeriod.value);
-        wind.windParameterInterpolationDuration.Override(globalSettings.interpolationDuration.value);
-
-        // Additional wind settings, like gust control, could be added here if necessary
-        // Example: Apply gust strength settings from grass or tree wind settings
-        var grassSettings = WindControlSystem.Instance.grassSettings;
-        var treeSettings = WindControlSystem.Instance.treeSettings;
-
-        wind.windGustStrengthControl.value = grassSettings.gustStrengthControl.value;
-        wind.windTreeGustStrengthControl.value = treeSettings.gustControl.value;
+        wind.windGlobalStrengthScale.Override(TreeControllerMod.Instance.Settings.WindGlobalStrength);
+        wind.windGlobalStrengthScale2.Override(TreeControllerMod.Instance.Settings.WindGlobalStrength2);
+        wind.windDirection.Override(TreeControllerMod.Instance.Settings.WindDirection);
+        wind.windDirectionVariance.Override(TreeControllerMod.Instance.Settings.WindDirectionVariance);
+        wind.windDirectionVariancePeriod.Override(TreeControllerMod.Instance.Settings.WindDirectionVariancePeriod);
+        wind.windParameterInterpolationDuration.Override(TreeControllerMod.Instance.Settings.WindInterpolationDuration);
     }
 }

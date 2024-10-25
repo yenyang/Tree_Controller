@@ -8,7 +8,6 @@ namespace TreeController.TreeWindsController
     using Game;
     using Game.Rendering;
     using Tree_Controller;
-    using Tree_Controller.Domain;
     using Unity.Entities;
     using UnityEngine;
     using UnityEngine.Rendering;
@@ -18,8 +17,6 @@ namespace TreeController.TreeWindsController
     /// </summary>
     public partial class WindControlSystem : GameSystemBase
     {
-        private bool m_WindEnabled;
-        private GlobalWindSettings m_GlobalSettings = new GlobalWindSettings();
         private AnimationCurveParameter m_StrengthVarianceAnimation;
         private ClampedFloatParameter m_Strength;
         private ClampedFloatParameter m_StrengthVariance;
@@ -50,7 +47,7 @@ namespace TreeController.TreeWindsController
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (m_WindEnabled)
+            if (TreeControllerMod.Instance.Settings.WindEnabled)
             {
                 // Apply the current wind settings from WindControlSystem to the game's volume component
                 ApplyWindSettings();
@@ -81,7 +78,7 @@ namespace TreeController.TreeWindsController
         /// </summary>
         private void ApplyWindSettings()
         {
-            if (!m_WindEnabled)
+            if (!TreeControllerMod.Instance.Settings.WindEnabled)
             {
                 DisableAllWind();
                 return;
@@ -103,15 +100,16 @@ namespace TreeController.TreeWindsController
                 float time = (float)SystemAPI.Time.DeltaTime;
                 float strengthAnim = m_StrengthVarianceAnimation.value.Evaluate(time % (2 * m_StrengthVariancePeriod.value));
 
-                m_GlobalSettings.globalStrengthScale.value = ClampedValueRatio(m_GlobalSettings.globalStrengthScale, strengthAnim);
+                ClampedFloatParameter globalStrengthScale = new ClampedFloatParameter(TreeControllerMod.Instance.Settings.WindGlobalStrength, 0f, 3f);
+                globalStrengthScale.value = ClampedValueRatio(globalStrengthScale, strengthAnim);
 
                 // Apply wind settings to volume component
-                windVolumeComponent.windGlobalStrengthScale.Override(m_GlobalSettings.globalStrengthScale.value);
-                windVolumeComponent.windGlobalStrengthScale2.Override(m_GlobalSettings.globalStrengthScale2.value);
-                windVolumeComponent.windDirection.Override(m_GlobalSettings.windDirection.value);
-                windVolumeComponent.windDirectionVariance.Override(m_GlobalSettings.windDirectionVariance.value);
-                windVolumeComponent.windDirectionVariancePeriod.Override(m_GlobalSettings.windDirectionVariancePeriod.value);
-                windVolumeComponent.windParameterInterpolationDuration.Override(m_GlobalSettings.interpolationDuration.value);
+                windVolumeComponent.windGlobalStrengthScale.Override(globalStrengthScale.value);
+                windVolumeComponent.windGlobalStrengthScale2.Override(TreeControllerMod.Instance.Settings.WindGlobalStrength2);
+                windVolumeComponent.windDirection.Override(TreeControllerMod.Instance.Settings.WindDirection);
+                windVolumeComponent.windDirectionVariance.Override(TreeControllerMod.Instance.Settings.WindDirectionVariance);
+                windVolumeComponent.windDirectionVariancePeriod.Override(TreeControllerMod.Instance.Settings.WindDirectionVariancePeriod);
+                windVolumeComponent.windParameterInterpolationDuration.Override(TreeControllerMod.Instance.Settings.WindInterpolationDuration);
             }
             else
             {

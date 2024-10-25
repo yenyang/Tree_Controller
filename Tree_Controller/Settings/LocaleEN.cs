@@ -6,6 +6,7 @@ namespace Tree_Controller.Settings
 {
     using System.Collections.Generic;
     using Colossal;
+    using Game.Settings;
 
     /// <summary>
     /// Localization for <see cref="TreeControllerSettings"/> in English.
@@ -27,6 +28,8 @@ namespace Tree_Controller.Settings
             m_Localization = new Dictionary<string, string>()
             {
                 { m_Setting.GetSettingsLocaleID(), "Tree Controller" },
+                { m_Setting.GetOptionTabLocaleID(TreeControllerSettings.General), "General" },
+                { m_Setting.GetOptionTabLocaleID(TreeControllerSettings.WindTab), "Wind" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.UseDeadModelDuringWinter)), "Deciduous trees use Dead Model during Winter" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.UseDeadModelDuringWinter)), "Will temporarily make all non-lumber industry deciduous trees use the dead model and pause growth during winter." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.DisableTreeGrowth)), "Disable Tree Growth" },
@@ -39,9 +42,9 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.DestroyFoliageSettings)), "Delete All Foliage" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.DestroyFoliageSettings)), "Permanently removes all trees and plants from the map. It keeps any foliage owned by buildings, parks, or roads. This action cannot be undone." },
                 { m_Setting.GetOptionWarningLocaleID(nameof(TreeControllerSettings.DestroyFoliageSettings)), "Remove all trees and plants not attached to existing objects?" },
-                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.ResetModSettings)), "Reset Tree Controller Settings" },
-                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.ResetModSettings)), "After confirmation this will reset Tree Controller Settings." },
-                { m_Setting.GetOptionWarningLocaleID(nameof(TreeControllerSettings.ResetModSettings)), "Reset Tree Controller Settings?" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.ResetGeneralSettings)), "Reset Tree Controller General Settings" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.ResetGeneralSettings)), "After confirmation this will reset Tree Controller General Settings." },
+                { m_Setting.GetOptionWarningLocaleID(nameof(TreeControllerSettings.ResetGeneralSettings)), "Reset Tree Controller General Settings?" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Yenyangs), "Yenyang's" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Vanilla), "Vanilla" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.ColorVariationSetYYTC.Spring), "Spring" },
@@ -52,6 +55,24 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.AgeSelectionTechnique)), "When multiple Tree Ages are selected, one will be selected using this option. Equal Distribution is just a random selection. Forest Distribution randomly selects using the editor's approximation for a forest." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerMod.Version)), "Version" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerMod.Version)), $"Version number for the Tree Controller mod installed." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.WindEnabled)), "Toggle Wind" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.WindEnabled)), "Toggles the wind (uncheck to toggle wind off and check to toggle wind on)" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.WindGlobalStrength)), "Wind Strength" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.WindGlobalStrength)), "Controls the global wind strength" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.WindGlobalStrength2)), "Wind Strength 2" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.WindGlobalStrength2)), "Controls the global wind strength" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.WindDirection)), "Wind Direction" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.WindDirection)), "Controls the global wind direction" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.WindDirectionVariance)), "Wind Direction variance" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.WindDirectionVariance)), "Controls the global wind direction variance" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.WindDirectionVariancePeriod)), "Wind Direction variance period" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.WindDirectionVariancePeriod)), "Controls the global wind direction variance period" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.WindInterpolationDuration)), "Wind Interpolation Duration" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.WindInterpolationDuration)), "Controls the global wind interpolation duration" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.ResetWindSettings)), "Reset Tree Wind Controller General Settings" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.ResetWindSettings)), "After confirmation this will reset Tree Wind Controller Settings." },
+                { m_Setting.GetOptionWarningLocaleID(nameof(TreeControllerSettings.ResetWindSettings)), "Reset Tree Wind Controller Settings?" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.Author)), "Tree Wind Controller by BruceyBoy, Originally by donutmonger." },
                 { "Options.TOOLTIPYYTC[WholeMapApply]", "Right Click to Apply." },
                 { "YY_TREE_CONTROLLER[Selection]", "Selection" },
                 { "YY_TREE_CONTROLLER[Age]", "Age" },

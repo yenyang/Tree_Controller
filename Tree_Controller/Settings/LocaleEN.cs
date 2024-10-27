@@ -57,6 +57,8 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerMod.Version)), $"Version number for the Tree Controller mod installed." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.SelectedWindOption)), "Tree Wind Control Type" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.SelectedWindOption)), "Vanilla will leave wind shader for tree and vegetation alone. Disabled will make trees and vegetation not move from wind. Override controls the values for the wind effects on trees and vegetation based on these settings." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.DisableWindWhenPaused)), "Disable Wind When Paused" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.DisableWindWhenPaused)), "Trees and vegetation not move from wind when the game is paused." },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.WindOptions.Vanilla), "Vanilla" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.WindOptions.Disabled), "Disabled" },
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.WindOptions.Override), "Override" },

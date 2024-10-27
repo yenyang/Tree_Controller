@@ -3,8 +3,10 @@
 // </copyright>
 
 using Game.Rendering;
+using Game.Simulation;
 using HarmonyLib;
 using Tree_Controller;
+using Unity.Entities;
 using UnityEngine.Rendering;
 
 /// <summary>
@@ -21,18 +23,21 @@ public static class WindGlobalPropertiesPatch
     /// <returns>True if continuing to vanilla method, false if skipping vanilla method.</returns>
     public static bool Prefix(CommandBuffer cmd, WindVolumeComponent wind)
     {
-        // Do not change any values if set to vanilla.
-        if (TreeControllerMod.Instance.Settings.SelectedWindOption == Tree_Controller.Settings.TreeControllerSettings.WindOptions.Vanilla)
-        {
-            return true;
-        }
+        SimulationSystem simulationSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<SimulationSystem>();
 
         // Disable all wind if the wind system is disabled
-        if (TreeControllerMod.Instance.Settings.SelectedWindOption == Tree_Controller.Settings.TreeControllerSettings.WindOptions.Disabled)
+        if (TreeControllerMod.Instance.Settings.SelectedWindOption == Tree_Controller.Settings.TreeControllerSettings.WindOptions.Disabled
+            || (TreeControllerMod.Instance.Settings.DisableWindWhenPaused && simulationSystem.selectedSpeed == 0))
         {
             wind.windGlobalStrengthScale.Override(0);
             wind.windGlobalStrengthScale2.Override(0);
             return true; // Skip further updates if wind is disabled
+        }
+
+        // Do not change any values if set to vanilla.
+        if (TreeControllerMod.Instance.Settings.SelectedWindOption == Tree_Controller.Settings.TreeControllerSettings.WindOptions.Vanilla)
+        {
+            return true;
         }
 
         // Override the wind volume properties with the user-controlled values

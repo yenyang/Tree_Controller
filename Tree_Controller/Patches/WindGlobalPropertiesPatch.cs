@@ -18,14 +18,21 @@ public static class WindGlobalPropertiesPatch
     /// </summary>
     /// <param name="cmd">command buffer.</param>
     /// <param name="wind">wind volume component.</param>
-    public static void Prefix(CommandBuffer cmd, WindVolumeComponent wind)
+    /// <returns>True if continuing to vanilla method, false if skipping vanilla method.</returns>
+    public static bool Prefix(CommandBuffer cmd, WindVolumeComponent wind)
     {
+        // Do not change any values if set to vanilla.
+        if (TreeControllerMod.Instance.Settings.SelectedWindOption == Tree_Controller.Settings.TreeControllerSettings.WindOptions.Vanilla)
+        {
+            return true;
+        }
+
         // Disable all wind if the wind system is disabled
-        if (!TreeControllerMod.Instance.Settings.WindEnabled)
+        if (TreeControllerMod.Instance.Settings.SelectedWindOption == Tree_Controller.Settings.TreeControllerSettings.WindOptions.Disabled)
         {
             wind.windGlobalStrengthScale.Override(0);
             wind.windGlobalStrengthScale2.Override(0);
-            return; // Skip further updates if wind is disabled
+            return true; // Skip further updates if wind is disabled
         }
 
         // Override the wind volume properties with the user-controlled values
@@ -35,5 +42,7 @@ public static class WindGlobalPropertiesPatch
         wind.windDirectionVariance.Override(TreeControllerMod.Instance.Settings.WindDirectionVariance);
         wind.windDirectionVariancePeriod.Override(TreeControllerMod.Instance.Settings.WindDirectionVariancePeriod);
         wind.windParameterInterpolationDuration.Override(TreeControllerMod.Instance.Settings.WindInterpolationDuration);
+
+        return true;
     }
 }

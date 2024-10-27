@@ -21,7 +21,6 @@ namespace Tree_Controller
     using Tree_Controller.Settings;
     using Tree_Controller.Systems;
     using Tree_Controller.Tools;
-    using TreeController.TreeWindsController;
 
     /// <summary>
     /// Mod entry point.
@@ -124,8 +123,6 @@ namespace Tree_Controller
             updateSystem.UpdateBefore<LumberSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAt<DetectAreaChangeSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<DestroyFoliageSystem>(SystemUpdatePhase.ToolUpdate);
-            updateSystem.UpdateAt<WindControlSystem>(SystemUpdatePhase.GameSimulation);
-            updateSystem.UpdateAt<WindControlSystem>(SystemUpdatePhase.Rendering);
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} finished systems");
         }
 

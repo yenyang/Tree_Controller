@@ -97,6 +97,27 @@ namespace Tree_Controller.Settings
         }
 
         /// <summary>
+        /// An enum for how mod affects wind on vegetatoin.
+        /// </summary>
+        public enum WindOptions
+        {
+            /// <summary>
+            /// Use the game's vanilla wind shader values.
+            /// </summary>
+            Vanilla,
+
+            /// <summary>
+            /// Disable When completely.
+            /// </summary>
+            Disabled,
+
+            /// <summary>
+            /// Override Vanilla wind shader.
+            /// </summary>
+            Override,
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether Deciduous trees use Dead model during winter.
         /// </summary>
         [SettingsUISection(General, Stable)]
@@ -193,7 +214,7 @@ namespace Tree_Controller.Settings
         /// Gets or sets a value indicating whether wind is enabled.
         /// </summary>
         [SettingsUISection(WindTab, DisableWinds)]
-        public bool WindEnabled { get; set; }
+        public WindOptions SelectedWindOption { get; set; }
 
         // Global Wind Settings
 
@@ -202,6 +223,7 @@ namespace Tree_Controller.Settings
         /// </summary>
         [SettingsUISection(WindTab, GlobalWindGroup)]
         [SettingsUISlider(min = 0f, max = 3f, step = 0.1f, unit = Unit.kPercentage)]
+        [SettingsUIHideByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
         public float WindGlobalStrength { get; set; }
 
         /// <summary>
@@ -209,12 +231,14 @@ namespace Tree_Controller.Settings
         /// </summary>
         [SettingsUISection(WindTab, GlobalWindGroup)]
         [SettingsUISlider(min = 0f, max = 3f, step = 0.1f, unit = Unit.kPercentage)]
+        [SettingsUIHideByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
         public float WindGlobalStrength2 { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the wind direction.
         /// </summary>
         [SettingsUISection(WindTab, GlobalWindGroup)]
+        [SettingsUIHideByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
         [SettingsUISlider(min = 0f, max = 360f, step = 1f, unit = Unit.kAngle)]
         public float WindDirection { get; set; }
 
@@ -223,6 +247,7 @@ namespace Tree_Controller.Settings
         /// </summary>
         [SettingsUISection(WindTab, GlobalWindGroup)]
         [SettingsUISlider(min = 0f, max = 90f, step = 1f, unit = Unit.kAngle)]
+        [SettingsUIHideByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
         public float WindDirectionVariance { get; set; }
 
         /// <summary>
@@ -230,6 +255,7 @@ namespace Tree_Controller.Settings
         /// </summary>
         [SettingsUISection(WindTab, GlobalWindGroup)]
         [SettingsUISlider(min = 0.01f, max = 120f, step = 0.1f, unit = Unit.kPercentage)]
+        [SettingsUIHideByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
         public float WindDirectionVariancePeriod { get; set; }
 
         /// <summary>
@@ -237,6 +263,7 @@ namespace Tree_Controller.Settings
         /// </summary>
         [SettingsUISection(WindTab, GlobalWindGroup)]
         [SettingsUISlider(min = 0.0001f, max = 5f, step = 0.01f, unit = Unit.kPercentage)]
+        [SettingsUIHideByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
         public float WindInterpolationDuration { get; set; }
 
         /// <summary>
@@ -256,7 +283,7 @@ namespace Tree_Controller.Settings
         {
             set
             {
-                WindEnabled = true;
+                SelectedWindOption = WindOptions.Vanilla;
                 WindGlobalStrength = 1f;
                 WindGlobalStrength2 = 1f;
                 WindDirection = 65f;
@@ -274,7 +301,7 @@ namespace Tree_Controller.Settings
             ColorVariationSet = ColorVariationSetYYTC.Vanilla;
             UseDeadModelDuringWinter = false;
             AgeSelectionTechnique = AgeSelectionOptions.RandomWeighted;
-            WindEnabled = true;
+            SelectedWindOption = WindOptions.Vanilla;
             WindGlobalStrength = 1f;
             WindGlobalStrength2 = 1f;
             WindDirection = 65f;
@@ -299,5 +326,11 @@ namespace Tree_Controller.Settings
         {
             TreeControllerMod.Instance.Logger.Debug($"Setting triggered or updated: {setting}.");
         }
+
+        /// <summary>
+        /// Checks whether selected wind option is override.
+        /// </summary>
+        /// <returns>True if override, false if not.</returns>
+        public bool OverrideWind() => SelectedWindOption == WindOptions.Override;
     }
 }

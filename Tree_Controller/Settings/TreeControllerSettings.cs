@@ -17,7 +17,7 @@ namespace Tree_Controller.Settings
     /// </summary>
     [FileLocation("Mods_Yenyang_Tree_Controller")]
     [SettingsUITabOrder(General, WindTab)]
-    [SettingsUIGroupOrder(Stable, DisableWinds, GlobalWindGroup, Remove, Reset, Info)]
+    [SettingsUIGroupOrder(Stable, DisableWinds, Override, Remove, Reset, Info)]
     [SettingsUIMouseAction(TreeControllerMod.ApplyMimicAction, "TreeControllerTool")]
     [SettingsUIMouseAction(TreeControllerMod.SecondaryApplyMimicAction, "TreeControllerTool")]
     public class TreeControllerSettings : ModSetting
@@ -33,7 +33,7 @@ namespace Tree_Controller.Settings
         public const string WindTab = "Wind";
 
         // Groups
-        private const string GlobalWindGroup = "Global Wind Settings";
+        private const string Override = "Override";
         private const string DisableWinds = "DisableWinds";
         private const string Reset = "Reset";
         private const string Remove = "Remove";
@@ -213,13 +213,13 @@ namespace Tree_Controller.Settings
         /// <summary>
         /// Gets or sets a value indicating whether wind is enabled.
         /// </summary>
-        [SettingsUISection(WindTab, GlobalWindGroup)]
+        [SettingsUISection(WindTab, Stable)]
         public WindOptions SelectedWindOption { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether wind is enabled.
         /// </summary>
-        [SettingsUISection(WindTab, GlobalWindGroup)]
+        [SettingsUISection(WindTab, Stable)]
         [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(WindDisabled))]
         public bool DisableWindWhenPaused { get; set; }
 
@@ -228,23 +228,23 @@ namespace Tree_Controller.Settings
         /// <summary>
         /// Gets or sets a value indicating the wind global strength.
         /// </summary>
-        [SettingsUISection(WindTab, GlobalWindGroup)]
-        [SettingsUISlider(min = 0f, max = 3f, step = 0.1f, unit = Unit.kPercentage)]
+        [SettingsUISection(WindTab, Override)]
+        [SettingsUISlider(min = 0f, max = 3f, step = 0.1f, unit = Unit.kFloatSingleFraction)]
         [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
         public float WindGlobalStrength { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the wind gloabal strength 2.
         /// </summary>
-        [SettingsUISection(WindTab, GlobalWindGroup)]
-        [SettingsUISlider(min = 0f, max = 3f, step = 0.1f, unit = Unit.kPercentage)]
+        [SettingsUISection(WindTab, Override)]
+        [SettingsUISlider(min = 0f, max = 3f, step = 0.1f, unit = Unit.kFloatSingleFraction)]
         [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
         public float WindGlobalStrength2 { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the wind direction.
         /// </summary>
-        [SettingsUISection(WindTab, GlobalWindGroup)]
+        [SettingsUISection(WindTab, Override)]
         [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
         [SettingsUISlider(min = 0f, max = 360f, step = 1f, unit = Unit.kAngle)]
         public float WindDirection { get; set; }
@@ -252,7 +252,7 @@ namespace Tree_Controller.Settings
         /// <summary>
         /// Gets or sets a value indicating the wind direction variance.
         /// </summary>
-        [SettingsUISection(WindTab, GlobalWindGroup)]
+        [SettingsUISection(WindTab, Override)]
         [SettingsUISlider(min = 0f, max = 90f, step = 1f, unit = Unit.kAngle)]
         [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
         public float WindDirectionVariance { get; set; }
@@ -260,16 +260,16 @@ namespace Tree_Controller.Settings
         /// <summary>
         /// Gets or sets a value indicating the wind direction variance period.
         /// </summary>
-        [SettingsUISection(WindTab, GlobalWindGroup)]
-        [SettingsUISlider(min = 0.01f, max = 120f, step = 0.1f, unit = Unit.kPercentage)]
+        [SettingsUISection(WindTab, Override)]
+        [SettingsUISlider(min = 0.01f, max = 20f, step = 0.1f, unit = Unit.kFloatSingleFraction)]
         [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
         public float WindDirectionVariancePeriod { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating the wind interpolation duration.
         /// </summary>
-        [SettingsUISection(WindTab, GlobalWindGroup)]
-        [SettingsUISlider(min = 0.0001f, max = 5f, step = 0.01f, unit = Unit.kPercentage)]
+        [SettingsUISection(WindTab, Override)]
+        [SettingsUISlider(min = 0.0001f, max = 5f, step = 0.01f, unit = Unit.kFloatSingleFraction)]
         [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
         public float WindInterpolationDuration { get; set; }
 
@@ -284,7 +284,28 @@ namespace Tree_Controller.Settings
         /// Sets a value indicating whether: a button for Resetting the settings for the wind tab.
         /// </summary>
         [SettingsUIButton]
-        [SettingsUISection(WindTab, GlobalWindGroup)]
+        [SettingsUISection(WindTab, Override)]
+        [SettingsUIConfirmation]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
+        public bool ResetWindSliders
+        {
+            set
+            {
+                WindGlobalStrength = 1f;
+                WindGlobalStrength2 = 1f;
+                WindDirection = 65f;
+                WindDirectionVariance = 25f;
+                WindDirectionVariancePeriod = 15f;
+                WindInterpolationDuration = 0.5f;
+                ApplyAndSave();
+            }
+        }
+
+        /// <summary>
+        /// Sets a value indicating whether: a button for Resetting the settings for the wind tab.
+        /// </summary>
+        [SettingsUIButton]
+        [SettingsUISection(WindTab, Reset)]
         [SettingsUIConfirmation]
         public bool ResetWindSettings
         {

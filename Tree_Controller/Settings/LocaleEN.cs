@@ -77,7 +77,7 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.ResetWindSettings)), "Reset Tree Wind Controller General Settings" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.ResetWindSettings)), "After confirmation this will reset Tree Wind Controller Settings." },
                 { m_Setting.GetOptionWarningLocaleID(nameof(TreeControllerSettings.ResetWindSettings)), "Reset Tree Wind Controller Settings?" },
-                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.Author)), "Tree Wind Controller by BruceyBoy, Originally by donutmonger." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.Author)), "Tree Wind Controller co-authored with BruceyBoy, Originally by donutmonger." },
                 { "Options.TOOLTIPYYTC[WholeMapApply]", "Right Click to Apply." },
                 { "YY_TREE_CONTROLLER[Selection]", "Selection" },
                 { "YY_TREE_CONTROLLER[Age]", "Age" },

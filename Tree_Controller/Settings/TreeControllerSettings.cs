@@ -331,10 +331,12 @@ namespace Tree_Controller.Settings
             UseDeadModelDuringWinter = false;
             AgeSelectionTechnique = AgeSelectionOptions.RandomWeighted;
             SelectedWindOption = WindOptions.Vanilla;
+            DisableWindWhenPaused = false;
             WindGlobalStrength = 1f;
             WindGlobalStrength2 = 1f;
             WindDirection = 65f;
             WindDirectionVariance = 25f;
+            WindDirectionVariancePeriod = 15f;
             WindInterpolationDuration = 0.5f;
         }
 

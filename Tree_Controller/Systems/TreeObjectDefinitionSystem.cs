@@ -13,6 +13,7 @@ namespace Tree_Controller.Systems
     using Game.Prefabs;
     using Game.Tools;
     using Tree_Controller.Tools;
+    using Tree_Controller.Utils;
     using Unity.Collections;
     using Unity.Entities;
     using UnityEngine;
@@ -57,7 +58,7 @@ namespace Tree_Controller.Systems
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_TreeControllerTool = World.GetOrCreateSystemManaged<TreeControllerTool>();
             m_Log.Info($"[{nameof(TreeObjectDefinitionSystem)}] {nameof(OnCreate)}");
-
+            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_ObjectToolSystem || (tool.toolID != null && tool.toolID == "Line Tool");
             m_ObjectDefinitionQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<CreationDefinition, Game.Tools.ObjectDefinition>()
                 .WithAll<Updated>()
@@ -88,7 +89,7 @@ namespace Tree_Controller.Systems
                 }
 
                 Entity prefabEntity = currentCreationDefinition.m_Prefab;
-                Unity.Mathematics.Random random = new ((uint)(Mathf.Abs(currentObjectDefinition.m_Position.x) + Mathf.Abs(currentObjectDefinition.m_Position.z)) * 1000);
+                Unity.Mathematics.Random random = new ((uint)currentCreationDefinition.m_RandomSeed);
                 if ((m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush) || m_ToolSystem.activeTool.toolID == "Line Tool")
                 {
                     prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
@@ -99,8 +100,11 @@ namespace Tree_Controller.Systems
                     }
                 }
 
-                if (m_ToolSystem.actionMode.IsEditor() && EntityManager.HasComponent<TreeData>(prefabEntity))
+                if (m_ToolSystem.activeTool.toolID != "Line Tool" && EntityManager.HasComponent<TreeData>(prefabEntity))
                 {
+                    // This is a hack to prevent the vanilla age row from appearing.
+                    m_ObjectToolSystem.SetMemberValue("allowAge", false);
+
                     TreeState nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random);
                     if (BrushTreeStateAges.ContainsKey(nextTreeState))
                     {

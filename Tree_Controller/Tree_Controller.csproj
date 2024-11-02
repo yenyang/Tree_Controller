@@ -10,9 +10,9 @@
 		
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->
 		<PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
-		<AssemblyVersion>1.4.3</AssemblyVersion>
-		<FileVersion>1.4.3</FileVersion>
-		<Version>1.4.3</Version>
+		<AssemblyVersion>1.5.0</AssemblyVersion>
+		<FileVersion>1.5.0</FileVersion>
+		<Version>1.5.0</Version>
 	</PropertyGroup>
 	<!--Imports must be after PropertyGroup block-->
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
@@ -107,6 +107,18 @@
 		</Reference>
 		<Reference Include="Unity.Mathematics">
 		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Unity.Mathematics.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
+		<Reference Include="Unity.RenderPipelines.Core.Runtime">
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
+		<Reference Include="Unity.RenderPipelines.HighDefinition.Config.Runtime">
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Unity.RenderPipelines.HighDefinition.Config.Runtime.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
+		<Reference Include="Unity.RenderPipelines.HighDefinition.Runtime">
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Unity.RenderPipelines.HighDefinition.Runtime.dll</HintPath>
 		  <Private>False</Private>
 		</Reference>
 		<Reference Include="UnityEngine">
@@ -212,6 +224,12 @@
 		<Content Include="lang\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="LICENSE.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿Tools and systems for changing ages, types, colors, growth and seasonal behaviors for trees, bushes, and plants. Forest brushes.
+﻿Tools and systems for changing ages, types, colors, growth seasonal, and wind behaviors for trees, bushes, and plants. Forest brushes.
 
 Video Demo available on YouTube.
 
@@ -34,6 +34,8 @@ For brushing vegetation this mod has sets of vegetation for forest brushes. Some
 
 Settings button to remove all trees and plants that are not part of a road, building, park, etc. Intended for those that want to start a new map but redo the trees and bushes themselves. (Contributed by phillycheeze)
 
+Tree Wind Controller options in the Wind settings tab. Can Disable or Override shader values for how wind affects trees and vegetation.
+
 ## Custom sets
 Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click the custom set button to save a custom set. Once a set has been saved, click the custom set button to select that set. Hold Ctrl while switching themes to maintain the custom set.
 
@@ -63,7 +65,9 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
 # Credits 
 * yenyang - Mod Author
 * Chameleon TBN - Testing, Feedback, Icons, and Logo
+* BruceyBoy - Co-Authored Tree Wind Controller
 * phillycheese - Code Contribution
+* donutmonger - Original author of Tree Wind Controller on Thunderstore.
 * Algernon - Help with UI, Cooperative Development and Code Sharing, Collaboration regarding line tool.
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing
 * T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing

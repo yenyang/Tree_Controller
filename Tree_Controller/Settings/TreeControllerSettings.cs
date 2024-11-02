@@ -8,17 +8,38 @@ namespace Tree_Controller.Settings
     using Game.Input;
     using Game.Modding;
     using Game.Settings;
+    using Game.UI;
     using Tree_Controller.Systems;
     using Unity.Entities;
 
     /// <summary>
-    /// The mod settings for the Anarchy Mod.
+    /// The mod settings for the Tree Controller Mod.
     /// </summary>
     [FileLocation("Mods_Yenyang_Tree_Controller")]
+    [SettingsUITabOrder(General, WindTab)]
+    [SettingsUIGroupOrder(Stable, DisableWinds, Override, Remove, Reset, Info)]
     [SettingsUIMouseAction(TreeControllerMod.ApplyMimicAction, "TreeControllerTool")]
     [SettingsUIMouseAction(TreeControllerMod.SecondaryApplyMimicAction, "TreeControllerTool")]
     public class TreeControllerSettings : ModSetting
     {
+        /// <summary>
+        /// General Tree Controller Settings.
+        /// </summary>
+        public const string General = "General";
+
+        /// <summary>
+        /// Tree Wind controller settings.
+        /// </summary>
+        public const string WindTab = "Wind";
+
+        // Groups
+        private const string Override = "Override";
+        private const string DisableWinds = "DisableWinds";
+        private const string Reset = "Reset";
+        private const string Remove = "Remove";
+        private const string Stable = "Stable";
+        private const string Info = "Version";
+
         private ReloadFoliageColorDataSystem m_ReloadFoliageColorDataSystem;
         private DestroyFoliageSystem m_DestroyFoliageSystem;
 
@@ -76,36 +97,56 @@ namespace Tree_Controller.Settings
         }
 
         /// <summary>
+        /// An enum for how mod affects wind on vegetatoin.
+        /// </summary>
+        public enum WindOptions
+        {
+            /// <summary>
+            /// Use the game's vanilla wind shader values.
+            /// </summary>
+            Vanilla,
+
+            /// <summary>
+            /// Disable When completely.
+            /// </summary>
+            Disabled,
+
+            /// <summary>
+            /// Override Vanilla wind shader.
+            /// </summary>
+            Override,
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether Deciduous trees use Dead model during winter.
         /// </summary>
+        [SettingsUISection(General, Stable)]
         public bool UseDeadModelDuringWinter { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether tree growth is disabled globally.
         /// </summary>
+        [SettingsUISection(General, Stable)]
         public bool DisableTreeGrowth { get; set; }
 
         /// <summary>
         /// Gets or sets a enum that defines the selection for Age Selection.
         /// </summary>
+        [SettingsUISection(General, Stable)]
         public AgeSelectionOptions AgeSelectionTechnique { get; set; }
 
         /// <summary>
         /// Gets or sets a enum that defines the type of Seasonal foliage color set preference.
         /// </summary>
+        [SettingsUISection(General, Stable)]
         public ColorVariationSetYYTC ColorVariationSet { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to use random rotation while plopping trees.
-        /// </summary>
-        [SettingsUIHidden]
-        public bool RandomRotation { get; set; }
 
         /// <summary>
         /// Sets a value indicating whether the mod needs to safely remove components and reset models.
         /// </summary>
         [SettingsUIButton]
         [SettingsUIConfirmation]
+        [SettingsUISection(General, Remove)]
         public bool SafelyRemoveButton
         {
             set
@@ -119,13 +160,15 @@ namespace Tree_Controller.Settings
         /// </summary>
         [SettingsUIButton]
         [SettingsUIConfirmation]
-        public bool ResetModSettings
+        [SettingsUISection(General, Reset)]
+        public bool ResetGeneralSettings
         {
             set
             {
-                bool rotation = RandomRotation;
-                SetDefaults();
-                RandomRotation = rotation;
+                DisableTreeGrowth = false;
+                ColorVariationSet = ColorVariationSetYYTC.Vanilla;
+                UseDeadModelDuringWinter = false;
+                AgeSelectionTechnique = AgeSelectionOptions.RandomWeighted;
                 ApplyAndSave();
             }
         }
@@ -135,6 +178,7 @@ namespace Tree_Controller.Settings
         /// </summary>
         [SettingsUIButton]
         [SettingsUIConfirmation]
+        [SettingsUISection(General, Remove)]
         public bool DestroyFoliageSettings
         {
             set
@@ -143,6 +187,12 @@ namespace Tree_Controller.Settings
                 m_DestroyFoliageSystem.Enabled = true;
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating the version.
+        /// </summary>
+        [SettingsUISection(General, Info)]
+        public string Version => TreeControllerMod.Instance.Version;
 
         /// <summary>
         /// Gets or sets hidden keybinding for apply action.
@@ -161,18 +211,131 @@ namespace Tree_Controller.Settings
         public ProxyBinding SecondaryApplyMimic { get; set; }
 
         /// <summary>
-        /// Gets a value indicating the version.
+        /// Gets or sets a value indicating whether wind is enabled.
         /// </summary>
-        public string Version => TreeControllerMod.Instance.Version;
+        [SettingsUISection(WindTab, Stable)]
+        public WindOptions SelectedWindOption { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether wind is enabled.
+        /// </summary>
+        [SettingsUISection(WindTab, Stable)]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(WindDisabled))]
+        public bool DisableWindWhenPaused { get; set; }
+
+        // Global Wind Settings
+
+        /// <summary>
+        /// Gets or sets a value indicating the wind global strength.
+        /// </summary>
+        [SettingsUISection(WindTab, Override)]
+        [SettingsUISlider(min = 0f, max = 3f, step = 0.1f, unit = Unit.kFloatSingleFraction)]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
+        public float WindGlobalStrength { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the wind gloabal strength 2.
+        /// </summary>
+        [SettingsUISection(WindTab, Override)]
+        [SettingsUISlider(min = 0f, max = 3f, step = 0.1f, unit = Unit.kFloatSingleFraction)]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
+        public float WindGlobalStrength2 { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the wind direction.
+        /// </summary>
+        [SettingsUISection(WindTab, Override)]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
+        [SettingsUISlider(min = 0f, max = 360f, step = 1f, unit = Unit.kAngle)]
+        public float WindDirection { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the wind direction variance.
+        /// </summary>
+        [SettingsUISection(WindTab, Override)]
+        [SettingsUISlider(min = 0f, max = 90f, step = 1f, unit = Unit.kAngle)]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
+        public float WindDirectionVariance { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the wind direction variance period.
+        /// </summary>
+        [SettingsUISection(WindTab, Override)]
+        [SettingsUISlider(min = 0.01f, max = 20f, step = 0.1f, unit = Unit.kFloatSingleFraction)]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
+        public float WindDirectionVariancePeriod { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the wind interpolation duration.
+        /// </summary>
+        [SettingsUISection(WindTab, Override)]
+        [SettingsUISlider(min = 0.0001f, max = 5f, step = 0.01f, unit = Unit.kFloatSingleFraction)]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
+        public float WindInterpolationDuration { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating the author of Tree Wind Controller.
+        /// </summary>
+        [SettingsUISection(WindTab, Info)]
+        [SettingsUIMultilineText]
+        public string Author { get; }
+
+        /// <summary>
+        /// Sets a value indicating whether: a button for Resetting the settings for the wind tab.
+        /// </summary>
+        [SettingsUIButton]
+        [SettingsUISection(WindTab, Override)]
+        [SettingsUIConfirmation]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(OverrideWind), true)]
+        public bool ResetWindSliders
+        {
+            set
+            {
+                WindGlobalStrength = 1f;
+                WindGlobalStrength2 = 1f;
+                WindDirection = 65f;
+                WindDirectionVariance = 25f;
+                WindDirectionVariancePeriod = 15f;
+                WindInterpolationDuration = 0.5f;
+                ApplyAndSave();
+            }
+        }
+
+        /// <summary>
+        /// Sets a value indicating whether: a button for Resetting the settings for the wind tab.
+        /// </summary>
+        [SettingsUIButton]
+        [SettingsUISection(WindTab, Reset)]
+        [SettingsUIConfirmation]
+        public bool ResetWindSettings
+        {
+            set
+            {
+                SelectedWindOption = WindOptions.Vanilla;
+                DisableWindWhenPaused = false;
+                WindGlobalStrength = 1f;
+                WindGlobalStrength2 = 1f;
+                WindDirection = 65f;
+                WindDirectionVariance = 25f;
+                WindDirectionVariancePeriod = 15f;
+                WindInterpolationDuration = 0.5f;
+                ApplyAndSave();
+            }
+        }
 
         /// <inheritdoc/>
         public override void SetDefaults()
         {
-            RandomRotation = true;
             DisableTreeGrowth = false;
             ColorVariationSet = ColorVariationSetYYTC.Vanilla;
             UseDeadModelDuringWinter = false;
             AgeSelectionTechnique = AgeSelectionOptions.RandomWeighted;
+            SelectedWindOption = WindOptions.Vanilla;
+            WindGlobalStrength = 1f;
+            WindGlobalStrength2 = 1f;
+            WindDirection = 65f;
+            WindDirectionVariance = 25f;
+            WindInterpolationDuration = 0.5f;
         }
 
         /// <summary>
@@ -192,5 +355,18 @@ namespace Tree_Controller.Settings
         {
             TreeControllerMod.Instance.Logger.Debug($"Setting triggered or updated: {setting}.");
         }
+
+        /// <summary>
+        /// Checks whether selected wind option is override.
+        /// </summary>
+        /// <returns>True if override, false if not.</returns>
+        public bool OverrideWind() => SelectedWindOption == WindOptions.Override;
+
+
+        /// <summary>
+        /// Checks whether selected wind option is disabled.
+        /// </summary>
+        /// <returns>True if disabled, false if not.</returns>
+        public bool WindDisabled() => SelectedWindOption == WindOptions.Disabled;
     }
 }

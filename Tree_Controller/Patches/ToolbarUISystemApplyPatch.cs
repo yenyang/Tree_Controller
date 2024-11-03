@@ -70,7 +70,6 @@ namespace Tree_Controller.Patches
 
                     if (toolSystem.activeTool == objectToolSystem && prefabSystem.EntityManager.HasComponent<TreeData>(prefabEntity))
                     {
-                        TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} checking age mask binding");
                         var ageMaskBindingVar = toolbarUISystem.GetMemberValue("m_AgeMaskBinding");
                         if (ageMaskBindingVar is ValueBinding<int>)
                         {

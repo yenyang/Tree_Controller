@@ -34,6 +34,8 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.UseDeadModelDuringWinter)), "Will temporarily make all non-lumber industry deciduous trees use the dead model and pause growth during winter." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.DisableTreeGrowth)), "Disable Tree Growth" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.DisableTreeGrowth)), "Disable tree growth for the entire map except for lumber industry." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.FreeVegetation)), "Free Trees and Vegetation" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.FreeVegetation)), "Sets the cost of trees and vegetation to 0." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.ColorVariationSet)), "Color Variation Set" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.ColorVariationSet)), "Sets of seasonal colors for Trees, bushes, and plants. Vanilla is the base game. Yenyang's is my curated colors. Spring is green year round. Autumn is fall colors year round. Custom has been moved to a new mod called Recolor." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.SafelyRemoveButton)), "Safely Remove" },

@@ -142,6 +142,13 @@ namespace Tree_Controller.Settings
         public ColorVariationSetYYTC ColorVariationSet { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to make vegetation costs free.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
+        [SettingsUISetter(typeof(TreeControllerSettings), nameof(ToggleVegetationCost))]
+        public bool FreeVegetation { get; set; }
+
+        /// <summary>
         /// Sets a value indicating whether the mod needs to safely remove components and reset models.
         /// </summary>
         [SettingsUIButton]
@@ -169,6 +176,7 @@ namespace Tree_Controller.Settings
                 ColorVariationSet = ColorVariationSetYYTC.Vanilla;
                 UseDeadModelDuringWinter = false;
                 AgeSelectionTechnique = AgeSelectionOptions.RandomWeighted;
+                FreeVegetation = false;
                 ApplyAndSave();
             }
         }
@@ -338,6 +346,7 @@ namespace Tree_Controller.Settings
             WindDirectionVariance = 25f;
             WindDirectionVariancePeriod = 15f;
             WindInterpolationDuration = 0.5f;
+            FreeVegetation = false;
         }
 
         /// <summary>
@@ -370,5 +379,22 @@ namespace Tree_Controller.Settings
         /// </summary>
         /// <returns>True if disabled, false if not.</returns>
         public bool WindDisabled() => SelectedWindOption == WindOptions.Disabled;
+
+        /// <summary>
+        /// Toggles the vegetation cost by calling public methods from FreeVegetationSystem.
+        /// </summary>
+        /// <param name="free">Should vegeation be free or regular cost.</param>
+        public void ToggleVegetationCost(bool free)
+        {
+            FreeVegetationSystem freeVegetationSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<FreeVegetationSystem>();
+            if (free)
+            {
+                freeVegetationSystem.SetVegetationCostsToZero();
+            }
+            else
+            {
+                freeVegetationSystem.ResetVegetationCosts();
+            }
+        }
     }
 }

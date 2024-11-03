@@ -73,7 +73,6 @@ namespace Tree_Controller.Systems
         protected override void OnUpdate()
         {
             NativeArray<Entity> entities = m_ObjectDefinitionQuery.ToEntityArray(Allocator.Temp);
-            m_Log.Debug(entities.Length);
             foreach (Entity entity in entities)
             {
                 if (!EntityManager.TryGetComponent(entity, out CreationDefinition currentCreationDefinition))

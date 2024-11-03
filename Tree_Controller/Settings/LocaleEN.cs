@@ -125,6 +125,7 @@ namespace Tree_Controller.Settings
                 { "YY_TREE_CONTROLLER[custom-set-5]", "Custom Set 5" },
                 { "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]", "Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click this button to save a custom set. Once a set has been saved, click this button to select that set. Hold Ctrl while switching themes to maintain the custom set." },
                 { "YY_TREE_CONTROLLER[change]", "Change" },
+                { TooltipTitleKey("Stump"), "Stump" },
             };
         }
 

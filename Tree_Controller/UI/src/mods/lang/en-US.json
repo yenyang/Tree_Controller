@@ -6,6 +6,8 @@
   "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.UseDeadModelDuringWinter]": "Will temporarily make all non-lumber industry deciduous trees use the dead model and pause growth during winter.",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.DisableTreeGrowth]": "Disable Tree Growth",
   "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.DisableTreeGrowth]": "Disable tree growth for the entire map except for lumber industry.",
+  "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.FreeVegetation]": "Free Trees and Vegetation",
+  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.FreeVegetation]": "Sets the cost of trees and vegetation to 0.",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.ColorVariationSet]": "Color Variation Set",
   "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.ColorVariationSet]": "Sets of seasonal colors for Trees, bushes, and plants. Vanilla is the base game. Yenyang's is my curated colors. Spring is green year round. Autumn is fall colors year round. Custom has been moved to a new mod called Recolor.",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.SafelyRemoveButton]": "Safely Remove",
@@ -94,5 +96,6 @@
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-4]": "Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click this button to save a custom set. Once a set has been saved, click this button to select that set. Hold Ctrl while switching themes to maintain the custom set.",
   "YY_TREE_CONTROLLER[custom-set-5]": "Custom Set 5",
   "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]": "Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click this button to save a custom set. Once a set has been saved, click this button to select that set. Hold Ctrl while switching themes to maintain the custom set.",
-  "YY_TREE_CONTROLLER[change]": "Change"
+  "YY_TREE_CONTROLLER[change]": "Change",
+  "Tree_Controller.TOOLTIP_TITLE[Stump]": "Stump"
 }

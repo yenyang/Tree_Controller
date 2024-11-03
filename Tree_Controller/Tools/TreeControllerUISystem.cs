@@ -236,6 +236,11 @@ namespace Tree_Controller.Tools
                 treeState.Add(TreeState.Dead);
             }
 
+            if ((seletedAges & Ages.Stump) == Ages.Stump)
+            {
+                treeState.Add(TreeState.Stump);
+            }
+
             return treeState;
         }
 
@@ -276,6 +281,11 @@ namespace Tree_Controller.Tools
             if ((seletedAges & Ages.Dead) == Ages.Dead)
             {
                 selectedTreeStates.Add(TreeState.Dead);
+            }
+
+            if ((seletedAges & Ages.Stump) == Ages.Stump)
+            {
+                selectedTreeStates.Add(TreeState.Stump);
             }
 
             if (selectedTreeStates.Count == 1)
@@ -563,7 +573,7 @@ namespace Tree_Controller.Tools
             }
             else if (toggledAge == Ages.All && selectedAges == Ages.None)
             {
-                selectedAges |= Ages.Child | Ages.Teen | Ages.Adult | Ages.Elderly | Ages.Elderly | Ages.Dead | Ages.All;
+                selectedAges |= Ages.Child | Ages.Teen | Ages.Adult | Ages.Elderly | Ages.Elderly | Ages.Dead | Ages.Stump | Ages.All;
                 m_SelectedAges.Update((int)selectedAges);
                 return;
             }
@@ -577,7 +587,7 @@ namespace Tree_Controller.Tools
                 selectedAges |= toggledAge;
             }
 
-            if ((int)selectedAges == 31)
+            if ((int)selectedAges == ((int)Ages.All - 1))
             {
                 selectedAges |= Ages.All;
             }

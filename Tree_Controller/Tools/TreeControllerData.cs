@@ -40,9 +40,14 @@ namespace Tree_Controller.Tools
         Dead = 16,
 
         /// <summary>
+        /// Stump model.
+        /// </summary>
+        Stump = 32,
+
+        /// <summary>
         /// Random selection of all ages.
         /// </summary>
-        All = 32,
+        All = 64,
     }
 
     /// <summary>
@@ -96,40 +101,4 @@ namespace Tree_Controller.Tools
         /// </summary>
         Map = 3,
     }
-
-    /*
-    /// <summary>
-    /// A JsonWritable binding for tree controller tool data.
-    /// </summary>
-    public struct TreeControllerData : IJsonWritable
-    {
-        /// <summary>
-        /// the currently selected ages in an enum.
-        /// </summary>
-        public Ages selectedAges;
-
-        /// <summary>
-        /// The currently selected tool mode for object tool or tree controller tool.
-        /// </summary>
-        public ToolMode toolMode;
-
-        /// <summary>
-        /// The current selection mode.
-        /// </summary>
-        public Selection selection;
-
-        /// <inheritdoc/>
-        public void Write(IJsonWriter writer)
-        {
-            writer.TypeBegin(GetType().FullName);
-            writer.PropertyName(nameof(selectedAges));
-            writer.Write(Enum.GetName(typeof(Ages), selectedAges));
-            writer.PropertyName(nameof(toolMode));
-            writer.Write(Enum.GetName(typeof(ToolMode), toolMode));
-            writer.PropertyName(nameof(selection));
-            writer.Write(Enum.GetName(typeof(Selection), selection));
-            writer.TypeEnd();
-        }
-    }
-    */
 }

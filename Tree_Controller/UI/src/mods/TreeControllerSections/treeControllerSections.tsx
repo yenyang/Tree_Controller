@@ -17,7 +17,8 @@ enum Ages
     Adult = 4,
     Elderly = 8,
     Dead = 16,
-    All = 32,
+    Stump = 32,
+    All = 64,
 }
 
 enum ToolMode 
@@ -36,27 +37,28 @@ enum Selection
 }
 
 // These contain the coui paths to Unified Icon Library svg assets
-const couiStandard =                         "coui://uil/Standard/";
+const uilStandard =                         "coui://uil/Standard/";
 const gameStandard =                           "Media/Tools/Vegetation Options/";
-const ageChangSrc =          couiStandard +  "ReplaceTreeAge.svg";
-const prefabChangeSrc =      couiStandard +  "Replace.svg";
-const buildingOrNetSrc =     couiStandard +  "HouseandNetwork.svg";
-const radiusSrc =            couiStandard +  "Circle.svg";
-const wholeMapSrc    =       couiStandard +  "MapGrid.svg";
+const ageChangSrc =          uilStandard +  "ReplaceTreeAge.svg";
+const prefabChangeSrc =      uilStandard +  "Replace.svg";
+const buildingOrNetSrc =     uilStandard +  "HouseandNetwork.svg";
+const radiusSrc =            uilStandard +  "Circle.svg";
+const wholeMapSrc    =       uilStandard +  "MapGrid.svg";
 const childSrc =             gameStandard + "TreeChild.svg";
 const teenSrc =              gameStandard +  "TreeTeen.svg";
 const adultSrc =             gameStandard +  "TreeAdult.svg";
-const singleSrc =           couiStandard + "TreeAdult.svg";
+const singleSrc =           uilStandard + "TreeAdult.svg";
 const elderlySrc =           gameStandard +  "TreeElderly.svg";
-const deadSrc =              couiStandard +  "TreeDead.svg";
-const arrowDownSrc =         couiStandard +  "ArrowDownThickStroke.svg";
-const arrowUpSrc =           couiStandard +  "ArrowUpThickStroke.svg";
-const deciduousSrc =         couiStandard +  "TreesDeciduous.svg";
-const evergreenSrc =         couiStandard +  "TreesNeedle.svg";
-const bushesSrc =            couiStandard +  "Bushes.svg";
-const diskSaveSrc =          couiStandard +  "DiskSave.svg";
-const clearAgesSrc =        couiStandard + "StarAll.svg";
-const brushSrc =            couiStandard + "Trees.svg";
+const deadSrc =              uilStandard +  "TreeDead.svg";
+const arrowDownSrc =         uilStandard +  "ArrowDownThickStroke.svg";
+const arrowUpSrc =           uilStandard +  "ArrowUpThickStroke.svg";
+const deciduousSrc =         uilStandard +  "TreesDeciduous.svg";
+const evergreenSrc =         uilStandard +  "TreesNeedle.svg";
+const bushesSrc =            uilStandard +  "Bushes.svg";
+const diskSaveSrc =          uilStandard +  "DiskSave.svg";
+const clearAgesSrc =        uilStandard + "StarAll.svg";
+const brushSrc =            uilStandard + "Trees.svg";
+const stumpSrc =            uilStandard + "TreeStump.svg";
 
 // These establishes the binding with C# side. Without C# side game ui will crash.
 const ToolMode$ =            bindValue<number> (mod.id, 'ToolMode');
@@ -274,6 +276,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                         <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.Adult) == Ages.Adult}     tooltip={adultTooltipTitle}            onSelect={() => changeSelectedAge(Ages.Adult)}      src={adultSrc}           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.Elderly) == Ages.Elderly} tooltip={elderlyTooltipTitle}        onSelect={() => changeSelectedAge(Ages.Elderly)}    src={elderlySrc}         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.Dead) == Ages.Dead}       tooltip={deadTooltipTitle}              onSelect={() => changeSelectedAge(Ages.Dead)}       src={deadSrc}            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.Stump) == Ages.Stump}       tooltip={translate("Tree_Controller.TOOLTIP_TITLE[Stump]", locale["Tree_Controller.TOOLTIP_TITLE[Stump]"])}              onSelect={() => changeSelectedAge(Ages.Stump)}       src={stumpSrc}            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                     </VanillaComponentResolver.instance.Section>
                     )}
                     { treeControllerToolActive && (

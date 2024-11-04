@@ -8,6 +8,7 @@ namespace Tree_Controller.Tools
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Runtime.InteropServices.ComTypes;
     using System.Xml.Serialization;
     using Colossal.Annotations;
     using Colossal.Entities;
@@ -207,7 +208,7 @@ namespace Tree_Controller.Tools
 
             NativeList<TreeState> treeState = new NativeList<TreeState>(Allocator.TempJob);
 
-            if (seletedAges == Ages.None)
+            if (seletedAges == Ages.None || ((seletedAges & Ages.Stump) == Ages.Stump && !m_ShowStump.Value))
             {
                 treeState.Add(TreeState.Adult);
                 return treeState;
@@ -238,7 +239,7 @@ namespace Tree_Controller.Tools
                 treeState.Add(TreeState.Dead);
             }
 
-            if ((seletedAges & Ages.Stump) == Ages.Stump)
+            if ((seletedAges & Ages.Stump) == Ages.Stump && m_ShowStump.Value)
             {
                 treeState.Add(TreeState.Stump);
             }
@@ -850,6 +851,11 @@ namespace Tree_Controller.Tools
                     }
                 }
 
+                if (!isTree && ReviewPrefabSubobjects(prefabEntity))
+                {
+                    isTree = true;
+                }
+
                 m_IsTree.Update(isTree);
                 if (selectedPrefabs.Count > 1)
                 {
@@ -924,15 +930,80 @@ namespace Tree_Controller.Tools
                 else
                 {
                     m_IsVegetation.Update(false);
+                    m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} not vegetation");
+                    if (ReviewPrefabSubobjects(prefabEntity))
+                    {
+                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} update is tree to true");
+                        m_IsTree.Update(true);
+                    }
+                    else
+                    {
+                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} update is tree to false");
+                        m_IsTree.Update(false);
+                    }
+
                 }
             }
             else if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity2))
             {
                 m_IsVegetation.Update(EntityManager.HasComponent<Vegetation>(prefabEntity2));
-                m_IsTree.Update(EntityManager.HasComponent<TreeData>(prefabEntity2));
+                bool isTree = false;
+                if (EntityManager.HasComponent<TreeData>(prefabEntity2))
+                {
+                    isTree = true;
+                }
+
+                if (!isTree && ReviewPrefabSubobjects(prefabEntity2))
+                {
+                    isTree = true;
+                }
+
+                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} isTree : {isTree}");
+                m_IsTree.Update(isTree);
             }
 
             HandleShowStumps();
+        }
+
+        private bool ReviewPrefabSubobjects(Entity prefabEntity)
+        {
+            bool isTree = false;
+
+            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ReviewPrefabSubobjects)}");
+            if (EntityManager.TryGetBuffer(prefabEntity, isReadOnly: true, out DynamicBuffer<Game.Prefabs.SubObject> subobjectsBuffer))
+            {
+
+                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ReviewPrefabSubobjects)} has subobjects buffer");
+                foreach (Game.Prefabs.SubObject subObject in subobjectsBuffer)
+                {
+                    if (EntityManager.HasComponent<Game.Prefabs.TreeData>(subObject.m_Prefab))
+                    {
+                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ReviewPrefabSubobjects)} has Tree Data");
+                        isTree = true;
+                        break;
+                    }
+
+                    if (EntityManager.TryGetBuffer(subObject.m_Prefab, isReadOnly: true, out DynamicBuffer<Game.Prefabs.PlaceholderObjectElement> placeholderObjectBuffer))
+                    {
+                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ReviewPrefabSubobjects)} has placeholder object buffer");
+                        foreach (PlaceholderObjectElement placeholderObjectElement in placeholderObjectBuffer)
+                        {
+                            if (EntityManager.HasComponent<Game.Prefabs.TreeData>(placeholderObjectElement.m_Object))
+                            {
+                                isTree = true;
+                                break;
+                            }
+                        }
+
+                        if (isTree)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return isTree;
         }
 
         private void HandleShowStumps()

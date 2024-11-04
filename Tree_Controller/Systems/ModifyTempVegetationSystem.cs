@@ -8,8 +8,10 @@ namespace Tree_Controller.Systems
     using Colossal.Logging;
     using Game;
     using Game.Common;
+    using Game.Objects;
     using Game.Prefabs;
     using Game.Tools;
+    using Tree_Controller.Tools;
     using Unity.Collections;
     using Unity.Entities;
 
@@ -23,8 +25,10 @@ namespace Tree_Controller.Systems
         private ObjectToolSystem m_ObjectToolSystem;
         private PrefabSystem m_PrefabSystem;
         private NetToolSystem m_NetToolSystem;
-        private EntityQuery m_TempVegetationQuery;
+        private EntityQuery m_TempOwnedTreeQuery;
+        private EntityQuery m_TempOwnedVegetationQuery;
         private EntityQuery m_TempTreeQuery;
+        private TreeControllerUISystem m_UISystem;
 
         /// <inheritdoc/>
         protected override void OnCreate()
@@ -35,33 +39,59 @@ namespace Tree_Controller.Systems
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
+            m_UISystem = World.GetOrCreateSystemManaged<TreeControllerUISystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_ObjectToolSystem || (tool.toolID != null && tool.toolID == "Line Tool") || tool == m_NetToolSystem;
 
-            m_TempVegetationQuery = SystemAPI.QueryBuilder()
-                .WithAll<Updated, Temp>()
+            m_TempOwnedVegetationQuery = SystemAPI.QueryBuilder()
+                .WithAll<Updated, Temp, Owner, PseudoRandomSeed>()
                 .WithAny<Game.Objects.Tree, Game.Objects.Plant>()
                 .WithNone<Deleted, Overridden>()
                 .Build();
 
-            m_TempTreeQuery = SystemAPI.QueryBuilder()
-                .WithAll<Updated, Temp, Game.Objects.Tree>()
+            m_TempOwnedTreeQuery = SystemAPI.QueryBuilder()
+                .WithAll<Updated, Temp, Owner, Game.Objects.Tree>()
                 .WithNone<Deleted, Overridden>()
                 .Build();
 
-            RequireForUpdate(m_TempVegetationQuery);
+            m_TempTreeQuery = SystemAPI.QueryBuilder()
+                .WithAll<Updated, Temp, Game.Objects.Tree, PseudoRandomSeed>()
+                .WithNone<Deleted, Overridden, Owner>()
+                .Build();
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-
-            NativeArray<Entity> tempTreeEntities = m_TempTreeQuery.ToEntityArray(Allocator.Temp);
-            if (TreeControllerMod.Instance.Settings.IncludeStumps && tempTreeEntities.Length > 0)
+            if (!m_TempOwnedVegetationQuery.IsEmptyIgnoreFilter)
             {
-                foreach (Entity tempTreeEntity in tempTreeEntities)
+                NativeArray<Entity> entities = m_TempOwnedVegetationQuery.ToEntityArray(Allocator.Temp);
+                ushort i = 1;
+                foreach (Entity entity in entities)
                 {
-                    if (!EntityManager.TryGetComponent(tempTreeEntity, out Game.Objects.Tree tree)
-                        || !EntityManager.TryGetComponent(tempTreeEntity, out PrefabRef prefabRef)
+                    if (EntityManager.TryGetComponent(entity, out PseudoRandomSeed pseudoRandomSeed))
+                    {
+                        if (pseudoRandomSeed.m_Seed + i < ushort.MaxValue)
+                        {
+                            pseudoRandomSeed.m_Seed += i;
+                        }
+                        else
+                        {
+                            pseudoRandomSeed.m_Seed -= i;
+                        }
+
+                        i++;
+                        EntityManager.SetComponentData(entity, pseudoRandomSeed);
+                    }
+                }
+            }
+
+            if (TreeControllerMod.Instance.Settings.IncludeStumps && !m_TempTreeQuery.IsEmptyIgnoreFilter)
+            {
+                NativeArray<Entity> entities = m_TempTreeQuery.ToEntityArray(Allocator.Temp);
+                foreach (Entity entity in entities)
+                {
+                    if (!EntityManager.TryGetComponent(entity, out Game.Objects.Tree tree)
+                        || !EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)
                         || !EntityManager.TryGetBuffer(prefabRef.m_Prefab, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
                         || subMeshBuffer.Length <= 5)
                     {
@@ -72,8 +102,34 @@ namespace Tree_Controller.Systems
                     {
                         tree.m_State = Game.Objects.TreeState.Stump;
                         tree.m_Growth = 0;
-                        EntityManager.SetComponentData(tempTreeEntity, tree);
+                        EntityManager.SetComponentData(entity, tree);
                     }
+                }
+            }
+
+            if (!m_TempOwnedTreeQuery.IsEmptyIgnoreFilter)
+            {
+                NativeArray<Entity> entities = m_TempOwnedTreeQuery.ToEntityArray(Allocator.Temp);
+                foreach (Entity entity in entities)
+                {
+                    if (!EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)
+                        || !EntityManager.TryGetComponent(entity, out Game.Objects.Tree tree)
+                        || !EntityManager.TryGetComponent(entity, out PseudoRandomSeed pseudoRandomSeed))
+                    {
+                        continue;
+                    }
+
+                    bool includeStump = false;
+                    if (EntityManager.TryGetBuffer(prefabRef.m_Prefab, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
+                       && subMeshBuffer.Length > 5)
+                    {
+                        includeStump = true;
+                    }
+
+                    Unity.Mathematics.Random random = new (pseudoRandomSeed.m_Seed);
+                    TreeState nextTreeState = m_UISystem.GetNextTreeState(ref random, includeStump);
+                    tree.m_State = nextTreeState;
+                    EntityManager.SetComponentData(entity, tree);
                 }
             }
         }

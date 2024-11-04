@@ -136,6 +136,12 @@ namespace Tree_Controller.Settings
         public AgeSelectionOptions AgeSelectionTechnique { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to include stumps.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
+        public bool IncludeStumps { get; set; }
+
+        /// <summary>
         /// Gets or sets a enum that defines the type of Seasonal foliage color set preference.
         /// </summary>
         [SettingsUISection(General, Stable)]
@@ -177,6 +183,7 @@ namespace Tree_Controller.Settings
                 UseDeadModelDuringWinter = false;
                 AgeSelectionTechnique = AgeSelectionOptions.RandomWeighted;
                 FreeVegetation = false;
+                IncludeStumps = false;
                 ApplyAndSave();
             }
         }
@@ -347,6 +354,7 @@ namespace Tree_Controller.Settings
             WindDirectionVariancePeriod = 15f;
             WindInterpolationDuration = 0.5f;
             FreeVegetation = false;
+            IncludeStumps = false;
         }
 
         /// <summary>

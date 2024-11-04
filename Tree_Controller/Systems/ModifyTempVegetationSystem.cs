@@ -56,12 +56,24 @@ namespace Tree_Controller.Systems
         {
 
             NativeArray<Entity> tempTreeEntities = m_TempTreeQuery.ToEntityArray(Allocator.Temp);
-            foreach (Entity tempTreeEntity in tempTreeEntities)
+            if (TreeControllerMod.Instance.Settings.IncludeStumps && tempTreeEntities.Length > 0)
             {
-                if (EntityManager.TryGetComponent(tempTreeEntity, out Game.Objects.Tree tree))
+                foreach (Entity tempTreeEntity in tempTreeEntities)
                 {
-                    tree.m_State = Game.Objects.TreeState.Stump;
-                    EntityManager.SetComponentData(tempTreeEntity, tree);
+                    if (!EntityManager.TryGetComponent(tempTreeEntity, out Game.Objects.Tree tree)
+                        || !EntityManager.TryGetComponent(tempTreeEntity, out PrefabRef prefabRef)
+                        || !EntityManager.TryGetBuffer(prefabRef.m_Prefab, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
+                        || subMeshBuffer.Length <= 5)
+                    {
+                        continue;
+                    }
+
+                    if (tree.m_State == Game.Objects.TreeState.Dead && tree.m_Growth == 255)
+                    {
+                        tree.m_State = Game.Objects.TreeState.Stump;
+                        tree.m_Growth = 0;
+                        EntityManager.SetComponentData(tempTreeEntity, tree);
+                    }
                 }
             }
         }

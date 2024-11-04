@@ -10,6 +10,7 @@ namespace Tree_Controller.Tools
     using System.IO;
     using System.Xml.Serialization;
     using Colossal.Annotations;
+    using Colossal.Entities;
     using Colossal.Logging;
     using Colossal.PSI.Environment;
     using Colossal.Serialization.Entities;
@@ -19,7 +20,6 @@ namespace Tree_Controller.Tools
     using Game.Prefabs;
     using Game.SceneFlow;
     using Game.Tools;
-    using Game.UI;
     using Tree_Controller.Extensions;
     using Tree_Controller.Settings;
     using Tree_Controller.Systems;
@@ -42,6 +42,7 @@ namespace Tree_Controller.Tools
             { TreeState.Adult, ObjectUtils.TREE_AGE_PHASE_ADULT },
             { TreeState.Elderly, ObjectUtils.TREE_AGE_PHASE_ELDERLY },
             { TreeState.Dead, ObjectUtils.TREE_AGE_PHASE_DEAD },
+            { TreeState.Stump, 0f },
         };
 
         private readonly List<PrefabID> m_VanillaDeciduousPrefabIDs = new()
@@ -121,6 +122,7 @@ namespace Tree_Controller.Tools
         private ValueBinding<float> m_Radius;
         private ValueBinding<bool> m_IsVegetation;
         private ValueBinding<bool> m_IsTree;
+        private ValueBindingHelper<bool> m_ShowStump;
         private ValueBinding<string> m_SelectedPrefabSet;
         private ValueBindingHelper<bool> m_IsEditor;
         private bool m_UpdateSelectionSet = false;
@@ -248,14 +250,27 @@ namespace Tree_Controller.Tools
         /// Gets a tree state from the selected tree state given a random parameter.
         /// </summary>
         /// <param name="random">A source of randomness.</param>
+        /// <param name="includeStump">Should stump be included or not.</param>
         /// <returns>A random tree state from selected or Adult if none are selected.</returns>
-        public TreeState GetNextTreeState(ref Unity.Mathematics.Random random)
+        public TreeState GetNextTreeState(ref Unity.Mathematics.Random random, bool includeStump)
         {
             List<TreeState> selectedTreeStates = new List<TreeState>();
             Ages seletedAges = (Ages)m_SelectedAges.value;
             if (seletedAges == Ages.None)
             {
                 return TreeState.Adult;
+            }
+
+            if (seletedAges == Ages.Stump && !includeStump)
+            {
+                if (m_ShowStump.Value)
+                {
+                    return TreeState.Dead;
+                }
+                else
+                {
+                    return TreeState.Adult;
+                }
             }
 
             if ((seletedAges & Ages.Child) == Ages.Child)
@@ -283,7 +298,7 @@ namespace Tree_Controller.Tools
                 selectedTreeStates.Add(TreeState.Dead);
             }
 
-            if ((seletedAges & Ages.Stump) == Ages.Stump)
+            if ((seletedAges & Ages.Stump) == Ages.Stump && includeStump)
             {
                 selectedTreeStates.Add(TreeState.Stump);
             }
@@ -408,6 +423,7 @@ namespace Tree_Controller.Tools
             AddBinding(m_Radius = new ValueBinding<float>(ModId, "Radius", 100f));
             AddBinding(m_SelectedPrefabSet = new ValueBinding<string>(ModId, "PrefabSet", string.Empty));
             m_IsEditor = CreateBinding("IsEditor", false);
+            m_ShowStump = CreateBinding("ShowStump", false);
 
             // This section handles trigger bindings which listen for triggers from UI and then start an event.
             AddBinding(new TriggerBinding<int>(ModId, "ChangeToolMode", ChangeToolMode));
@@ -855,6 +871,8 @@ namespace Tree_Controller.Tools
                 m_IsTree.Update(false);
                 m_IsVegetation.Update(false);
             }
+
+            HandleShowStumps();
         }
 
         /// <summary>
@@ -912,6 +930,28 @@ namespace Tree_Controller.Tools
             {
                 m_IsVegetation.Update(EntityManager.HasComponent<Vegetation>(prefabEntity2));
                 m_IsTree.Update(EntityManager.HasComponent<TreeData>(prefabEntity2));
+            }
+
+            HandleShowStumps();
+        }
+
+        private void HandleShowStumps()
+        {
+            m_ShowStump.Value = false;
+            List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
+            if (m_IsTree.value && TreeControllerMod.Instance.Settings.IncludeStumps)
+            {
+                foreach (PrefabBase prefab in selectedPrefabs)
+                {
+                    if (m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity)
+                        && EntityManager.HasComponent<TreeData>(prefabEntity)
+                        && EntityManager.TryGetBuffer(prefabEntity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
+                        && subMeshBuffer.Length > 5)
+                    {
+                        m_ShowStump.Value = true;
+                        break;
+                    }
+                }
             }
         }
 

@@ -36,6 +36,8 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.DisableTreeGrowth)), "Disable tree growth for the entire map except for lumber industry." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.FreeVegetation)), "Free Trees and Vegetation" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.FreeVegetation)), "Sets the cost of trees and vegetation to 0." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.IncludeStumps)), "Include Stumps" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.IncludeStumps)), "Age selection will include stumps for Trees." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.ColorVariationSet)), "Color Variation Set" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.ColorVariationSet)), "Sets of seasonal colors for Trees, bushes, and plants. Vanilla is the base game. Yenyang's is my curated colors. Spring is green year round. Autumn is fall colors year round. Custom has been moved to a new mod called Recolor." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.SafelyRemoveButton)), "Safely Remove" },

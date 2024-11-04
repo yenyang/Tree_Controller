@@ -30,6 +30,7 @@ namespace Tree_Controller.Systems
             { TreeState.Adult, ObjectUtils.TREE_AGE_PHASE_CHILD + ObjectUtils.TREE_AGE_PHASE_TEEN },
             { TreeState.Elderly, ObjectUtils.TREE_AGE_PHASE_CHILD + ObjectUtils.TREE_AGE_PHASE_TEEN + ObjectUtils.TREE_AGE_PHASE_ADULT },
             { TreeState.Dead, ObjectUtils.TREE_AGE_PHASE_CHILD + ObjectUtils.TREE_AGE_PHASE_TEEN + ObjectUtils.TREE_AGE_PHASE_ADULT + ObjectUtils.TREE_AGE_PHASE_ELDERLY + .00001f },
+            { TreeState.Stump, ObjectUtils.TREE_AGE_PHASE_CHILD + ObjectUtils.TREE_AGE_PHASE_TEEN + ObjectUtils.TREE_AGE_PHASE_ADULT + ObjectUtils.TREE_AGE_PHASE_ELDERLY + ObjectUtils.TREE_AGE_PHASE_DEAD },
         };
 
         private ToolSystem m_ToolSystem;
@@ -104,7 +105,15 @@ namespace Tree_Controller.Systems
                     // This is a hack to prevent the vanilla age row from appearing.
                     m_ObjectToolSystem.SetMemberValue("allowAge", false);
 
-                    TreeState nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random);
+                    bool includeStump = false;
+                    if (EntityManager.HasComponent<Game.Prefabs.TreeData>(prefabEntity)
+                       && EntityManager.TryGetBuffer(prefabEntity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
+                       && subMeshBuffer.Length > 5)
+                    {
+                        includeStump = true;
+                    }
+
+                    TreeState nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random, includeStump);
                     if (BrushTreeStateAges.ContainsKey(nextTreeState))
                     {
                         currentObjectDefinition.m_Age = BrushTreeStateAges[nextTreeState];

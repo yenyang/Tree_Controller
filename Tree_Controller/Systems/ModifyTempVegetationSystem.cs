@@ -1,4 +1,4 @@
-﻿// <copyright file="ModifyTempTreesSystem.cs" company="Yenyangs Mods. MIT License">
+﻿// <copyright file="ModifyTempVegetationSystem.cs" company="Yenyangs Mods. MIT License">
 // Copyright (c) Yenyangs Mods. MIT License. All rights reserved.
 // </copyright>
 
@@ -8,10 +8,13 @@ namespace Tree_Controller.Systems
     using Colossal.Logging;
     using Game;
     using Game.Common;
+    using Game.Input;
     using Game.Objects;
     using Game.Prefabs;
     using Game.Tools;
+    using System;
     using Tree_Controller.Tools;
+    using Tree_Controller.Utils;
     using Unity.Collections;
     using Unity.Entities;
 
@@ -29,18 +32,31 @@ namespace Tree_Controller.Systems
         private EntityQuery m_TempOwnedVegetationQuery;
         private EntityQuery m_TempTreeQuery;
         private TreeControllerUISystem m_UISystem;
+        private Unity.Mathematics.Random m_Random;
+        private ushort m_RandomSeed;
+        private ProxyAction m_ApplyAction;
 
         /// <inheritdoc/>
         protected override void OnCreate()
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_Log.Info($"{nameof(ModifyTempVegetationSystem)}.OnCreate");
+            m_Log.Info($"{nameof(ModifyTempVegetationSystem)}.{nameof(OnCreate)}");
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_UISystem = World.GetOrCreateSystemManaged<TreeControllerUISystem>();
-            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_ObjectToolSystem || (tool.toolID != null && tool.toolID == "Line Tool") || tool == m_NetToolSystem;
+            m_ApplyAction = TreeControllerMod.Instance.Settings.GetAction(TreeControllerMod.ApplyMimicAction);
+            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) =>
+            {
+                Enabled = tool == m_ObjectToolSystem || (tool.toolID != null && tool.toolID == "Line Tool") || tool == m_NetToolSystem;
+                m_ApplyAction.shouldBeEnabled = Enabled;
+                m_Log.Info($"{nameof(ModifyTempVegetationSystem)}.OnToolChanged Enabled= {Enabled}");
+            };
+
+            m_Random = new Unity.Mathematics.Random((ushort)DateTime.Now.Millisecond);
+            m_RandomSeed = (ushort)m_Random.NextInt(0, ushort.MaxValue);
+            m_Log.Debug($"{nameof(ModifyTempVegetationSystem)}.{nameof(OnCreate)} m_RandomSeed = {m_RandomSeed}");
 
             m_TempOwnedVegetationQuery = SystemAPI.QueryBuilder()
                 .WithAll<Updated, Temp, Owner, PseudoRandomSeed>()
@@ -57,6 +73,7 @@ namespace Tree_Controller.Systems
                 .WithAll<Updated, Temp, Game.Objects.Tree, PseudoRandomSeed>()
                 .WithNone<Deleted, Overridden, Owner>()
                 .Build();
+
         }
 
         /// <inheritdoc/>
@@ -70,13 +87,13 @@ namespace Tree_Controller.Systems
                 {
                     if (EntityManager.TryGetComponent(entity, out PseudoRandomSeed pseudoRandomSeed))
                     {
-                        if (pseudoRandomSeed.m_Seed + i < ushort.MaxValue)
+                        if (m_RandomSeed + i < ushort.MaxValue)
                         {
-                            pseudoRandomSeed.m_Seed += i;
+                            pseudoRandomSeed.m_Seed = (ushort)(m_RandomSeed + i);
                         }
                         else
                         {
-                            pseudoRandomSeed.m_Seed -= i;
+                            pseudoRandomSeed.m_Seed = (ushort)(m_RandomSeed - i);
                         }
 
                         i++;
@@ -130,6 +147,17 @@ namespace Tree_Controller.Systems
                     TreeState nextTreeState = m_UISystem.GetNextTreeState(ref random, includeStump);
                     tree.m_State = nextTreeState;
                     EntityManager.SetComponentData(entity, tree);
+                }
+            }
+
+            var applyAction = m_ToolSystem.activeTool.GetMemberValue("applyAction");
+            if (applyAction as UIInputAction.State != null)
+            {
+                UIInputAction.State state = applyAction as UIInputAction.State;
+                if (state.action.IsPressed() || state.action.WasPerformedThisFrame())
+                {
+                    m_RandomSeed = (ushort)m_Random.NextInt(0, ushort.MaxValue);
+                    m_Log.Debug($"{nameof(ModifyTempVegetationSystem)}.{nameof(OnUpdate)} m_RandomSeed = {m_RandomSeed}");
                 }
             }
         }

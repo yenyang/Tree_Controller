@@ -124,6 +124,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
 
         // These get the value of the bindings.
         const objectToolActive = useValue(tool.activeTool$).id == tool.OBJECT_TOOL;
+        const netToolActive = useValue(tool.activeTool$).id == tool.NET_TOOL;
         const treeControllerToolActive = useValue(tool.activeTool$).id == "Tree Controller Tool";
         const lineToolActive = useValue(tool.activeTool$).id == "Line Tool";
         const SelectionMode = useValue(SelectionMode$);
@@ -248,7 +249,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
 
         var result = Component();
         
-        if (((objectToolActive || treeControllerToolActive || lineToolActive) && (IsVegetation || IsTree)) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge) ) 
+        if (((objectToolActive || treeControllerToolActive || lineToolActive || netToolActive) && (IsVegetation || IsTree)) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge) ) 
         {
             result.props.children?.push
             (
@@ -270,7 +271,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                         <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == customSetID+5}        tooltip={descriptionTooltip(customSet5TooltipTitle, customSet5TooltipDescription)}      onSelect={() => changePrefabSet(customSetID+5)}                             children={GenerateCustomSetNumber5()}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                     </VanillaComponentResolver.instance.Section>
                     )}
-                    { (((IsTree && treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge) || (objectToolActive && IsTree)) && !ShowStumps && !lineToolActive) && (
+                    { (((IsTree && treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge) || ((objectToolActive || netToolActive) && IsTree)) && !ShowStumps && !lineToolActive) && (
                     <VanillaComponentResolver.instance.Section title={translate("YY_TREE_CONTROLLER[Age]",locale["YY_TREE_CONTROLLER[Age]"])}>
                         <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.All) == Ages.All}         tooltip={descriptionTooltip(clearAgeTooltipTitle, clearAgeTooltipDescription)}      onSelect={() => changeSelectedAge(Ages.All)}        src={clearAgesSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.Child) == Ages.Child}     tooltip={childTooltipTitle}            onSelect={() => changeSelectedAge(Ages.Child)}      src={childSrc}           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
@@ -280,7 +281,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                         <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.Dead) == Ages.Dead}       tooltip={deadTooltipTitle}              onSelect={() => changeSelectedAge(Ages.Dead)}       src={deadSrc}            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                     </VanillaComponentResolver.instance.Section>
                     )}
-                    { (((IsTree && treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge) || (objectToolActive && IsTree)) && ShowStumps && !lineToolActive) && (
+                    { (((IsTree && treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge) || ((objectToolActive || netToolActive) && IsTree)) && ShowStumps && !lineToolActive) && (
                     <VanillaComponentResolver.instance.Section title={translate("YY_TREE_CONTROLLER[Age]",locale["YY_TREE_CONTROLLER[Age]"])}>
                         <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.All) == Ages.All}         tooltip={descriptionTooltip(clearAgeTooltipTitle, clearAgeTooltipDescription)}      onSelect={() => changeSelectedAge(Ages.All)}        src={clearAgesSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.Child) == Ages.Child}     tooltip={childTooltipTitle}            onSelect={() => changeSelectedAge(Ages.Child)}      src={childSrc}           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>

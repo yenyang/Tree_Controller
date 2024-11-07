@@ -28,6 +28,7 @@ namespace Tree_Controller.Tools
     using Unity.Entities;
     using Unity.Jobs;
     using UnityEngine.InputSystem;
+    using static Colossal.AssetPipeline.Diagnostic.Report;
 
     /// <summary>
     /// UI system for Object Tool while using tree prefabs.
@@ -930,15 +931,13 @@ namespace Tree_Controller.Tools
                 else
                 {
                     m_IsVegetation.Update(false);
-                    m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} not vegetation");
+
                     if (ReviewPrefabSubobjects(prefabEntity))
                     {
-                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} update is tree to true");
                         m_IsTree.Update(true);
                     }
                     else
                     {
-                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} update is tree to false");
                         m_IsTree.Update(false);
                     }
 
@@ -958,7 +957,6 @@ namespace Tree_Controller.Tools
                     isTree = true;
                 }
 
-                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} isTree : {isTree}");
                 m_IsTree.Update(isTree);
             }
 
@@ -968,36 +966,41 @@ namespace Tree_Controller.Tools
         private bool ReviewPrefabSubobjects(Entity prefabEntity)
         {
             bool isTree = false;
+            m_ShowStump.Value = false;
 
-            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ReviewPrefabSubobjects)}");
             if (EntityManager.TryGetBuffer(prefabEntity, isReadOnly: true, out DynamicBuffer<Game.Prefabs.SubObject> subobjectsBuffer))
             {
-
-                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ReviewPrefabSubobjects)} has subobjects buffer");
                 foreach (Game.Prefabs.SubObject subObject in subobjectsBuffer)
                 {
                     if (EntityManager.HasComponent<Game.Prefabs.TreeData>(subObject.m_Prefab))
                     {
-                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ReviewPrefabSubobjects)} has Tree Data");
                         isTree = true;
-                        break;
+
+                        if (EntityManager.HasComponent<TreeData>(subObject.m_Prefab)
+                        && EntityManager.TryGetBuffer(subObject.m_Prefab, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
+                        && subMeshBuffer.Length > 5)
+                        {
+                            m_ShowStump.Value = true;
+                            return isTree;
+                        }
                     }
 
                     if (EntityManager.TryGetBuffer(subObject.m_Prefab, isReadOnly: true, out DynamicBuffer<Game.Prefabs.PlaceholderObjectElement> placeholderObjectBuffer))
                     {
-                        m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ReviewPrefabSubobjects)} has placeholder object buffer");
                         foreach (PlaceholderObjectElement placeholderObjectElement in placeholderObjectBuffer)
                         {
                             if (EntityManager.HasComponent<Game.Prefabs.TreeData>(placeholderObjectElement.m_Object))
                             {
                                 isTree = true;
-                                break;
-                            }
-                        }
 
-                        if (isTree)
-                        {
-                            break;
+                                if (EntityManager.HasComponent<TreeData>(placeholderObjectElement.m_Object)
+                                && EntityManager.TryGetBuffer(placeholderObjectElement.m_Object, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
+                                && subMeshBuffer.Length > 5)
+                                {
+                                    m_ShowStump.Value = true;
+                                    return isTree;
+                                }
+                            }
                         }
                     }
                 }

@@ -310,8 +310,6 @@ namespace Tree_Controller.Tools
         {
             Enabled = false;
             m_Log = TreeControllerMod.Instance.Logger;
-            m_ApplyAction = InputManager.instance.FindAction("Tool", "Apply");
-            m_SecondaryApplyAction = InputManager.instance.FindAction("Tool", "Secondary Apply");
             m_Log.Info($"[{nameof(TreeControllerTool)}] {nameof(OnCreate)}");
             m_ToolOutputBarrier = World.GetOrCreateSystemManaged<ToolOutputBarrier>();
             m_OverlayRenderSystem = World.GetOrCreateSystemManaged<OverlayRenderSystem>();

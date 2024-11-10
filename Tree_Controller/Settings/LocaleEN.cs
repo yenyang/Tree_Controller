@@ -38,6 +38,8 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.FreeVegetation)), "Sets the cost of trees and vegetation to 0." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.IncludeStumps)), "Include Stumps" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.IncludeStumps)), "Age selection will include stumps for Trees." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.ConstrainBrush)), "Constrain Brush" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.ConstrainBrush)), "Prevents tree and vegetation applied with the circular brush from exceeding the visual limits of the brush. You may not always have a visual indicator of where the next one will be if the game wants to place the next one outside the limits." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.ColorVariationSet)), "Color Variation Set" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.ColorVariationSet)), "Sets of seasonal colors for Trees, bushes, and plants. Vanilla is the base game. Yenyang's is my curated colors. Spring is green year round. Autumn is fall colors year round. Custom has been moved to a new mod called Recolor." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.SafelyRemoveButton)), "Safely Remove" },

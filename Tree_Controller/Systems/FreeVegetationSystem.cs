@@ -81,7 +81,8 @@ namespace Tree_Controller.Systems
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
 
             m_VegetationPrefabQuery = SystemAPI.QueryBuilder()
-               .WithAll<Vegetation, PlaceableObjectData>()
+               .WithAllRW<PlaceableObjectData>()
+               .WithAll<Vegetation>()
                .WithNone<Deleted, Overridden>()
                .Build();
 

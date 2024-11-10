@@ -16,6 +16,7 @@ namespace Tree_Controller.Systems
     using Tree_Controller.Utils;
     using Unity.Collections;
     using Unity.Entities;
+    using Unity.Mathematics;
     using UnityEngine;
 
     /// <summary>
@@ -40,6 +41,7 @@ namespace Tree_Controller.Systems
         private EntityQuery m_ObjectDefinitionQuery;
         private TreeControllerTool m_TreeControllerTool;
         private ILog m_Log;
+        private ToolRaycastSystem m_ToolRaycastSystem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TreeObjectDefinitionSystem"/> class.
@@ -58,6 +60,7 @@ namespace Tree_Controller.Systems
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_TreeControllerTool = World.GetOrCreateSystemManaged<TreeControllerTool>();
+            m_ToolRaycastSystem = World.GetOrCreateSystemManaged<ToolRaycastSystem>();
             m_Log.Info($"[{nameof(TreeObjectDefinitionSystem)}] {nameof(OnCreate)}");
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_ObjectToolSystem || (tool.toolID != null && tool.toolID == "Line Tool");
             m_ObjectDefinitionQuery = SystemAPI.QueryBuilder()
@@ -124,6 +127,32 @@ namespace Tree_Controller.Systems
                     }
 
                     EntityManager.SetComponentData(entity, currentObjectDefinition);
+                }
+                else if (EntityManager.HasComponent<TreeData>(prefabEntity))
+                {
+                    // This is a hack to ensure vanilla age row appears with line tool. I think.
+                    m_ObjectToolSystem.SetMemberValue("allowAge", true);
+                }
+            }
+
+            if (TreeControllerMod.Instance.Settings.ConstrainBrush
+                && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush
+                && m_ToolRaycastSystem.GetRaycastResult(out RaycastResult result)
+                && !EntityManager.HasComponent<Deleted>(result.m_Owner))
+            {
+                foreach (Entity entity in entities)
+                {
+                    if (!EntityManager.TryGetComponent(entity, out ObjectDefinition currentObjectDefinition))
+                    {
+                        continue;
+                    }
+
+                    float2 objectXZ = new (currentObjectDefinition.m_Position.x, currentObjectDefinition.m_Position.z);
+                    float2 raycastXZ = new (result.m_Hit.m_Position.x, result.m_Hit.m_Position.z);
+                    if (Vector2.Distance(objectXZ, raycastXZ) > (0.333 * m_ObjectToolSystem.brushSize))
+                    {
+                        EntityManager.DestroyEntity(entity);
+                    }
                 }
             }
 

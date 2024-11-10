@@ -1,3 +1,6 @@
-﻿# Patch v1.5.1
-* Fixed default values that would cause trees to disappear in override mode if the Direction Variance Period wasn't changed from 0.
-* Updated Spanish Localization.
+﻿# Patch v1.6.0
+* Added ability to select tree ages while plopping objects with tree subobjects such as buildings and round-a-bouts.
+* Added Dead trees back to age selection with object tool. (Not Line Tool for now.)
+* Added Free Trees and Vegetation option. (Default Off)
+* Added option to add Stumps to age selection with object tool and tree changing tools. (Default Off)
+* Added option to constrain brush while adding trees and vegetation with object tool brush mode. (Default On).

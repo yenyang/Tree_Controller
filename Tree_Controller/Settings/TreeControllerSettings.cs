@@ -155,6 +155,12 @@ namespace Tree_Controller.Settings
         public bool FreeVegetation { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to constrain the brush.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
+        public bool ConstrainBrush { get; set; }
+
+        /// <summary>
         /// Sets a value indicating whether the mod needs to safely remove components and reset models.
         /// </summary>
         [SettingsUIButton]
@@ -183,6 +189,7 @@ namespace Tree_Controller.Settings
                 UseDeadModelDuringWinter = false;
                 AgeSelectionTechnique = AgeSelectionOptions.RandomWeighted;
                 FreeVegetation = false;
+                ConstrainBrush = true;
                 IncludeStumps = false;
                 ApplyAndSave();
             }
@@ -355,6 +362,7 @@ namespace Tree_Controller.Settings
             WindInterpolationDuration = 0.5f;
             FreeVegetation = false;
             IncludeStumps = false;
+            ConstrainBrush = true;
         }
 
         /// <summary>

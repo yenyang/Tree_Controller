@@ -20,9 +20,12 @@ namespace Tree_Controller.Tools
     using Game.Prefabs;
     using Game.SceneFlow;
     using Game.Tools;
+    using Game.UI.InGame;
     using Tree_Controller.Extensions;
+    using Tree_Controller.Patches;
     using Tree_Controller.Settings;
     using Tree_Controller.Systems;
+    using Tree_Controller.Utils;
     using Unity.Collections;
     using Unity.Entities;
     using Unity.Jobs;
@@ -40,7 +43,7 @@ namespace Tree_Controller.Tools
 
         private const string ModId = "Tree_Controller";
 
-        private readonly Dictionary<TreeState, float> AgeWeights = new ()
+        private readonly Dictionary<TreeState, float> AgeWeights = new()
         {
             { 0, ObjectUtils.TREE_AGE_PHASE_CHILD },
             { TreeState.Teen,  ObjectUtils.TREE_AGE_PHASE_TEEN },
@@ -136,6 +139,7 @@ namespace Tree_Controller.Tools
         private int m_FrameCount = 0;
         [CanBeNull]
         private PrefabBase m_TrySetPrefabNextFrame;
+        private ToolbarUISystem m_ToolbarUISystem;
 
         /// <summary>
         /// Gets or sets a value indicating whether the selection set of buttons on the Toolbar UI needs to be updated.
@@ -396,6 +400,7 @@ namespace Tree_Controller.Tools
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
             m_TreeObjectDefinitionSystem = World.GetOrCreateSystemManaged<TreeObjectDefinitionSystem>();
             m_UiView = GameManager.instance.userInterface.view.View;
+            m_ToolbarUISystem = World.GetOrCreateSystemManaged<ToolbarUISystem>();
             m_ThemeEntities = new List<Entity>();
             m_TreeControllerTool = World.GetOrCreateSystemManaged<TreeControllerTool>();
             m_ContentFolder = Path.Combine(EnvPath.kUserDataPath, "ModsData", "Mods_Yenyang_Tree_Controller", "CustomSets");
@@ -686,6 +691,39 @@ namespace Tree_Controller.Tools
             m_ToolSystem.activeTool = m_ObjectToolSystem;
         }
 
+        private void SetAgeBinding()
+        {
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem
+                && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush
+                && m_ToolSystem.activePrefab is not null
+                && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity)
+                && m_PrefabSystem.EntityManager.HasComponent<TreeData>(prefabEntity))
+            {
+                var ageMaskBindingVar = m_ToolbarUISystem.GetMemberValue("m_AgeMaskBinding");
+                if (ageMaskBindingVar is ValueBinding<int>)
+                {
+                    TreeControllerMod.Instance.Logger.Debug($"{nameof(TreeControllerUISystem)}.{nameof(SetAgeBinding)} setting age mask binding");
+                    ValueBinding<int> ageMaskBinding = ageMaskBindingVar as ValueBinding<int>;
+                    ageMaskBinding.Update(0);
+
+                    TreeControllerMod.Instance.Logger.Debug($"{nameof(TreeControllerUISystem)}.{nameof(SetAgeBinding)} finished age mask binding");
+                }
+            }
+            else if (m_ToolSystem.activePrefab is not null
+                && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity2)
+                && m_PrefabSystem.EntityManager.HasComponent<TreeData>(prefabEntity2))
+            {
+                var ageMaskBindingVar = m_ToolbarUISystem.GetMemberValue("m_AgeMaskBinding");
+                if (ageMaskBindingVar is ValueBinding<int>)
+                {
+                    TreeControllerMod.Instance.Logger.Debug($"{nameof(TreeControllerUISystem)}.{nameof(SetAgeBinding)} setting age mask binding");
+                    ValueBinding<int> ageMaskBinding = ageMaskBindingVar as ValueBinding<int>;
+                    ageMaskBinding.Update((int)m_ObjectToolSystem.ageMask);
+                    TreeControllerMod.Instance.Logger.Debug($"{nameof(TreeControllerUISystem)}.{nameof(SetAgeBinding)} finished age mask binding");
+                }
+            }
+        }
+
         /// <summary>
         /// Lots a string from JS.
         /// </summary>
@@ -889,6 +927,7 @@ namespace Tree_Controller.Tools
             }
 
             HandleShowStumps();
+            SetAgeBinding();
         }
 
         /// <summary>
@@ -969,6 +1008,7 @@ namespace Tree_Controller.Tools
             }
 
             HandleShowStumps();
+            SetAgeBinding();
         }
 
         private bool ReviewPrefabSubobjects(Entity prefabEntity)

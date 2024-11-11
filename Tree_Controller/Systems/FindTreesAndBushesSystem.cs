@@ -37,6 +37,7 @@ namespace Tree_Controller.Systems
         private ILog m_Log;
         private EndFrameBarrier m_EndFrameBarrier;
         private PrefabSystem m_PrefabSystem;
+        private FreeVegetationSystem m_FreeVegetationSystem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FindTreesAndBushesSystem"/> class.
@@ -61,6 +62,7 @@ namespace Tree_Controller.Systems
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_SafelyRemoveSystem = World.GetOrCreateSystemManaged<SafelyRemoveSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_FreeVegetationSystem = World.GetOrCreateSystemManaged<FreeVegetationSystem>();
             m_TreeQuery = SystemAPI.QueryBuilder()
                 .WithAll<UpdateFrame, Game.Prefabs.PrefabRef, Game.Objects.Tree>()
                 .WithNone<Deleted, Temp, Evergreen, DeciduousData, Overridden, Lumber>()
@@ -121,6 +123,11 @@ namespace Tree_Controller.Systems
             foreach (UIGroupElement element in buffer)
             {
                 EntityManager.AddComponent<Vegetation>(element.m_Prefab);
+            }
+
+            if (TreeControllerMod.Instance.Settings.FreeVegetation)
+            {
+                m_FreeVegetationSystem.SetVegetationCostsToZero();
             }
 
             base.OnGameLoadingComplete(purpose, mode);

@@ -32,8 +32,6 @@ namespace Tree_Controller.Patches
             }
 
             ToolSystem toolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
-            TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolUISystem)}.{nameof(ToolUISystemSetBrushStrengthPatch)} toolSystem.activeTool.brushStrength = {toolSystem.activeTool.brushStrength}");
-            TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolUISystem)}.{nameof(ToolUISystemSetBrushStrengthPatch)} strength = {strength}");
             PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
 
             if (toolSystem.activePrefab is null)
@@ -50,13 +48,11 @@ namespace Tree_Controller.Patches
             if (toolSystem.activeTool.brushStrength < strength && strength == 1f)
             {
                 toolSystem.activeTool.brushStrength = TreeControllerUISystem.MaxBrushStrength;
-                TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolUISystem)}.{nameof(ToolUISystemSetBrushStrengthPatch)} set brush strength to {toolSystem.activeTool.brushStrength}");
                 return false;
             }
             else if (toolSystem.activeTool.brushStrength == TreeControllerUISystem.MaxBrushStrength && strength == 1f)
             {
                 toolSystem.activeTool.brushStrength = 0.95f;
-                TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolUISystem)}.{nameof(ToolUISystemSetBrushStrengthPatch)} set brush strength to {toolSystem.activeTool.brushStrength}");
                 return false;
             }
 

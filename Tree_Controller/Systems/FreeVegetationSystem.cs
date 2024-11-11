@@ -64,10 +64,7 @@ namespace Tree_Controller.Systems
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
             base.OnGameLoadingComplete(purpose, mode);
-            if (TreeControllerMod.Instance.Settings.FreeVegetation)
-            {
-                SetVegetationCostsToZero();
-            }
+            
         }
 
         /// <inheritdoc/>

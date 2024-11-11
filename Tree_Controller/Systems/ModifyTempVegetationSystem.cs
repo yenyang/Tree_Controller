@@ -51,12 +51,10 @@ namespace Tree_Controller.Systems
             {
                 Enabled = tool == m_ObjectToolSystem || (tool.toolID != null && tool.toolID == "Line Tool") || tool == m_NetToolSystem;
                 m_ApplyAction.shouldBeEnabled = Enabled;
-                m_Log.Info($"{nameof(ModifyTempVegetationSystem)}.OnToolChanged Enabled= {Enabled}");
             };
 
             m_Random = new Unity.Mathematics.Random((ushort)DateTime.Now.Millisecond);
             m_RandomSeed = (ushort)m_Random.NextInt(0, ushort.MaxValue);
-            m_Log.Debug($"{nameof(ModifyTempVegetationSystem)}.{nameof(OnCreate)} m_RandomSeed = {m_RandomSeed}");
 
             m_TempOwnedVegetationQuery = SystemAPI.QueryBuilder()
                 .WithAll<Updated, Temp, Owner, PseudoRandomSeed>()
@@ -157,7 +155,6 @@ namespace Tree_Controller.Systems
                 if (state.action.IsPressed() || state.action.WasPerformedThisFrame())
                 {
                     m_RandomSeed = (ushort)m_Random.NextInt(0, ushort.MaxValue);
-                    m_Log.Debug($"{nameof(ModifyTempVegetationSystem)}.{nameof(OnUpdate)} m_RandomSeed = {m_RandomSeed}");
                 }
             }
         }

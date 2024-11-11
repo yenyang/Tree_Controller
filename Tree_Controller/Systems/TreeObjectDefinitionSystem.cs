@@ -106,8 +106,8 @@ namespace Tree_Controller.Systems
                 if (m_ToolSystem.activeTool.toolID != "Line Tool" && EntityManager.HasComponent<TreeData>(prefabEntity))
                 {
                     // This is a hack to prevent the vanilla age row from appearing.
-                    m_ObjectToolSystem.SetMemberValue("allowAge", false);
 
+                    // m_ObjectToolSystem.SetMemberValue("allowAge", false);
                     bool includeStump = false;
                     if (EntityManager.HasComponent<Game.Prefabs.TreeData>(prefabEntity)
                        && EntityManager.TryGetBuffer(prefabEntity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
@@ -128,14 +128,10 @@ namespace Tree_Controller.Systems
 
                     EntityManager.SetComponentData(entity, currentObjectDefinition);
                 }
-                else if (EntityManager.HasComponent<TreeData>(prefabEntity))
-                {
-                    // This is a hack to ensure vanilla age row appears with line tool. I think.
-                    m_ObjectToolSystem.SetMemberValue("allowAge", true);
-                }
             }
 
             if (TreeControllerMod.Instance.Settings.ConstrainBrush
+                && m_ToolSystem.activeTool == m_ObjectToolSystem
                 && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush
                 && m_ToolRaycastSystem.GetRaycastResult(out RaycastResult result)
                 && !EntityManager.HasComponent<Deleted>(result.m_Owner))

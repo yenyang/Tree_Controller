@@ -16,9 +16,10 @@ namespace Tree_Controller.Systems
     /// <summary>
     /// Modifies the prices of vegetation prefabs.
     /// </summary>
-    public partial class FreeVegetationSystem : GameSystemBase
+    public partial class ModifyVegetationPrefabsSystem : GameSystemBase
     {
-        private EntityQuery m_VegetationPrefabQuery;
+        private EntityQuery m_FreeVegetationQuery;
+        private EntityQuery m_TreeObjectGeometryQuery;
         private ILog m_Log;
         private PrefabSystem m_PrefabSystem;
 
@@ -27,7 +28,7 @@ namespace Tree_Controller.Systems
         /// </summary>
         public void SetVegetationCostsToZero()
         {
-            NativeArray<Entity> prefabEntities = m_VegetationPrefabQuery.ToEntityArray(Allocator.Temp);
+            NativeArray<Entity> prefabEntities = m_FreeVegetationQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity entity in prefabEntities)
             {
                 if (EntityManager.TryGetComponent(entity, out PlaceableObjectData placeableObjectData))
@@ -37,7 +38,7 @@ namespace Tree_Controller.Systems
                 }
             }
 
-            m_Log.Info($"{nameof(FreeVegetationSystem)}.{nameof(SetVegetationCostsToZero)} Complete.");
+            m_Log.Info($"{nameof(ModifyVegetationPrefabsSystem)}.{nameof(SetVegetationCostsToZero)} Complete.");
         }
 
         /// <summary>
@@ -45,7 +46,7 @@ namespace Tree_Controller.Systems
         /// </summary>
         public void ResetVegetationCosts()
         {
-            NativeArray<Entity> prefabEntities = m_VegetationPrefabQuery.ToEntityArray(Allocator.Temp);
+            NativeArray<Entity> prefabEntities = m_FreeVegetationQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity entity in prefabEntities)
             {
                 if (EntityManager.TryGetComponent(entity, out PlaceableObjectData placeableObjectData)
@@ -57,14 +58,26 @@ namespace Tree_Controller.Systems
                 }
             }
 
-            m_Log.Info($"{nameof(FreeVegetationSystem)}.{nameof(ResetVegetationCosts)} Complete.");
+            m_Log.Info($"{nameof(ModifyVegetationPrefabsSystem)}.{nameof(ResetVegetationCosts)} Complete.");
         }
 
-        /// <inheritdoc/>
-        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        /// <summary>
+        /// Sets the object geometry bounds of tree prefabs to something smaller.
+        /// </summary>
+        public void DecreaseObjectGeometryBounds()
         {
-            base.OnGameLoadingComplete(purpose, mode);
-            
+            NativeArray<Entity> prefabEntities = m_TreeObjectGeometryQuery.ToEntityArray(Allocator.Temp);
+            foreach (Entity entity in prefabEntities)
+            {
+                if (EntityManager.TryGetComponent(entity, out ObjectGeometryData objectGeometryData))
+                {
+                    objectGeometryData.m_Size.x = objectGeometryData.m_LegSize.x;
+                    objectGeometryData.m_Size.z = objectGeometryData.m_LegSize.z;
+                    EntityManager.SetComponentData(entity, objectGeometryData);
+                }
+            }
+
+            m_Log.Info($"{nameof(ModifyVegetationPrefabsSystem)}.{nameof(DecreaseObjectGeometryBounds)} Complete.");
         }
 
         /// <inheritdoc/>
@@ -72,14 +85,19 @@ namespace Tree_Controller.Systems
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_Log.Info($"{nameof(FreeVegetationSystem)}.OnCreate");
-
+            m_Log.Info($"{nameof(ModifyVegetationPrefabsSystem)}.OnCreate");
 
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
 
-            m_VegetationPrefabQuery = SystemAPI.QueryBuilder()
+            m_FreeVegetationQuery = SystemAPI.QueryBuilder()
                .WithAllRW<PlaceableObjectData>()
                .WithAll<Vegetation>()
+               .WithNone<Deleted, Overridden>()
+               .Build();
+
+            m_TreeObjectGeometryQuery = SystemAPI.QueryBuilder()
+               .WithAllRW<ObjectGeometryData>()
+               .WithAll<TreeData>()
                .WithNone<Deleted, Overridden>()
                .Build();
 

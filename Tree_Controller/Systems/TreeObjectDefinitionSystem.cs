@@ -145,7 +145,7 @@ namespace Tree_Controller.Systems
 
                     float2 objectXZ = new (currentObjectDefinition.m_Position.x, currentObjectDefinition.m_Position.z);
                     float2 raycastXZ = new (result.m_Hit.m_Position.x, result.m_Hit.m_Position.z);
-                    if (Vector2.Distance(objectXZ, raycastXZ) > (0.333 * m_ObjectToolSystem.brushSize))
+                    if (Vector2.Distance(objectXZ, raycastXZ) > (0.333f * m_ObjectToolSystem.brushSize))
                     {
                         EntityManager.DestroyEntity(entity);
                     }

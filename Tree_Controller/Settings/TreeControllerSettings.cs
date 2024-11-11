@@ -410,7 +410,7 @@ namespace Tree_Controller.Settings
         /// <param name="free">Should vegeation be free or regular cost.</param>
         public void ToggleVegetationCost(bool free)
         {
-            FreeVegetationSystem freeVegetationSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<FreeVegetationSystem>();
+            ModifyVegetationPrefabsSystem freeVegetationSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ModifyVegetationPrefabsSystem>();
             if (free)
             {
                 freeVegetationSystem.SetVegetationCostsToZero();

@@ -142,6 +142,12 @@ namespace Tree_Controller.Settings
         public bool IncludeStumps { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to increase brush strength at 100%.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
+        public bool FasterFullBrushStrength { get; set; }
+
+        /// <summary>
         /// Gets or sets a enum that defines the type of Seasonal foliage color set preference.
         /// </summary>
         [SettingsUISection(General, Stable)]
@@ -191,6 +197,7 @@ namespace Tree_Controller.Settings
                 FreeVegetation = false;
                 ConstrainBrush = true;
                 IncludeStumps = false;
+                FasterFullBrushStrength = false;
                 ApplyAndSave();
             }
         }
@@ -363,6 +370,7 @@ namespace Tree_Controller.Settings
             FreeVegetation = false;
             IncludeStumps = false;
             ConstrainBrush = true;
+            FasterFullBrushStrength = false;
         }
 
         /// <summary>

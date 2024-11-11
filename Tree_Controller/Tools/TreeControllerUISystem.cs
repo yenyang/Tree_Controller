@@ -8,7 +8,6 @@ namespace Tree_Controller.Tools
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Runtime.InteropServices.ComTypes;
     using System.Xml.Serialization;
     using Colossal.Annotations;
     using Colossal.Entities;
@@ -28,13 +27,17 @@ namespace Tree_Controller.Tools
     using Unity.Entities;
     using Unity.Jobs;
     using UnityEngine.InputSystem;
-    using static Colossal.AssetPipeline.Diagnostic.Report;
 
     /// <summary>
     /// UI system for Object Tool while using tree prefabs.
     /// </summary>
     public partial class TreeControllerUISystem : ExtendedUISystemBase
     {
+        /// <summary>
+        /// Maximum brush strength for Faster brush action.
+        /// </summary>
+        public const float MaxBrushStrength = 3f;
+
         private const string ModId = "Tree_Controller";
 
         private readonly Dictionary<TreeState, float> AgeWeights = new ()
@@ -544,6 +547,11 @@ namespace Tree_Controller.Tools
                 m_ToolMode.Update((int)ToolMode.Plop);
             }
 
+            if (TreeControllerMod.Instance.Settings.FasterFullBrushStrength && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush && m_ObjectToolSystem.brushStrength == 1f)
+            {
+                m_ObjectToolSystem.brushStrength = MaxBrushStrength;
+            }
+
             base.OnUpdate();
             return;
         }
@@ -871,6 +879,7 @@ namespace Tree_Controller.Tools
                 {
                     m_ToolMode.Update((int)ToolMode.Brush);
                 }
+
             }
             else
             {
@@ -940,7 +949,6 @@ namespace Tree_Controller.Tools
                     {
                         m_IsTree.Update(false);
                     }
-
                 }
             }
             else if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity2))

@@ -70,6 +70,8 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetEnumValueLocaleID(TreeControllerSettings.WindOptions.Override), "Override" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.WindGlobalStrength)), "Wind Strength" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.WindGlobalStrength)), "One of two factors used to determine the global wind strength." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.FasterFullBrushStrength)), "Faster Full Brush Strength" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.FasterFullBrushStrength)), "Instead of 100%, the brush strength while creating trees and vegetation will be 300%." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.WindGlobalStrength2)), "Wind Strength 2" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.WindGlobalStrength2)), "One of two factors used to determine the global wind strength." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.WindDirection)), "Wind Direction" },

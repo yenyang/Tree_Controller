@@ -148,6 +148,13 @@ namespace Tree_Controller.Settings
         public bool FasterFullBrushStrength { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to limit tree overlapping checks to trunks.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
+        [SettingsUISetter(typeof(TreeControllerSettings), nameof(ToggleLimitedTreeAnarchy))]
+        public bool LimitedTreeAnarchy { get; set; }
+
+        /// <summary>
         /// Gets or sets a enum that defines the type of Seasonal foliage color set preference.
         /// </summary>
         [SettingsUISection(General, Stable)]
@@ -198,6 +205,7 @@ namespace Tree_Controller.Settings
                 ConstrainBrush = true;
                 IncludeStumps = false;
                 FasterFullBrushStrength = false;
+                LimitedTreeAnarchy = false;
                 ApplyAndSave();
             }
         }
@@ -371,6 +379,7 @@ namespace Tree_Controller.Settings
             IncludeStumps = false;
             ConstrainBrush = true;
             FasterFullBrushStrength = false;
+            LimitedTreeAnarchy = false;
         }
 
         /// <summary>
@@ -410,14 +419,31 @@ namespace Tree_Controller.Settings
         /// <param name="free">Should vegeation be free or regular cost.</param>
         public void ToggleVegetationCost(bool free)
         {
-            ModifyVegetationPrefabsSystem freeVegetationSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ModifyVegetationPrefabsSystem>();
+            ModifyVegetationPrefabsSystem modifyVegeationPrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ModifyVegetationPrefabsSystem>();
             if (free)
             {
-                freeVegetationSystem.SetVegetationCostsToZero();
+                modifyVegeationPrefabSystem.SetVegetationCostsToZero();
             }
             else
             {
-                freeVegetationSystem.ResetVegetationCosts();
+                modifyVegeationPrefabSystem.ResetVegetationCosts();
+            }
+        }
+
+        /// <summary>
+        /// Toggles the limited tree anarchy on or off.
+        /// </summary>
+        /// <param name="toggleState">should object geometry sizes be decreased or reset.</param>
+        public void ToggleLimitedTreeAnarchy(bool toggleState)
+        {
+            ModifyVegetationPrefabsSystem modifyVegeationPrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ModifyVegetationPrefabsSystem>();
+            if (toggleState)
+            {
+                modifyVegeationPrefabSystem.DecreaseObjectGeometrySize();
+            }
+            else
+            {
+                modifyVegeationPrefabSystem.ResetObjectGeometrySize();
             }
         }
     }

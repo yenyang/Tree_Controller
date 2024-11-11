@@ -38,6 +38,8 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.FreeVegetation)), "Sets the cost of trees and vegetation to 0." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.IncludeStumps)), "Include Stumps" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.IncludeStumps)), "Age selection will include stumps for Trees." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.LimitedTreeAnarchy)), "Limited Tree Anarchy" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.LimitedTreeAnarchy)), "Makes conflict checks involving trees approximately based on the tree trunks instead of the dripline. Dense forests cause performance issues. If this setting is later turned off or reset, and the conflicting trees do not have Anarchy component then they will be overriden and disappear. Use Anarchy components tool to bring them back." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.ConstrainBrush)), "Constrain Brush" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.ConstrainBrush)), "Prevents tree and vegetation applied with the circular brush from exceeding the visual limits of the brush. You may not always have a visual indicator of where the next one will be if the game wants to place the next one outside the limits." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.ColorVariationSet)), "Color Variation Set" },

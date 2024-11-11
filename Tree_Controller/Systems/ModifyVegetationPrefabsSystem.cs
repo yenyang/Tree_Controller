@@ -6,7 +6,6 @@ namespace Tree_Controller.Systems
 {
     using Colossal.Entities;
     using Colossal.Logging;
-    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
     using Game.Prefabs;
@@ -62,22 +61,50 @@ namespace Tree_Controller.Systems
         }
 
         /// <summary>
-        /// Sets the object geometry bounds of tree prefabs to something smaller.
+        /// Sets the object geometry size of tree prefabs to trunk size.
         /// </summary>
-        public void DecreaseObjectGeometryBounds()
+        public void DecreaseObjectGeometrySize()
         {
             NativeArray<Entity> prefabEntities = m_TreeObjectGeometryQuery.ToEntityArray(Allocator.Temp);
             foreach (Entity entity in prefabEntities)
             {
-                if (EntityManager.TryGetComponent(entity, out ObjectGeometryData objectGeometryData))
+                if (EntityManager.TryGetComponent(entity, out ObjectGeometryData objectGeometryData)
+                    && EntityManager.TryGetComponent(entity, out Vegetation vegetationData))
                 {
+                    if (vegetationData.m_Size.x == 0 && vegetationData.m_Size.z == 0)
+                    {
+                        vegetationData.m_Size = objectGeometryData.m_Size;
+                        EntityManager.SetComponentData(entity, vegetationData);
+                    }
+
                     objectGeometryData.m_Size.x = objectGeometryData.m_LegSize.x;
                     objectGeometryData.m_Size.z = objectGeometryData.m_LegSize.z;
                     EntityManager.SetComponentData(entity, objectGeometryData);
                 }
             }
 
-            m_Log.Info($"{nameof(ModifyVegetationPrefabsSystem)}.{nameof(DecreaseObjectGeometryBounds)} Complete.");
+            m_Log.Info($"{nameof(ModifyVegetationPrefabsSystem)}.{nameof(DecreaseObjectGeometrySize)} Complete.");
+        }
+
+
+        /// <summary>
+        /// Resets the object geometry size of tree prefabs back to dripline.
+        /// </summary>
+        public void ResetObjectGeometrySize()
+        {
+            NativeArray<Entity> prefabEntities = m_TreeObjectGeometryQuery.ToEntityArray(Allocator.Temp);
+            foreach (Entity entity in prefabEntities)
+            {
+                if (EntityManager.TryGetComponent(entity, out ObjectGeometryData objectGeometryData)
+                    && EntityManager.TryGetComponent(entity, out Vegetation vegetationData))
+                {
+                    objectGeometryData.m_Size.x = vegetationData.m_Size.x;
+                    objectGeometryData.m_Size.z = vegetationData.m_Size.z;
+                    EntityManager.SetComponentData(entity, objectGeometryData);
+                }
+            }
+
+            m_Log.Info($"{nameof(ModifyVegetationPrefabsSystem)}.{nameof(ResetObjectGeometrySize)} Complete.");
         }
 
         /// <inheritdoc/>
@@ -97,7 +124,7 @@ namespace Tree_Controller.Systems
 
             m_TreeObjectGeometryQuery = SystemAPI.QueryBuilder()
                .WithAllRW<ObjectGeometryData>()
-               .WithAll<TreeData>()
+               .WithAll<TreeData, Vegetation>()
                .WithNone<Deleted, Overridden>()
                .Build();
 

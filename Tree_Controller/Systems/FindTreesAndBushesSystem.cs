@@ -134,7 +134,10 @@ namespace Tree_Controller.Systems
                     Vegetation vegetation = new Vegetation(new Unity.Mathematics.float3(objectGeometryData.m_Size.x, 0, objectGeometryData.m_Size.z));
                     EntityManager.SetComponentData(element.m_Prefab, vegetation);
 
-                    if (TreeControllerMod.Instance.Settings.LimitedTreeAnarchy)
+                    if (TreeControllerMod.Instance.Settings.LimitedTreeAnarchy
+                        && EntityManager.HasComponent<TreeData>(element.m_Prefab)
+                        && EntityManager.TryGetBuffer(element.m_Prefab, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
+                        && subMeshBuffer.Length > 5)
                     {
                         objectGeometryData.m_Size.x = objectGeometryData.m_LegSize.x;
                         objectGeometryData.m_Size.z = objectGeometryData.m_LegSize.z;

@@ -77,9 +77,13 @@ namespace Tree_Controller.Systems
                         EntityManager.SetComponentData(entity, vegetationData);
                     }
 
-                    objectGeometryData.m_Size.x = objectGeometryData.m_LegSize.x;
-                    objectGeometryData.m_Size.z = objectGeometryData.m_LegSize.z;
-                    EntityManager.SetComponentData(entity, objectGeometryData);
+                    if (EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
+                        && subMeshBuffer.Length > 5)
+                    {
+                        objectGeometryData.m_Size.x = objectGeometryData.m_LegSize.x;
+                        objectGeometryData.m_Size.z = objectGeometryData.m_LegSize.z;
+                        EntityManager.SetComponentData(entity, objectGeometryData);
+                    }
                 }
             }
 
@@ -96,7 +100,9 @@ namespace Tree_Controller.Systems
             foreach (Entity entity in prefabEntities)
             {
                 if (EntityManager.TryGetComponent(entity, out ObjectGeometryData objectGeometryData)
-                    && EntityManager.TryGetComponent(entity, out Vegetation vegetationData))
+                    && EntityManager.TryGetComponent(entity, out Vegetation vegetationData)
+                    && EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
+                    && subMeshBuffer.Length > 5)
                 {
                     objectGeometryData.m_Size.x = vegetationData.m_Size.x;
                     objectGeometryData.m_Size.z = vegetationData.m_Size.z;

@@ -1,0 +1,27 @@
+.rowGroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.spacer {
+    width: 24rem;
+}
+
+.definedHeight {
+    height: 30rem;
+}
+
+.smallButton {
+    width: 18rem !important;
+    height: 18rem !important;
+}
+
+.disableState {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+}

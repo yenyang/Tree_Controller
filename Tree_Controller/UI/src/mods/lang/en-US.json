@@ -11,7 +11,7 @@
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.IncludeStumps]": "Include Stumps",
   "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.IncludeStumps]": "Age selection will include stumps for Trees.",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.LimitedTreeAnarchy]": "Limited Tree Anarchy",
-  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.LimitedTreeAnarchy]": "Makes conflict checks involving trees only be based on the tree trunks instead of the dripline.",
+  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.LimitedTreeAnarchy]": "Makes conflict checks involving trees approximately based on the tree trunks instead of the dripline. Dense forests cause performance issues. If this setting is later turned off or reset, and the conflicting trees do not have Anarchy component then they will be overriden and disappear. Use Anarchy components tool to bring them back.",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.ConstrainBrush]": "Constrain Brush",
   "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.ConstrainBrush]": "Prevents tree and vegetation applied with the circular brush from exceeding the visual limits of the brush. You may not always have a visual indicator of where the next one will be if the game wants to place the next one outside the limits.",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.ColorVariationSet]": "Color Variation Set",

@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Icon } from "cs2/ui";
 import locale from "../lang/en-US.json";
 
-enum Ages 
+export enum Ages 
 {
     None = 0,
     Child = 1,
@@ -44,21 +44,21 @@ const prefabChangeSrc =      uilStandard +  "Replace.svg";
 const buildingOrNetSrc =     uilStandard +  "HouseandNetwork.svg";
 const radiusSrc =            uilStandard +  "Circle.svg";
 const wholeMapSrc    =       uilStandard +  "MapGrid.svg";
-const childSrc =             gameStandard + "TreeChild.svg";
-const teenSrc =              gameStandard +  "TreeTeen.svg";
-const adultSrc =             gameStandard +  "TreeAdult.svg";
+export const childSrc =             gameStandard + "TreeChild.svg";
+export const teenSrc =              gameStandard +  "TreeTeen.svg";
+export const adultSrc =             gameStandard +  "TreeAdult.svg";
 const singleSrc =           uilStandard + "TreeAdult.svg";
-const elderlySrc =           gameStandard +  "TreeElderly.svg";
-const deadSrc =              uilStandard +  "TreeDead.svg";
+export const elderlySrc =           gameStandard +  "TreeElderly.svg";
+export const deadSrc =              uilStandard +  "TreeDead.svg";
 const arrowDownSrc =         uilStandard +  "ArrowDownThickStroke.svg";
 const arrowUpSrc =           uilStandard +  "ArrowUpThickStroke.svg";
-const deciduousSrc =         uilStandard +  "TreesDeciduous.svg";
-const evergreenSrc =         uilStandard +  "TreesNeedle.svg";
-const bushesSrc =            uilStandard +  "Bushes.svg";
+export const deciduousSrc =         uilStandard +  "TreesDeciduous.svg";
+export const evergreenSrc =         uilStandard +  "TreesNeedle.svg";
+export const bushesSrc =            uilStandard +  "Bushes.svg";
 const diskSaveSrc =          uilStandard +  "DiskSave.svg";
-const clearAgesSrc =        uilStandard + "StarAll.svg";
+export const clearAgesSrc =        uilStandard + "StarAll.svg";
 const brushSrc =            uilStandard + "Trees.svg";
-const stumpSrc =            uilStandard + "TreeStump.svg";
+export const stumpSrc =            uilStandard + "TreeStump.svg";
 
 // These establishes the binding with C# side. Without C# side game ui will crash.
 const ToolMode$ =            bindValue<number> (mod.id, 'ToolMode');
@@ -74,10 +74,10 @@ const ShowStump$ =           bindValue<boolean>(mod.id, 'ShowStump');
 // These are strings that will be used for event triggers.
 const radiusDownID =             "radius-down-arrow";
 const radiusUpID =               "radius-up-arrow";
-const deciduousTreesID =         "YYTC-wild-deciduous-trees";
-const evergreenTreesID =         "YYTC-evergreen-trees";
-const wildBushesID =             "YYTC-wild-bushes";
-const customSetID =              "YYTC-custom-set-";
+export const deciduousTreesID =         "YYTC-wild-deciduous-trees";
+export const evergreenTreesID =         "YYTC-evergreen-trees";
+export const wildBushesID =             "YYTC-wild-bushes";
+export const customSetID =              "YYTC-custom-set-";
 
 // This functions trigger an event on C# side and C# designates the method to implement.
 function handleClick(eventName: string) 
@@ -101,12 +101,12 @@ function changeSelectionMode(selectionMode: Selection) {
 }
 
 // This function triggers an event to change the prefab set.
-function changePrefabSet(prefabSet: string) {
+export function changePrefabSet(prefabSet: string) {
     trigger(mod.id, "ChangePrefabSet", prefabSet);
 }
 
 // This is working, but it's possible a better solution is possible.
-function descriptionTooltip(tooltipTitle: string | null, tooltipDescription: string | null) : JSX.Element {
+export function descriptionTooltip(tooltipTitle: string | null, tooltipDescription: string | null) : JSX.Element {
     return (
         <>
             <div className={VanillaComponentResolver.instance.descriptionTooltipTheme.title}>{tooltipTitle}</div>

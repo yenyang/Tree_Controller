@@ -6,13 +6,23 @@
     flex-grow: 1;
 }
 
+.columnGroup {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    padding-bottom: 5rem;
+}
+
+.centered {
+    justify-content: center !important;
+}
+
 .spacer {
     width: 24rem;
 }
 
-.definedHeight {
-    height: 30rem;
-}
 
 .smallButton {
     width: 18rem !important;
@@ -24,4 +34,15 @@
     align-items: center;
     justify-content: center;
     flex-grow: 1;
+}
+
+.SliderFieldWidth {
+    width: 300rem;
+}
+
+.SliderFieldWidth > div {
+    padding-top: 0!important;    
+    padding-left: 0!important;    
+    padding-right: 0!important;    
+    padding-bottom: 0!important;
 }

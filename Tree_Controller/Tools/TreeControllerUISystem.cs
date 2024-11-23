@@ -21,8 +21,8 @@ namespace Tree_Controller.Tools
     using Game.SceneFlow;
     using Game.Tools;
     using Game.UI.InGame;
+    using Tree_Controller.Domain;
     using Tree_Controller.Extensions;
-    using Tree_Controller.Patches;
     using Tree_Controller.Settings;
     using Tree_Controller.Systems;
     using Tree_Controller.Utils;
@@ -32,7 +32,7 @@ namespace Tree_Controller.Tools
     using UnityEngine.InputSystem;
 
     /// <summary>
-    /// UI system for Object Tool while using tree prefabs.
+    /// UI system for Object Tool, Tree Controller Tool, and Line tool integration.
     /// </summary>
     public partial class TreeControllerUISystem : ExtendedUISystemBase
     {
@@ -112,7 +112,6 @@ namespace Tree_Controller.Tools
             { new PrefabID("StaticObjectPrefab", "NA_LindenTree01") },
         };
 
-
         private cohtml.Net.View m_UiView;
         private ToolSystem m_ToolSystem;
         private PrefabSystem m_PrefabSystem;
@@ -136,6 +135,7 @@ namespace Tree_Controller.Tools
         private bool m_UpdateSelectionSet = false;
         private bool m_RecentlySelectedPrefabSet = false;
         private bool m_MultiplePrefabsSelected = false;
+        private ValueBindingHelper<AdvancedForestBrushEntry[]> m_AdvanvedForestBrushEntries;
         private int m_FrameCount = 0;
         [CanBeNull]
         private PrefabBase m_TrySetPrefabNextFrame;
@@ -434,6 +434,7 @@ namespace Tree_Controller.Tools
             AddBinding(m_SelectedPrefabSet = new ValueBinding<string>(ModId, "PrefabSet", string.Empty));
             m_IsEditor = CreateBinding("IsEditor", false);
             m_ShowStump = CreateBinding("ShowStump", false);
+            m_AdvanvedForestBrushEntries = CreateBinding("AdvancedForestBrushEntries", new AdvancedForestBrushEntry[] { });
 
             // This section handles trigger bindings which listen for triggers from UI and then start an event.
             AddBinding(new TriggerBinding<int>(ModId, "ChangeToolMode", ChangeToolMode));
@@ -747,6 +748,8 @@ namespace Tree_Controller.Tools
                     }
                 }
 
+                m_AdvanvedForestBrushEntries.Value = new AdvancedForestBrushEntry[] { };
+
                 return;
             }
 
@@ -762,6 +765,8 @@ namespace Tree_Controller.Tools
                 m_SelectedPrefabSet.Update(string.Empty);
                 m_TreeControllerTool.SelectTreePrefab(originallySelectedPrefab);
                 m_Log.Warn($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} could not select empty set");
+
+                m_AdvanvedForestBrushEntries.Value = new AdvancedForestBrushEntry[] { };
                 return;
             }
 
@@ -769,16 +774,26 @@ namespace Tree_Controller.Tools
             m_TreeControllerTool.ClearSelectedTreePrefabs();
             m_RecentlySelectedPrefabSet = true;
             m_SelectedPrefabSet.Update(prefabSetID);
-            int i = 0;
+            List<PrefabID> validPrefabIDs = new List<PrefabID>();
             foreach (PrefabID id in m_PrefabSetsLookup[prefabSetID])
             {
                 if (m_PrefabSystem.TryGetPrefab(id, out PrefabBase prefab))
                 {
                     m_TreeControllerTool.SelectTreePrefab(prefab);
                     SelectPrefab(prefab);
-                    i++;
+                    validPrefabIDs.Add(id);
                 }
             }
+
+            int i = 0;
+            AdvancedForestBrushEntry[] advancedForestBrushEntries = new AdvancedForestBrushEntry[validPrefabIDs.Count];
+            foreach (PrefabID prefabID in validPrefabIDs)
+            {
+                advancedForestBrushEntries[i] = new AdvancedForestBrushEntry(prefabID, Ages.Adult, 100, 0, 4000);
+                i++;
+            }
+
+            m_AdvanvedForestBrushEntries.Value = advancedForestBrushEntries;
 
             m_UpdateSelectionSet = true;
 

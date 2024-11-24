@@ -11,6 +11,8 @@ import locale from "../lang/en-US.json";
 
 export enum Ages 
 {
+    Hide = -2,
+    MatchGlobal = -1,
     None = 0,
     Child = 1,
     Teen = 2,
@@ -39,7 +41,7 @@ enum Selection
 // These contain the coui paths to Unified Icon Library svg assets
 const uilStandard =                         "coui://uil/Standard/";
 const gameStandard =                           "Media/Tools/Vegetation Options/";
-const ageChangSrc =          uilStandard +  "ReplaceTreeAge.svg";
+export const ageChangSrc =          uilStandard +  "ReplaceTreeAge.svg";
 const prefabChangeSrc =      uilStandard +  "Replace.svg";
 const buildingOrNetSrc =     uilStandard +  "HouseandNetwork.svg";
 const radiusSrc =            uilStandard +  "Circle.svg";

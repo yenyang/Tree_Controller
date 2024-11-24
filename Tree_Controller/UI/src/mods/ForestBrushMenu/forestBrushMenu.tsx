@@ -52,7 +52,7 @@ export const ForestBrushMenuComponent = () => {
     
     const example : AdvancedForestBrushEntry = 
     {
-        LocaleKey: "Assets.NAME[Grass]",
+        Name: "Grass",
         Src: uilStandard + "RoadUpgradeRetainingWall.svg",
         Ages: Ages.Adult,
         ProbabilityWeight: 100,

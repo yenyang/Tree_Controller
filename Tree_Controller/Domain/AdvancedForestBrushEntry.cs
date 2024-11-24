@@ -14,7 +14,7 @@ namespace Tree_Controller.Domain
     /// </summary>
     public class AdvancedForestBrushEntry
     {
-        private string m_LocaleKey;
+        private string m_Name;
         private string m_Src;
         private Ages m_Ages;
         private int m_ProbabilityWeight;
@@ -38,11 +38,11 @@ namespace Tree_Controller.Domain
         /// <param name="maxElev">Maximum elevation.</param>
         public AdvancedForestBrushEntry(PrefabID prefabID, Ages ages, int probablity, int minElev, int maxElev)
         {
+            m_Name = prefabID.GetName();
             m_Ages = ages;
             m_ProbabilityWeight = probablity;
             m_MinimumElevation = minElev;
             m_MaximumElevation = maxElev;
-            m_LocaleKey = $"Assets.NAME[{prefabID.GetName()}]";
 
             PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
             ImageSystem imageSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ImageSystem>();
@@ -69,10 +69,10 @@ namespace Tree_Controller.Domain
         /// <summary>
         /// Gets or sets the locale key.
         /// </summary>
-        public string LocaleKey 
+        public string Name
         {
-            get { return m_LocaleKey; }
-            set { m_LocaleKey = value; }
+            get { return m_Name; }
+            set { m_Name = value; }
         }
 
         /// <summary>

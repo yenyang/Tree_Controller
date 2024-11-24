@@ -119,7 +119,7 @@ namespace Tree_Controller.Tools
         private TreeObjectDefinitionSystem m_TreeObjectDefinitionSystem;
         private TreeControllerTool m_TreeControllerTool;
         private ILog m_Log;
-        private Dictionary<string, List<PrefabID>> m_PrefabSetsLookup;
+        private Dictionary<string, CustomSetRepository> m_PrefabSetsLookup;
         private string m_ContentFolder;
         private EntityQuery m_VegetationQuery;
         private ValueBinding<int> m_ToolMode;
@@ -407,16 +407,16 @@ namespace Tree_Controller.Tools
             System.IO.Directory.CreateDirectory(m_ContentFolder);
             m_ToolSystem.EventToolChanged += OnToolChanged;
             m_ToolSystem.EventPrefabChanged += OnPrefabChanged;
-            m_PrefabSetsLookup = new Dictionary<string, List<PrefabID>>()
+            m_PrefabSetsLookup = new Dictionary<string, CustomSetRepository>()
             {
-                { "YYTC-wild-deciduous-trees", m_VanillaDeciduousPrefabIDs },
-                { "YYTC-evergreen-trees", m_VanillaEvergreenPrefabIDs },
-                { "YYTC-wild-bushes", m_VanillaWildBushPrefabs },
-                { "YYTC-custom-set-1", m_DefaultCustomSet1Prefabs },
-                { "YYTC-custom-set-2", m_DefaultCustomSet2Prefabs },
-                { "YYTC-custom-set-3", m_DefaultCustomSet3Prefabs },
-                { "YYTC-custom-set-4", m_DefaultCustomSet4Prefabs },
-                { "YYTC-custom-set-5", m_DefaultCustomSet5Prefabs },
+                { "YYTC-wild-deciduous-trees", new CustomSetRepository(m_VanillaDeciduousPrefabIDs) },
+                { "YYTC-evergreen-trees", new CustomSetRepository(m_VanillaEvergreenPrefabIDs) },
+                { "YYTC-wild-bushes", new CustomSetRepository(m_VanillaWildBushPrefabs) },
+                { "YYTC-custom-set-1", new CustomSetRepository(m_DefaultCustomSet1Prefabs) },
+                { "YYTC-custom-set-2", new CustomSetRepository(m_DefaultCustomSet2Prefabs) },
+                { "YYTC-custom-set-3", new CustomSetRepository(m_DefaultCustomSet3Prefabs) },
+                { "YYTC-custom-set-4", new CustomSetRepository(m_DefaultCustomSet4Prefabs) },
+                { "YYTC-custom-set-5", new CustomSetRepository(m_DefaultCustomSet5Prefabs) },
             };
 
             for (int i = 1; i <= 5; i++)
@@ -443,6 +443,7 @@ namespace Tree_Controller.Tools
             AddBinding(new TriggerBinding(ModId, "radius-up-arrow", IncreaseRadius));
             AddBinding(new TriggerBinding(ModId, "radius-down-arrow", DecreaseRadius));
             AddBinding(new TriggerBinding<string>(ModId, "ChangePrefabSet", ChangePrefabSet));
+            CreateTrigger<string, int>("ChangeProbabilityWeight", ChangeProbabilityWeight);
 
             m_VegetationQuery = GetEntityQuery(ComponentType.ReadOnly<Vegetation>());
 
@@ -775,7 +776,7 @@ namespace Tree_Controller.Tools
             m_RecentlySelectedPrefabSet = true;
             m_SelectedPrefabSet.Update(prefabSetID);
             List<PrefabID> validPrefabIDs = new List<PrefabID>();
-            foreach (PrefabID id in m_PrefabSetsLookup[prefabSetID])
+            foreach (PrefabID id in m_PrefabSetsLookup[prefabSetID].GetPrefabIDs())
             {
                 if (m_PrefabSystem.TryGetPrefab(id, out PrefabBase prefab))
                 {
@@ -1108,11 +1109,7 @@ namespace Tree_Controller.Tools
             string fileName = Path.Combine(m_ContentFolder, $"{prefabSetID}.xml");
             CustomSetRepository repository = new (prefabIDs);
 
-            m_PrefabSetsLookup[prefabSetID].Clear();
-            foreach (PrefabID prefab in prefabIDs)
-            {
-                m_PrefabSetsLookup[prefabSetID].Add(prefab);
-            }
+            m_PrefabSetsLookup[prefabSetID].SetPrefabsWithDefaultAdvancedOptions(prefabIDs);
 
             try
             {
@@ -1144,7 +1141,7 @@ namespace Tree_Controller.Tools
 
                     if (m_PrefabSetsLookup.ContainsKey(prefabSetID) && result.GetPrefabIDs().Count > 0)
                     {
-                        m_PrefabSetsLookup[prefabSetID] = result.GetPrefabIDs();
+                        m_PrefabSetsLookup[prefabSetID] = result;
                     }
 
                     m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(TryLoadCustomPrefabSet)} loaded repository for {prefabSetID}.");
@@ -1158,6 +1155,11 @@ namespace Tree_Controller.Tools
             }
 
             return false;
+        }
+
+        private void ChangeProbabilityWeight(string name, int probability)
+        {
+
         }
     }
 }

@@ -9,10 +9,15 @@
 .columnGroup {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: flex-start;    
     padding-left: 2.5rem;
     padding-right: 2.5rem;
     padding-bottom: 5rem;
+}
+
+.columnGroup > div {
+    padding-top: 2rem !important;    
+    padding-bottom: 2rem !important;
 }
 
 .centered {
@@ -23,6 +28,18 @@
     width: 24rem;
 }
 
+.text {
+    width: 95%;
+    font-size: 12rem;
+    white-space: normal;
+    overflow: hidden;
+    text-shadow: 0px 0px 6rem rgb(0 0 0);
+
+    p {
+        max-height: 45rem;
+        coh-font-fit-mode: shrink;
+    }
+}
 
 .smallButton {
     width: 18rem !important;
@@ -34,6 +51,10 @@
     align-items: center;
     justify-content: center;
     flex-grow: 1;
+}
+
+.PrefabThumbnailWidth {
+    width: 90rem;
 }
 
 .SliderFieldWidth {

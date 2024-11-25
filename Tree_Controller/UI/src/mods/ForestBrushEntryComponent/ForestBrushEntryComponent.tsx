@@ -19,8 +19,8 @@ const descriptionToolTipStyle = getModule("game-ui/common/tooltip/description-to
 
 const SliderField : any = getModule("game-ui/editor/widgets/fields/number-slider-field.tsx", "FloatSliderField");
    
-function changePrefabSet(name:string, probability : number) {
-    trigger(mod.id, "ChangeProbabilityWeight", name, probability);
+function changeValue(event:string, name:string, value : number) {
+    trigger(mod.id, event, name, value);
 }
 
 export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEntry }) => {
@@ -37,7 +37,6 @@ export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEn
     let [seletectedAges, changeSelectedAge] = useState<Ages>(props.entry.Ages);
     let [sliderMinElev, changeMinElevation] = useState<Number>(props.entry.MinimumElevation);    
     let [sliderMaxElev, changeMaxElevation] = useState<Number>(props.entry.MaximumElevation);    
-    let [sliderProbWeight, changeProbabilityWeight] = useState<Number>(props.entry.ProbabilityWeight);
 
     return (
         <div className={classNames(styles.rowGroup)}>
@@ -72,7 +71,7 @@ export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEn
                 </VanillaComponentResolver.instance.Section>
                 <VanillaComponentResolver.instance.Section title={"Probability Weight"}>
                     <div className={styles.SliderFieldWidth}>
-                        <SliderField value={sliderProbWeight} min={1} max={200} fractionDigits={0} onChange={(e: number) => {changeProbabilityWeight(e)}}></SliderField>
+                        <SliderField value={props.entry.ProbabilityWeight} min={1} max={200} fractionDigits={0} onChange={(e: number) => {changeValue("ChangeProbabilityWeight", props.entry.Name ,e)}}></SliderField>
                     </div>
                 </VanillaComponentResolver.instance.Section>
                 <VanillaComponentResolver.instance.Section title={"Minimum Elevation"}>

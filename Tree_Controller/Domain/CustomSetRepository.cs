@@ -184,9 +184,84 @@ namespace Tree_Controller.Domain
                 advancedForestBrushEntries.Add(GetDefaultAdvancedForestBrushEntry(prefabID.GetName()));
                 m_AdvancedForestBrushEntries = advancedForestBrushEntries.ToArray();
             }
-
         }
 
+        /// <summary>
+        /// Sets the probability weight for an advanced forest brush entry based on name.
+        /// </summary>
+        /// <param name="name">The prefab's name.</param>
+        /// <param name="probabilityWeight">New probability weight.</param>
+        public void SetProbabilityWeight(string name, int probabilityWeight)
+        {
+            for (int i = 0; i <= m_AdvancedForestBrushEntries.Length; i++)
+            {
+                if (m_AdvancedForestBrushEntries[i].Name == name)
+                {
+                    m_AdvancedForestBrushEntries[i].ProbabilityWeight = probabilityWeight;
+                    TreeControllerMod.Instance.Logger.Debug($"{nameof(CustomSetRepository)}.{nameof(SetProbabilityWeight)} set weight for {name} to {probabilityWeight}.");
+                    return;
+                }
+            }
+
+            TreeControllerMod.Instance.Logger.Debug($"{nameof(CustomSetRepository)}.{nameof(SetProbabilityWeight)} did not find {name}.");
+        }
+
+        /// <summary>
+        /// Sets the minimum elevation for an advanced forest brush entry based on name.
+        /// </summary>
+        /// <param name="name">The prefab's name.</param>
+        /// <param name="minimumElevation">New minimum elevation.</param>
+        public void SetMinimumElevation(string name, int minimumElevation)
+        {
+            for (int i = 0; i < m_AdvancedForestBrushEntries.Length; i++)
+            {
+                if (m_AdvancedForestBrushEntries[i].Name == name)
+                {
+                    m_AdvancedForestBrushEntries[i].MinimumElevation = minimumElevation;
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the max elevation for an advanced forest brush entry based on name.
+        /// </summary>
+        /// <param name="name">The prefab's name.</param>
+        /// <param name="maxElevation">New probability weight.</param>
+        public void SetMaximumElevation(string name, int maxElevation)
+        {
+            for (int i = 0; i < m_AdvancedForestBrushEntries.Length; i++)
+            {
+                if (m_AdvancedForestBrushEntries[i].Name == name)
+                {
+                    m_AdvancedForestBrushEntries[i].MaximumElevation = maxElevation;
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Saves the custom set while maintaining previous advanced forest brush entries and adding default ones if new.
+        /// </summary>
+        /// <param name="customSet">List of prefab bases.</param>
+        public void SaveCustomSet(List<PrefabBase> customSet)
+        {
+            List<string> names = ConvertToArray(customSet).ToList();
+            AdvancedForestBrushEntry[] newEntries = new AdvancedForestBrushEntry[customSet.Count];
+            for (int i = 0; i < customSet.Count; i++)
+            {
+                if (i < m_AdvancedForestBrushEntries.Length && names.Contains(m_AdvancedForestBrushEntries[i].Name))
+                {
+                    newEntries[i] = m_AdvancedForestBrushEntries[i];
+                }
+                else
+                {
+                    newEntries[i] = GetDefaultAdvancedForestBrushEntry(customSet[i].name);
+                }
+            }
+
+            m_AdvancedForestBrushEntries = newEntries;
+        }
 
         private string[] ConvertToArray(List<PrefabBase> list)
         {

@@ -758,7 +758,8 @@ namespace Tree_Controller.Tools
             if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && ctrlKeyPressed)
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} trying to add prefab ids to set lookup.");
-                TrySaveCustomPrefabSet(prefabSetID, selectedPrefabs);
+                m_PrefabSetsLookup[prefabSetID].SaveCustomSet(selectedPrefabs);
+                TrySaveCustomPrefabSet(prefabSetID);
             }
 
             if (m_PrefabSetsLookup[prefabSetID].Count == 0)
@@ -786,15 +787,7 @@ namespace Tree_Controller.Tools
                 }
             }
 
-            int i = 0;
-            AdvancedForestBrushEntry[] advancedForestBrushEntries = new AdvancedForestBrushEntry[validPrefabIDs.Count];
-            foreach (PrefabID prefabID in validPrefabIDs)
-            {
-                advancedForestBrushEntries[i] = new AdvancedForestBrushEntry(prefabID, Ages.Adult, 100, 0, 4000);
-                i++;
-            }
-
-            m_AdvanvedForestBrushEntries.Value = advancedForestBrushEntries;
+            m_AdvanvedForestBrushEntries.Value = m_PrefabSetsLookup[prefabSetID].AdvancedForestBrushEntries;
 
             m_UpdateSelectionSet = true;
 
@@ -933,7 +926,6 @@ namespace Tree_Controller.Tools
                 {
                     m_ToolMode.Update((int)ToolMode.Brush);
                 }
-
             }
             else
             {
@@ -1093,39 +1085,30 @@ namespace Tree_Controller.Tools
             }
         }
 
-        private bool TrySaveCustomPrefabSet(string prefabSetID, List<PrefabBase> prefabBases)
-        {
-            List<PrefabID> prefabIDs = new List<PrefabID>();
-            foreach (PrefabBase prefab in prefabBases)
-            {
-                prefabIDs.Add(prefab.GetPrefabID());
-            }
-
-            return TrySaveCustomPrefabSet(prefabSetID, prefabIDs);
-        }
-
-        private bool TrySaveCustomPrefabSet(string prefabSetID, List<PrefabID> prefabIDs)
+        private bool TrySaveCustomPrefabSet(string prefabSetID)
         {
             string fileName = Path.Combine(m_ContentFolder, $"{prefabSetID}.xml");
-            CustomSetRepository repository = new (prefabIDs);
 
-            m_PrefabSetsLookup[prefabSetID].SetPrefabsWithDefaultAdvancedOptions(prefabIDs);
-
-            try
+            if (m_PrefabSetsLookup.ContainsKey(prefabSetID))
             {
-                XmlSerializer serTool = new XmlSerializer(typeof(CustomSetRepository)); // Create serializer
-                using (System.IO.FileStream file = System.IO.File.Create(fileName)) // Create file
+                try
                 {
-                    serTool.Serialize(file, repository); // Serialize whole properties
-                }
+                    XmlSerializer serTool = new XmlSerializer(typeof(CustomSetRepository)); // Create serializer
+                    using (System.IO.FileStream file = System.IO.File.Create(fileName)) // Create file
+                    {
+                        serTool.Serialize(file, m_PrefabSetsLookup[prefabSetID]); // Serialize whole properties
+                    }
 
-                return true;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    m_Log.Warn($"{nameof(TreeControllerUISystem)}.{nameof(TrySaveCustomPrefabSet)} Could not save values for {prefabSetID}. Encountered exception {ex}");
+                    return false;
+                }
             }
-            catch (Exception ex)
-            {
-                m_Log.Warn($"{nameof(TreeControllerUISystem)}.{nameof(TrySaveCustomPrefabSet)} Could not save values for {prefabSetID}. Encountered exception {ex}");
-                return false;
-            }
+
+            return false;
         }
 
         private bool TryLoadCustomPrefabSet(string prefabSetID)
@@ -1159,7 +1142,13 @@ namespace Tree_Controller.Tools
 
         private void ChangeProbabilityWeight(string name, int probability)
         {
-
+            if (m_PrefabSetsLookup.ContainsKey(m_SelectedPrefabSet.value))
+            {
+                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeProbabilityWeight)} found set {m_SelectedPrefabSet.value}");
+                m_PrefabSetsLookup[m_SelectedPrefabSet.value].SetProbabilityWeight(name, probability);
+                m_AdvanvedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
+                m_AdvanvedForestBrushEntries.Binding.TriggerUpdate();
+            }
         }
     }
 }

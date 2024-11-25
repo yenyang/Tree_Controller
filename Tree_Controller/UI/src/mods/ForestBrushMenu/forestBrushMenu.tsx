@@ -54,7 +54,7 @@ export const ForestBrushMenuComponent = () => {
     {
         Name: "Grass",
         Src: uilStandard + "RoadUpgradeRetainingWall.svg",
-        Ages: Ages.Adult,
+        SelectedAges: Ages.Adult,
         ProbabilityWeight: 100,
         MinimumElevation: 0,
         MaximumElevation: 4000,

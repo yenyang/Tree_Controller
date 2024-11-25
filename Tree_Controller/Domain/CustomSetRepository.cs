@@ -300,7 +300,17 @@ namespace Tree_Controller.Domain
 
         private AdvancedForestBrushEntry GetDefaultAdvancedForestBrushEntry(string name)
         {
-            return new AdvancedForestBrushEntry(new PrefabID("StaticObjectPrefab", name), DefaultAge, DefaultProbabilityWeight, DefaultMinimumElevation, DefaultMaximumElevation);
+            PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
+            PrefabID prefabID = new PrefabID("StaticObjectPrefab", name);
+            Tools.Ages age = DefaultAge;
+            if (prefabSystem.TryGetPrefab(prefabID, out PrefabBase prefabBase)
+                && prefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity)
+                && !prefabSystem.EntityManager.HasComponent<Game.Prefabs.TreeData>(prefabEntity))
+            {
+                age = Tools.Ages.Hide;
+            }
+
+            return new AdvancedForestBrushEntry(prefabID, age, DefaultProbabilityWeight, DefaultMinimumElevation, DefaultMaximumElevation);
         }
     }
 }

@@ -443,7 +443,9 @@ namespace Tree_Controller.Tools
             AddBinding(new TriggerBinding(ModId, "radius-up-arrow", IncreaseRadius));
             AddBinding(new TriggerBinding(ModId, "radius-down-arrow", DecreaseRadius));
             AddBinding(new TriggerBinding<string>(ModId, "ChangePrefabSet", ChangePrefabSet));
-            CreateTrigger<string, int>("ChangeProbabilityWeight", ChangeProbabilityWeight);
+            CreateTrigger<string, int>("SetProbabilityWeight", SetProbabilityWeight);
+            CreateTrigger<string, int>("SetMinimumElevation", SetMinimumElevation);
+            CreateTrigger<string, int>("SetMaximumElevation", SetMaximumElevation);
 
             m_VegetationQuery = GetEntityQuery(ComponentType.ReadOnly<Vegetation>());
 
@@ -1140,14 +1142,36 @@ namespace Tree_Controller.Tools
             return false;
         }
 
-        private void ChangeProbabilityWeight(string name, int probability)
+        private void SetProbabilityWeight(string name, int value)
         {
             if (m_PrefabSetsLookup.ContainsKey(m_SelectedPrefabSet.value))
             {
-                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeProbabilityWeight)} found set {m_SelectedPrefabSet.value}");
-                m_PrefabSetsLookup[m_SelectedPrefabSet.value].SetProbabilityWeight(name, probability);
+                m_PrefabSetsLookup[m_SelectedPrefabSet.value].SetProbabilityWeight(name, value);
                 m_AdvanvedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
                 m_AdvanvedForestBrushEntries.Binding.TriggerUpdate();
+                TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
+            }
+        }
+
+        private void SetMinimumElevation(string name, int value)
+        {
+            if (m_PrefabSetsLookup.ContainsKey(m_SelectedPrefabSet.value))
+            {
+                m_PrefabSetsLookup[m_SelectedPrefabSet.value].SetMinimumElevation(name, value);
+                m_AdvanvedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
+                m_AdvanvedForestBrushEntries.Binding.TriggerUpdate();
+                TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
+            }
+        }
+
+        private void SetMaximumElevation(string name, int value)
+        {
+            if (m_PrefabSetsLookup.ContainsKey(m_SelectedPrefabSet.value))
+            {
+                m_PrefabSetsLookup[m_SelectedPrefabSet.value].SetMaximumElevation(name, value);
+                m_AdvanvedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
+                m_AdvanvedForestBrushEntries.Binding.TriggerUpdate();
+                TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
             }
         }
     }

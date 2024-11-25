@@ -34,10 +34,7 @@ export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEn
     const clearAgeTooltipTitle = translate("YY_TREE_CONTROLLER[clear-ages]",locale["YY_TREE_CONTROLLER[clear-ages]"]);
     const clearAgeTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[clear-ages]", locale["YY_TREE_CONTROLLER_DESCRIPTION[clear-ages]"]);
 
-    let [seletectedAges, changeSelectedAge] = useState<Ages>(props.entry.Ages);
-    let [sliderMinElev, changeMinElevation] = useState<Number>(props.entry.MinimumElevation);    
-    let [sliderMaxElev, changeMaxElevation] = useState<Number>(props.entry.MaximumElevation);    
-
+    console.log(props.entry.SelectedAges as Ages);
     return (
         <div className={classNames(styles.rowGroup)}>
             <div className={classNames(styles.columnGroup, styles.centered, styles.PrefabThumbnailWidth)}>
@@ -54,34 +51,40 @@ export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEn
                 </div>
             </div>
             <div className={styles.columnGroup}>
-                <VanillaComponentResolver.instance.Section title={translate("YY_TREE_CONTROLLER[Age]",locale["YY_TREE_CONTROLLER[Age]"])}>
-                    {( true && 
-                        <VanillaComponentResolver.instance.ToolButton  selected={(seletectedAges & Ages.MatchGlobal) == Ages.MatchGlobal}         tooltip={"Match gloabl"}      onSelect={() => changeSelectedAge(Ages.MatchGlobal)}        src={ageChangSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                    )}
-                    
-                    <VanillaComponentResolver.instance.ToolButton  selected={(seletectedAges & Ages.All) == Ages.All}         tooltip={descriptionTooltip(clearAgeTooltipTitle, clearAgeTooltipDescription)}      onSelect={() => changeSelectedAge(Ages.All)}        src={clearAgesSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                    <VanillaComponentResolver.instance.ToolButton  selected={(seletectedAges & Ages.Child) == Ages.Child}     tooltip={childTooltipTitle}            onSelect={() => changeSelectedAge(Ages.Child)}      src={childSrc}           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                    <VanillaComponentResolver.instance.ToolButton  selected={(seletectedAges & Ages.Teen) == Ages.Teen}       tooltip={teenTooltipTitle}              onSelect={() => changeSelectedAge(Ages.Teen)}       src={teenSrc}            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                    <VanillaComponentResolver.instance.ToolButton  selected={(seletectedAges & Ages.Adult) == Ages.Adult}     tooltip={adultTooltipTitle}            onSelect={() => changeSelectedAge(Ages.Adult)}      src={adultSrc}           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                    <VanillaComponentResolver.instance.ToolButton  selected={(seletectedAges & Ages.Elderly) == Ages.Elderly} tooltip={elderlyTooltipTitle}        onSelect={() => changeSelectedAge(Ages.Elderly)}    src={elderlySrc}         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                    <VanillaComponentResolver.instance.ToolButton  selected={(seletectedAges & Ages.Dead) == Ages.Dead}       tooltip={deadTooltipTitle}              onSelect={() => changeSelectedAge(Ages.Dead)}       src={deadSrc}            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                    {( true && 
-                        <VanillaComponentResolver.instance.ToolButton  selected={(seletectedAges & Ages.Stump) == Ages.Stump} tooltip={translate("Tree_Controller.TOOLTIP_TITLE[Stump]", locale["Tree_Controller.TOOLTIP_TITLE[Stump]"])}     onSelect={() => changeSelectedAge(Ages.Stump)}        src={stumpSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                    )}
-                </VanillaComponentResolver.instance.Section>
+                
+                {( (props.entry.SelectedAges & Ages.Hide) != Ages.Hide &&                     
+                    <VanillaComponentResolver.instance.Section title={translate("YY_TREE_CONTROLLER[Age]",locale["YY_TREE_CONTROLLER[Age]"])}>
+                        <>
+                            <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.MatchGlobal) == Ages.MatchGlobal}         tooltip={"Match gloabl"}      onSelect={() => console.log("Match Gloabl")}        src={ageChangSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                            {( (props.entry.SelectedAges & Ages.MatchGlobal) != Ages.MatchGlobal && 
+                                <>
+                                    <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.All) == Ages.All}         tooltip={descriptionTooltip(clearAgeTooltipTitle, clearAgeTooltipDescription)}      onSelect={() => console.log("all")}        src={clearAgesSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                                    <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.Child) == Ages.Child}     tooltip={childTooltipTitle}            onSelect={() => console.log("child")}      src={childSrc}           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                                    <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.Teen) == Ages.Teen}       tooltip={teenTooltipTitle}              onSelect={() => console.log("teen")}       src={teenSrc}            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                                    <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.Adult) == Ages.Adult}     tooltip={adultTooltipTitle}            onSelect={() => console.log("adult")}      src={adultSrc}           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                                    <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.Elderly) == Ages.Elderly} tooltip={elderlyTooltipTitle}        onSelect={() => console.log("elderyl")}    src={elderlySrc}         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                                    <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.Dead) == Ages.Dead}       tooltip={deadTooltipTitle}              onSelect={() => console.log("dead")}       src={deadSrc}            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                                </>
+                            )}
+                            {( false && 
+                                <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.Stump) == Ages.Stump} tooltip={translate("Tree_Controller.TOOLTIP_TITLE[Stump]", locale["Tree_Controller.TOOLTIP_TITLE[Stump]"])}     onSelect={() => console.log("stump")}        src={stumpSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                            )}
+                        </>
+                    </VanillaComponentResolver.instance.Section>
+                )}
                 <VanillaComponentResolver.instance.Section title={"Probability Weight"}>
                     <div className={styles.SliderFieldWidth}>
-                        <SliderField value={props.entry.ProbabilityWeight} min={1} max={200} fractionDigits={0} onChange={(e: number) => {changeValue("ChangeProbabilityWeight", props.entry.Name ,e)}}></SliderField>
+                        <SliderField value={props.entry.ProbabilityWeight} min={1} max={200} fractionDigits={0} onChange={(e: number) => {changeValue("SetProbabilityWeight", props.entry.Name ,e)}}></SliderField>
                     </div>
                 </VanillaComponentResolver.instance.Section>
                 <VanillaComponentResolver.instance.Section title={"Minimum Elevation"}>
                     <div className={styles.SliderFieldWidth}>
-                        <SliderField value={sliderMinElev} min={0} max={4000} fractionDigits={0} onChange={(e: number) => {changeMinElevation(e)}}></SliderField>
+                        <SliderField value={props.entry.MinimumElevation} min={0} max={4000} fractionDigits={0} onChange={(e: number) => {changeValue("SetMinimumElevation", props.entry.Name ,e)}}></SliderField>
                     </div>
                 </VanillaComponentResolver.instance.Section>
                 <VanillaComponentResolver.instance.Section title={"Maximum Elevation"}>
                     <div className={styles.SliderFieldWidth}>
-                        <SliderField value={sliderMaxElev} min={0} max={4000} fractionDigits={0} onChange={(e: number) => {changeMaxElevation(e)}}></SliderField>
+                        <SliderField value={props.entry.MaximumElevation} min={0} max={4000} fractionDigits={0} onChange={(e: number) => {changeValue("SetMaximumElevation", props.entry.Name ,e)}}></SliderField>
                     </div>
                 </VanillaComponentResolver.instance.Section>
             </div>

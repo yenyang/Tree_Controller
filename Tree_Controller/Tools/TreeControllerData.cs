@@ -10,16 +10,6 @@ namespace Tree_Controller.Tools
     public enum Ages
     {
         /// <summary>
-        /// Do not show ages.
-        /// </summary>
-        Hide = -2,
-
-        /// <summary>
-        /// Match global binding instead of a specific override.
-        /// </summary>
-        MatchGlobal = -1,
-
-        /// <summary>
         /// No selection will default to adult.
         /// </summary>
         None = 0,
@@ -58,6 +48,16 @@ namespace Tree_Controller.Tools
         /// Random selection of all ages.
         /// </summary>
         All = 64,
+
+        /// <summary>
+        /// Do not show ages.
+        /// </summary>
+        Hide = 128,
+
+        /// <summary>
+        /// Match global binding instead of a specific override.
+        /// </summary>
+        MatchGlobal = 256,
     }
 
     /// <summary>

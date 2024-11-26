@@ -446,6 +446,7 @@ namespace Tree_Controller.Tools
             CreateTrigger<string, int>("SetProbabilityWeight", SetProbabilityWeight);
             CreateTrigger<string, int>("SetMinimumElevation", SetMinimumElevation);
             CreateTrigger<string, int>("SetMaximumElevation", SetMaximumElevation);
+            CreateTrigger<string, int>("SetEntryAge", SetEntryAge);
 
             m_VegetationQuery = GetEntityQuery(ComponentType.ReadOnly<Vegetation>());
 
@@ -1169,6 +1170,17 @@ namespace Tree_Controller.Tools
             if (m_PrefabSetsLookup.ContainsKey(m_SelectedPrefabSet.value))
             {
                 m_PrefabSetsLookup[m_SelectedPrefabSet.value].SetMaximumElevation(name, value);
+                m_AdvanvedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
+                m_AdvanvedForestBrushEntries.Binding.TriggerUpdate();
+                TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
+            }
+        }
+
+        private void SetEntryAge(string name, int toggledAge)
+        {
+            if (m_PrefabSetsLookup.ContainsKey(m_SelectedPrefabSet.value))
+            {
+                m_PrefabSetsLookup[m_SelectedPrefabSet.value].SetAges(name, (Ages)toggledAge);
                 m_AdvanvedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
                 m_AdvanvedForestBrushEntries.Binding.TriggerUpdate();
                 TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);

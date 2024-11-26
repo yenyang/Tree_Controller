@@ -57,7 +57,7 @@ namespace Tree_Controller.Tools
         /// <summary>
         /// Match global binding instead of a specific override.
         /// </summary>
-        MatchGlobal = 256,
+        OverrideAge = 256,
     }
 
     /// <summary>

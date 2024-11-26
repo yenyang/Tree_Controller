@@ -20,7 +20,7 @@ export enum Ages
     Stump = 32,
     All = 64,
     Hide = 128,
-    MatchGlobal = 256,
+    OverrideAge = 256,
 }
 
 enum ToolMode 

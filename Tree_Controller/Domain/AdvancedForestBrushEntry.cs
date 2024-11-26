@@ -60,10 +60,10 @@ namespace Tree_Controller.Domain
         /// <summary>
         /// Gets or sets selected ages.
         /// </summary>
-        public Ages SelectedAges
+        public int SelectedAges
         {
-            get { return m_Ages; }
-            set { m_Ages = value; }
+            get { return (int)m_Ages; }
+            set { m_Ages = (Ages)value; }
         }
 
         /// <summary>

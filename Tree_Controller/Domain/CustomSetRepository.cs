@@ -6,7 +6,9 @@ namespace Tree_Controller.Domain
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Colossal.Logging;
     using Game.Prefabs;
+    using Tree_Controller.Tools;
     using Unity.Entities;
 
     /// <summary>
@@ -17,7 +19,7 @@ namespace Tree_Controller.Domain
         private readonly int DefaultProbabilityWeight = 100;
         private readonly int DefaultMinimumElevation = 0;
         private readonly int DefaultMaximumElevation = 4000;
-        private readonly Tools.Ages DefaultAge = Tools.Ages.MatchGlobal;
+        private readonly Tools.Ages DefaultAge = Tools.Ages.Adult;
 
         private int m_Version;
         private AdvancedForestBrushEntry[] m_AdvancedForestBrushEntries;
@@ -235,6 +237,71 @@ namespace Tree_Controller.Domain
                 if (m_AdvancedForestBrushEntries[i].Name == name)
                 {
                     m_AdvancedForestBrushEntries[i].MaximumElevation = maxElevation;
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the selected for an advanced forest brush entry based on name.
+        /// </summary>
+        /// <param name="name">the prefab's name.</param>
+        /// <param name="toggledAge">Toggled age.</param>
+        public void SetAges(string name, Ages toggledAge)
+        {
+            for (int i = 0; i < m_AdvancedForestBrushEntries.Length; i++)
+            {
+                if (m_AdvancedForestBrushEntries[i].Name == name)
+                {
+                    Ages selectedAges = (Ages)m_AdvancedForestBrushEntries[i].SelectedAges;
+                    if (toggledAge == Ages.OverrideAge)
+                    {
+                        if ((selectedAges & Ages.OverrideAge) == Ages.OverrideAge)
+                        {
+                            selectedAges &= ~Ages.OverrideAge;
+                        }
+                        else
+                        {
+                            selectedAges |= Ages.OverrideAge;
+                        }
+
+                        m_AdvancedForestBrushEntries[i].SelectedAges = (int)selectedAges;
+                        return;
+                    }
+
+                    if (toggledAge != Ages.All && (selectedAges & Ages.All) == Ages.All)
+                    {
+                        selectedAges &= ~Ages.All;
+                    }
+                    else if (toggledAge == Ages.All && selectedAges != Ages.OverrideAge)
+                    {
+                        selectedAges &= ~(Ages.Child | Ages.Teen | Ages.Adult | Ages.Elderly | Ages.Elderly | Ages.Dead | Ages.Stump | Ages.All);
+                        m_AdvancedForestBrushEntries[i].SelectedAges = (int)selectedAges;
+                        return;
+                    }
+                    else if (toggledAge == Ages.All && selectedAges == Ages.OverrideAge)
+                    {
+                        selectedAges |= Ages.Child | Ages.Teen | Ages.Adult | Ages.Elderly | Ages.Elderly | Ages.Dead | Ages.Stump | Ages.All;
+                        m_AdvancedForestBrushEntries[i].SelectedAges = (int)selectedAges;
+                        return;
+                    }
+
+                    if ((selectedAges & toggledAge) == toggledAge)
+                    {
+                        selectedAges &= ~toggledAge;
+                    }
+                    else
+                    {
+                        selectedAges |= toggledAge;
+                    }
+
+                    if (m_AdvancedForestBrushEntries[i].SelectedAges == ((int)Ages.All - 1))
+                    {
+                        selectedAges |= Ages.All;
+                    }
+
+                    m_AdvancedForestBrushEntries[i].SelectedAges = (int)selectedAges;
+
                     return;
                 }
             }

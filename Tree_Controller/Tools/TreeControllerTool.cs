@@ -582,18 +582,6 @@ namespace Tree_Controller.Tools
         }
 
         /// <summary>
-        /// Add keybinding to tool so you can enabled tool in game.
-        /// </summary>
-        private void OnKeyPressed(InputAction.CallbackContext context)
-        {
-            if (m_ToolSystem.activeTool != this && m_ToolSystem.activeTool == m_DefaultToolSystem)
-            {
-                m_ToolSystem.selected = Entity.Null;
-                m_ToolSystem.activeTool = this;
-            }
-        }
-
-        /// <summary>
         /// Checks selected ages for at least one selection.
         /// </summary>
         /// <param name="ages">An array of bools for the selected ages.</param>

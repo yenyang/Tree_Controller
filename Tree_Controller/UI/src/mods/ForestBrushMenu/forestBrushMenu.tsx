@@ -4,19 +4,22 @@ import { VanillaComponentResolver } from "mods/VanillaComponentResolver/VanillaC
 import { bindValue, trigger, useValue } from "cs2/api";
 import mod from "../../../mod.json";
 import { getModule } from "cs2/modding";
-import { game } from "cs2/bindings";
+import { game, tool } from "cs2/bindings";
 import { useLocalization } from "cs2/l10n";
 import locale from "../lang/en-US.json";
 import { ForestBrushEntryComponent } from "mods/ForestBrushEntryComponent/ForestBrushEntryComponent";
 import { AdvancedForestBrushEntry } from "Domain/advancedForestBrushEntry";
-import { Ages, evergreenTreesID, deciduousTreesID, wildBushesID, customSetID, descriptionTooltip, deciduousSrc, bushesSrc, evergreenSrc , changePrefabSet} from "mods/TreeControllerSections/treeControllerSections";
+import { Ages, evergreenTreesID, deciduousTreesID, wildBushesID, customSetID, descriptionTooltip, deciduousSrc, bushesSrc, evergreenSrc , changePrefabSet, ToolMode} from "mods/TreeControllerSections/treeControllerSections";
 
 const uilStandard =                         "coui://uil/Standard/";
 
 const closeSrc =         uilStandard +  "XClose.svg";
 const arrowUpSrc =           uilStandard +  "ArrowUpThickStroke.svg";
 
-// const ShowPanel$ = bindValue<boolean>(mod.id, "ShowForestBrushPanel");
+const ToolMode$ =            bindValue<number> (mod.id, 'ToolMode');
+const IsVegetation$ =        bindValue<boolean>(mod.id, 'IsVegetation');
+const IsTree$ =              bindValue<boolean>(mod.id, 'IsTree');
+const ShowPanel$ = bindValue<boolean>(mod.id, "ShowForestBrushPanel");
 const PrefabSet$ =           bindValue<string>(mod.id, 'PrefabSet');
 const AdvancedForestBrushEntries$ = bindValue<AdvancedForestBrushEntry[]>(mod.id, 'AdvancedForestBrushEntries');
 
@@ -27,10 +30,19 @@ function handleClick(event: string) {
 const roundButtonHighlightStyle = getModule("game-ui/common/input/button/themes/round-highlight-button.module.scss", "classes");
 
 export const ForestBrushMenuComponent = () => {
-    // const ShowPanel = useValue(ShowPanel$);
+    const ShowPanel = useValue(ShowPanel$);
     const isPhotoMode = useValue(game.activeGamePanel$)?.__Type == game.GamePanelType.PhotoMode;
     const AdvancedForestBrushEntries = useValue(AdvancedForestBrushEntries$);
     const PrefabSet = useValue(PrefabSet$);
+    const objectToolActive = useValue(tool.activeTool$).id == tool.OBJECT_TOOL;
+    const netToolActive = useValue(tool.activeTool$).id == tool.NET_TOOL;
+    const treeControllerToolActive = useValue(tool.activeTool$).id == "Tree Controller Tool";
+    const lineToolActive = useValue(tool.activeTool$).id == "Line Tool";
+
+    const CurrentToolMode = useValue(ToolMode$);
+    const IsVegetation = useValue(IsVegetation$);
+    const IsTree = useValue(IsTree$);
+
     const { translate } = useLocalization();
 
     const deciduousTooltipTitle = translate("YY_TREE_CONTROLLER[wild-deciduous-trees]",locale["YY_TREE_CONTROLLER[wild-deciduous-trees]"]);
@@ -50,18 +62,9 @@ export const ForestBrushMenuComponent = () => {
     const customSet5TooltipTitle = translate("YY_TREE_CONTROLLER[custom-set-5]",locale["YY_TREE_CONTROLLER[custom-set-5]"]);
     const customSet5TooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]",locale["YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]"]);
     
-    const example : AdvancedForestBrushEntry = 
-    {
-        Name: "Grass",
-        Src: uilStandard + "RoadUpgradeRetainingWall.svg",
-        SelectedAges: Ages.Adult,
-        ProbabilityWeight: 100,
-        MinimumElevation: 0,
-        MaximumElevation: 4000,
-    }
     return (
         <>
-            {true && !isPhotoMode && (
+            {ShowPanel && !isPhotoMode && (((objectToolActive || treeControllerToolActive || lineToolActive || netToolActive) && (IsVegetation || IsTree)) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge)) && (
                 <Portal>
                     <Panel
                         className={styles.panel}

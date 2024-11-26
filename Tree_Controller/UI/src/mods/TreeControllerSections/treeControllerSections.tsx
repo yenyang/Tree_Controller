@@ -23,7 +23,7 @@ export enum Ages
     OverrideAge = 256,
 }
 
-enum ToolMode 
+export enum ToolMode 
 {    Plop = 0,
     Brush = 1,
     ChangeAge = 2,
@@ -61,6 +61,7 @@ const diskSaveSrc =          uilStandard +  "DiskSave.svg";
 export const clearAgesSrc =        uilStandard + "StarAll.svg";
 const brushSrc =            uilStandard + "Trees.svg";
 export const stumpSrc =            uilStandard + "TreeStump.svg";
+const gearSrc = uilStandard + "Gear.svg";
 
 // These establishes the binding with C# side. Without C# side game ui will crash.
 const ToolMode$ =            bindValue<number> (mod.id, 'ToolMode');
@@ -72,6 +73,7 @@ const Radius$ =              bindValue<number>(mod.id, 'Radius');
 const PrefabSet$ =           bindValue<string>(mod.id, 'PrefabSet');
 const IsEditor$ =           bindValue<boolean>(mod.id, "IsEditor");
 const ShowStump$ =           bindValue<boolean>(mod.id, 'ShowStump');
+const ShowPanel$ =          bindValue<boolean>(mod.id, 'ShowForestBrushPanel');
 
 // These are strings that will be used for event triggers.
 const radiusDownID =             "radius-down-arrow";
@@ -138,6 +140,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
         const PrefabSet = useValue(PrefabSet$);
         const IsEditor = useValue(IsEditor$);
         const ShowStumps = useValue(ShowStump$);
+        const ShowPanel = useValue(ShowPanel$);
 
         // These set up state variables for custom sets switching from number to save disk icon.
         const [isCustomSet1Hovered, setCustomSet1Hovered] = useState(false);
@@ -263,6 +266,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                 <>
                     { (((objectToolActive && CurrentToolMode == ToolMode.Brush) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType) || lineToolActive) && IsVegetation) && (
                     <VanillaComponentResolver.instance.Section title={translate("YY_TREE_CONTROLLER[Sets]",locale["YY_TREE_CONTROLLER[Sets]"])}>
+                        <VanillaComponentResolver.instance.ToolButton  selected={ShowPanel}                         tooltip={"Show Panel"}                                                                  onSelect={() => handleClick("ForestBrushPanelToggled")}         src={gearSrc}                                           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == deciduousTreesID}     tooltip={descriptionTooltip(deciduousTooltipTitle,deciduousTooltipDescription)}         onSelect={() => changePrefabSet(deciduousTreesID)}    src={deciduousSrc}                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == evergreenTreesID}     tooltip={descriptionTooltip(evergreenTooltipTitle, evergreenTooltipDescription)}        onSelect={() => changePrefabSet(evergreenTreesID)}    src={evergreenSrc}                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == wildBushesID}         tooltip={descriptionTooltip(wildBushesTooltipTitle, wildBushesTooltipDescription)}      onSelect={() => changePrefabSet(wildBushesID)}        src={bushesSrc}                                                   focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>

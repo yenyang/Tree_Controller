@@ -132,6 +132,7 @@ namespace Tree_Controller.Tools
         private ValueBindingHelper<bool> m_ShowStump;
         private ValueBinding<string> m_SelectedPrefabSet;
         private ValueBindingHelper<bool> m_IsEditor;
+        private ValueBindingHelper<bool> m_ShowAdvancedForestBrushPanel;
         private bool m_UpdateSelectionSet = false;
         private bool m_RecentlySelectedPrefabSet = false;
         private bool m_MultiplePrefabsSelected = false;
@@ -435,6 +436,7 @@ namespace Tree_Controller.Tools
             m_IsEditor = CreateBinding("IsEditor", false);
             m_ShowStump = CreateBinding("ShowStump", false);
             m_AdvanvedForestBrushEntries = CreateBinding("AdvancedForestBrushEntries", new AdvancedForestBrushEntry[] { });
+            m_ShowAdvancedForestBrushPanel = CreateBinding("ShowForestBrushPanel", false);
 
             // This section handles trigger bindings which listen for triggers from UI and then start an event.
             AddBinding(new TriggerBinding<int>(ModId, "ChangeToolMode", ChangeToolMode));
@@ -447,6 +449,7 @@ namespace Tree_Controller.Tools
             CreateTrigger<string, int>("SetMinimumElevation", SetMinimumElevation);
             CreateTrigger<string, int>("SetMaximumElevation", SetMaximumElevation);
             CreateTrigger<string, int>("SetEntryAge", SetEntryAge);
+            CreateTrigger("ForestBrushPanelToggled", () => m_ShowAdvancedForestBrushPanel.Value = !m_ShowAdvancedForestBrushPanel.Value);
 
             m_VegetationQuery = GetEntityQuery(ComponentType.ReadOnly<Vegetation>());
 

@@ -590,6 +590,20 @@ namespace Tree_Controller.Tools
                     m_ToolMode.Update((int)ToolMode.ChangeType);
                     ActivatePrefabChange();
                     break;
+                case ToolMode.Line:
+                    m_ToolMode.Update((int)ToolMode.Line);
+                    m_Log.Debug("Enable vanilla line tool please.");
+                    m_ToolSystem.selected = Entity.Null;
+                    m_ObjectToolSystem.mode = ObjectToolSystem.Mode.Line;
+                    m_ToolSystem.activeTool = m_ObjectToolSystem;
+                    break;
+                case ToolMode.Curve:
+                    m_ToolMode.Update((int)ToolMode.Curve);
+                    m_Log.Debug("Enable curves object tool please.");
+                    m_ToolSystem.selected = Entity.Null;
+                    m_ObjectToolSystem.mode = ObjectToolSystem.Mode.Curve;
+                    m_ToolSystem.activeTool = m_ObjectToolSystem;
+                    break;
             }
         }
 
@@ -702,7 +716,9 @@ namespace Tree_Controller.Tools
         private void SetAgeBinding()
         {
             if (m_ToolSystem.activeTool == m_ObjectToolSystem
-                && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush
+                && (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush
+                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line
+                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve)
                 && m_ToolSystem.activePrefab is not null
                 && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity)
                 && m_PrefabSystem.EntityManager.HasComponent<TreeData>(prefabEntity))
@@ -881,9 +897,28 @@ namespace Tree_Controller.Tools
         /// <param name="tool">The new tool.</param>
         private void OnToolChanged(ToolBaseSystem tool)
         {
-            if (m_ToolSystem.activePrefab != null &&
-                (tool == m_TreeControllerTool || tool.toolID == "Line Tool" || (tool == m_ObjectToolSystem && (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush)))
-                && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity))
+            HandleToolOrPrefabChange(tool, tool.GetPrefab());
+        }
+
+        /// <summary>
+        /// Method implemented by event triggered by prefab changing.
+        /// </summary>
+        /// <param name="prefab">The new prefab.</param>
+        private void OnPrefabChanged(PrefabBase prefab)
+        {
+            HandleToolOrPrefabChange(m_ToolSystem.activeTool, prefab);
+        }
+
+        private void HandleToolOrPrefabChange(ToolBaseSystem tool, PrefabBase prefab)
+        {
+            if (prefab != null &&
+                (tool == m_TreeControllerTool || tool.toolID == "Line Tool" ||
+                (tool == m_ObjectToolSystem &&
+                (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create
+                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush
+                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line
+                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve)))
+                && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)} ");
                 Enabled = true;
@@ -891,13 +926,13 @@ namespace Tree_Controller.Tools
                 List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
                 if (m_IsVegetation.value && selectedPrefabs.Count == 0)
                 {
-                    m_TreeControllerTool.SelectTreePrefab(m_ToolSystem.activePrefab);
+                    m_TreeControllerTool.SelectTreePrefab(prefab);
                     selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
                     m_UpdateSelectionSet = true;
                 }
 
                 bool isTree = false;
-                if (EntityManager.HasComponent<TreeData>(prefabEntity) && selectedPrefabs.Contains(m_ToolSystem.activePrefab))
+                if (EntityManager.HasComponent<TreeData>(prefabEntity) && selectedPrefabs.Contains(prefab))
                 {
                     isTree = true;
                 }
@@ -938,87 +973,6 @@ namespace Tree_Controller.Tools
                 Enabled = false;
                 m_IsTree.Update(false);
                 m_IsVegetation.Update(false);
-            }
-
-            HandleShowStumps();
-            SetAgeBinding();
-        }
-
-        /// <summary>
-        /// Method implemented by event triggered by prefab changing.
-        /// </summary>
-        /// <param name="prefab">The new prefab.</param>
-        private void OnPrefabChanged(PrefabBase prefab)
-        {
-            if (prefab != null)
-            {
-                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)} {prefab.name} {prefab.uiTag}");
-            }
-            else
-            {
-                m_IsTree.Update(false);
-                m_IsVegetation.Update(false);
-            }
-
-            if (m_ToolSystem.activeTool != m_TreeControllerTool && m_ToolSystem.activeTool != m_ObjectToolSystem && m_ToolSystem.activeTool.toolID != "Line Tool")
-            {
-                return;
-            }
-
-            if ((m_ToolSystem.activeTool == m_TreeControllerTool || m_ToolSystem.activeTool.toolID == "Line Tool" || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush)) && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
-            {
-                if (EntityManager.HasComponent<Vegetation>(prefabEntity))
-                {
-                    m_IsVegetation.Update(true);
-                    List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
-                    bool isTree = false;
-                    if (EntityManager.HasComponent<TreeData>(prefabEntity) && selectedPrefabs.Contains(prefab))
-                    {
-                        isTree = true;
-                    }
-                    else if (selectedPrefabs.Count > 1)
-                    {
-                        foreach (PrefabBase prefabBase in selectedPrefabs)
-                        {
-                            if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity3) && EntityManager.HasComponent<TreeData>(prefabEntity3))
-                            {
-                                isTree = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    m_IsTree.Update(isTree);
-                }
-                else
-                {
-                    m_IsVegetation.Update(false);
-
-                    if (ReviewPrefabSubobjects(prefabEntity))
-                    {
-                        m_IsTree.Update(true);
-                    }
-                    else
-                    {
-                        m_IsTree.Update(false);
-                    }
-                }
-            }
-            else if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity2))
-            {
-                m_IsVegetation.Update(EntityManager.HasComponent<Vegetation>(prefabEntity2));
-                bool isTree = false;
-                if (EntityManager.HasComponent<TreeData>(prefabEntity2))
-                {
-                    isTree = true;
-                }
-
-                if (!isTree && ReviewPrefabSubobjects(prefabEntity2))
-                {
-                    isTree = true;
-                }
-
-                m_IsTree.Update(isTree);
             }
 
             HandleShowStumps();

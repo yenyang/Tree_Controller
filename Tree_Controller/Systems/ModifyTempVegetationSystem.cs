@@ -9,6 +9,7 @@ namespace Tree_Controller.Systems
     using Game;
     using Game.Common;
     using Game.Input;
+    using Game.Net;
     using Game.Objects;
     using Game.Prefabs;
     using Game.Tools;
@@ -17,6 +18,7 @@ namespace Tree_Controller.Systems
     using Tree_Controller.Utils;
     using Unity.Collections;
     using Unity.Entities;
+    using Unity.Entities.UniversalDelegates;
 
     /// <summary>
     /// Modifies Temp entities that are also trees.
@@ -31,6 +33,7 @@ namespace Tree_Controller.Systems
         private EntityQuery m_TempOwnedTreeQuery;
         private EntityQuery m_TempOwnedVegetationQuery;
         private EntityQuery m_TempTreeQuery;
+        private EntityQuery m_AppliedQuery;
         private TreeControllerUISystem m_UISystem;
         private Unity.Mathematics.Random m_Random;
         private ushort m_RandomSeed;
@@ -43,6 +46,7 @@ namespace Tree_Controller.Systems
             m_Log = TreeControllerMod.Instance.Logger;
             m_Log.Info($"{nameof(ModifyTempVegetationSystem)}.{nameof(OnCreate)}");
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
+            m_NetToolSystem = World.GetOrCreateSystemManaged<NetToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_UISystem = World.GetOrCreateSystemManaged<TreeControllerUISystem>();
@@ -72,6 +76,10 @@ namespace Tree_Controller.Systems
                 .WithNone<Deleted, Overridden, Owner>()
                 .Build();
 
+            m_AppliedQuery = SystemAPI.QueryBuilder()
+                .WithAll<Updated, Applied, Game.Objects.Tree, PseudoRandomSeed, Owner>()
+                .WithNone<Deleted, Overridden, Temp>()
+                .Build();
         }
 
         /// <inheritdoc/>
@@ -133,6 +141,47 @@ namespace Tree_Controller.Systems
                     {
                         continue;
                     }
+
+                    bool includeStump = false;
+                    if (EntityManager.TryGetBuffer(prefabRef.m_Prefab, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
+                       && subMeshBuffer.Length > 5)
+                    {
+                        includeStump = true;
+                    }
+
+                    Unity.Mathematics.Random random = new (pseudoRandomSeed.m_Seed);
+                    TreeState nextTreeState = m_UISystem.GetNextTreeState(ref random, includeStump);
+                    tree.m_State = nextTreeState;
+                    EntityManager.SetComponentData(entity, tree);
+                }
+            }
+
+            if (!m_AppliedQuery.IsEmptyIgnoreFilter)
+            {
+                int i = 0;
+                NativeArray<Entity> entities = m_AppliedQuery.ToEntityArray(Allocator.Temp);
+                foreach (Entity entity in entities)
+                {
+                    if (!EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)
+                        || !EntityManager.TryGetComponent(entity, out Game.Objects.Tree tree)
+                        || !EntityManager.TryGetComponent(entity, out PseudoRandomSeed pseudoRandomSeed)
+                        || !EntityManager.TryGetComponent(entity, out Owner owner)
+                        || !EntityManager.HasComponent<Edge>(owner.m_Owner))
+                    {
+                        continue;
+                    }
+
+                    if (m_RandomSeed + i < ushort.MaxValue)
+                    {
+                        pseudoRandomSeed.m_Seed = (ushort)(m_RandomSeed + i);
+                    }
+                    else
+                    {
+                        pseudoRandomSeed.m_Seed = (ushort)(m_RandomSeed - i);
+                    }
+
+                    i++;
+                    EntityManager.SetComponentData(entity, pseudoRandomSeed);
 
                     bool includeStump = false;
                     if (EntityManager.TryGetBuffer(prefabRef.m_Prefab, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)

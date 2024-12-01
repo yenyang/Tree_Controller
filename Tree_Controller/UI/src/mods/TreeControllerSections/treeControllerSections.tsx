@@ -1,6 +1,6 @@
 import {ModuleRegistryExtend} from "cs2/modding";
 import { bindValue, trigger, useValue } from "cs2/api";
-import { tool } from "cs2/bindings";
+import { game, tool } from "cs2/bindings";
 import mod from "../../../mod.json";
 import { VanillaComponentResolver } from "../VanillaComponentResolver/VanillaComponentResolver";
 import { useLocalization } from "cs2/l10n";
@@ -24,10 +24,13 @@ export enum Ages
 }
 
 export enum ToolMode 
-{    Plop = 0,
+{   
+    Plop = 0,
     Brush = 1,
     ChangeAge = 2,
     ChangeType = 3,
+    Line = 4,
+    Curve = 5,
 }
 
 enum Selection
@@ -38,30 +41,33 @@ enum Selection
     Map = 3,
 }
 
-// These contain the coui paths to Unified Icon Library svg assets
+// These contain the coui paths to svg assets
 const uilStandard =                         "coui://uil/Standard/";
-const gameStandard =                           "Media/Tools/Vegetation Options/";
+const gameStandard =                           "Media/Tools/";
 export const ageChangSrc =          uilStandard +  "ReplaceTreeAge.svg";
-const prefabChangeSrc =      uilStandard +  "Replace.svg";
-const buildingOrNetSrc =     uilStandard +  "HouseandNetwork.svg";
-const radiusSrc =            uilStandard +  "Circle.svg";
-const wholeMapSrc    =       uilStandard +  "MapGrid.svg";
-export const childSrc =             gameStandard + "TreeChild.svg";
-export const teenSrc =              gameStandard +  "TreeTeen.svg";
-export const adultSrc =             gameStandard +  "TreeAdult.svg";
-const singleSrc =           uilStandard + "TreeAdult.svg";
-export const elderlySrc =           gameStandard +  "TreeElderly.svg";
+const prefabChangeSrc =             uilStandard +  "Replace.svg";
+const buildingOrNetSrc =            uilStandard +  "HouseandNetwork.svg";
+const radiusSrc =                   uilStandard +  "Circle.svg";
+const wholeMapSrc    =              uilStandard +  "MapGrid.svg";
+export const childSrc =             gameStandard + "Vegetation Options/TreeChild.svg";
+export const teenSrc =              gameStandard +  "Vegetation Options/TreeTeen.svg";
+export const adultSrc =             gameStandard +  "Vegetation Options/TreeAdult.svg";
+const singleSrc =                   uilStandard + "TreeAdult.svg";
+export const elderlySrc =           gameStandard +  "Vegetation Options/TreeElderly.svg";
 export const deadSrc =              uilStandard +  "TreeDead.svg";
-const arrowDownSrc =         uilStandard +  "ArrowDownThickStroke.svg";
-const arrowUpSrc =           uilStandard +  "ArrowUpThickStroke.svg";
+const arrowDownSrc =                uilStandard +  "ArrowDownThickStroke.svg";
+const arrowUpSrc =                  uilStandard +  "ArrowUpThickStroke.svg";
 export const deciduousSrc =         uilStandard +  "TreesDeciduous.svg";
 export const evergreenSrc =         uilStandard +  "TreesNeedle.svg";
 export const bushesSrc =            uilStandard +  "Bushes.svg";
-const diskSaveSrc =          uilStandard +  "DiskSave.svg";
-export const clearAgesSrc =        uilStandard + "StarAll.svg";
-const brushSrc =            uilStandard + "Trees.svg";
-export const stumpSrc =            uilStandard + "TreeStump.svg";
-const gearSrc = uilStandard + "Gear.svg";
+const diskSaveSrc =                 uilStandard +  "DiskSave.svg";
+export const clearAgesSrc =         uilStandard + "StarAll.svg";
+const brushSrc =                    uilStandard + "Trees.svg";
+export const stumpSrc =             uilStandard + "TreeStump.svg";
+const gearSrc =                     uilStandard + "Gear.svg";
+const lineSrc =                     gameStandard + "Object Tool/Line.svg";
+const curveSrc =                     gameStandard + "Object Tool/Curve.svg";
+
 
 // These establishes the binding with C# side. Without C# side game ui will crash.
 const ToolMode$ =            bindValue<number> (mod.id, 'ToolMode');
@@ -213,6 +219,10 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
         const createTooltipDescription = translate("ToolOptions.TOOLTIP_DESCRIPTION[Create]", "Place an individual item on the map.");
         const brushTooltipTitle = translate("ToolOptions.TOOLTIP_TITLE[Brush]", "Place multiple");
         const brushTooltipDescription = translate("ToolOptions.TOOLTIP_DESCRIPTION[Brush]", "Place several items at once. Brush size determines the area, and brush strength the density of items.");
+        const lineTooltipTitle = translate("ToolOptions.TOOLTIP_TITLE[Line]", "Line");
+        const lineTooltipDescription = translate("ToolOptions.TOOLTIP_DESCRIPTION[Line]", "Draw a straight line.");
+        const curveTooltipTitle = translate("ToolOptions.TOOLTIP_TITLE[Curve]", "Curve");
+        const curveTooltipDescription = translate("ToolOptions.TOOLTIP_DESCRIPTION[Curve]", "Draw a curve.");
 
         const deciduousTooltipTitle = translate("YY_TREE_CONTROLLER[wild-deciduous-trees]",locale["YY_TREE_CONTROLLER[wild-deciduous-trees]"]);
         const deciduousTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[wild-deciduous-trees]",locale["YY_TREE_CONTROLLER_DESCRIPTION[wild-deciduous-trees]"]);
@@ -264,7 +274,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                 Radius section has up, and down buttons and text field.
                 */
                 <>
-                    { (((objectToolActive && CurrentToolMode == ToolMode.Brush) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType) || lineToolActive) && IsVegetation) && (
+                    { (((objectToolActive) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType) || lineToolActive) && IsVegetation) && (
                     <VanillaComponentResolver.instance.Section title={translate("YY_TREE_CONTROLLER[Sets]",locale["YY_TREE_CONTROLLER[Sets]"])}>
                         <VanillaComponentResolver.instance.ToolButton  selected={ShowPanel}                         tooltip={"Show Panel"}                                                                  onSelect={() => handleClick("ForestBrushPanelToggled")}         src={gearSrc}                                           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == deciduousTreesID}     tooltip={descriptionTooltip(deciduousTooltipTitle,deciduousTooltipDescription)}         onSelect={() => changePrefabSet(deciduousTreesID)}    src={deciduousSrc}                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
@@ -317,6 +327,8 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                         <VanillaComponentResolver.instance.Section title={translate("Toolbar.TOOL_MODE_TITLE", "Tool Mode")}>
                                 <VanillaComponentResolver.instance.ToolButton  selected={CurrentToolMode == ToolMode.Plop}    tooltip={descriptionTooltip(createTooltipTitle, createTooltipDescription)}        onSelect={() => changeToolMode(ToolMode.Plop)}     src={singleSrc}      focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                                 <VanillaComponentResolver.instance.ToolButton  selected={CurrentToolMode == ToolMode.Brush}    tooltip={descriptionTooltip(brushTooltipTitle, brushTooltipDescription)}         onSelect={() => changeToolMode(ToolMode.Brush)}    src={brushSrc}      focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                                <VanillaComponentResolver.instance.ToolButton  selected={CurrentToolMode == ToolMode.Plop}    tooltip={descriptionTooltip(lineTooltipTitle, lineTooltipDescription)}        onSelect={() => changeToolMode(ToolMode.Line)}     src={lineSrc}      focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                                <VanillaComponentResolver.instance.ToolButton  selected={CurrentToolMode == ToolMode.Brush}    tooltip={descriptionTooltip(curveTooltipTitle, curveTooltipDescription)}         onSelect={() => changeToolMode(ToolMode.Curve)}    src={curveSrc}      focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         </VanillaComponentResolver.instance.Section>                
                     )}
                 </>

@@ -84,6 +84,16 @@ namespace Tree_Controller.Tools
         /// Tree controller change type mode.
         /// </summary>
         ChangeType = 3,
+
+        /// <summary>
+        /// Object tool creating a line.
+        /// </summary>
+        Line = 4,
+
+        /// <summary>
+        /// Object tool creating a curve.
+        /// </summary>
+        Curve = 5,
     }
 
     /// <summary>

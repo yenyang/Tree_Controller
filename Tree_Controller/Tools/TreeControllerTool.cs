@@ -185,7 +185,7 @@ namespace Tree_Controller.Tools
             if (EntityManager.HasComponent<Vegetation>(prefabEntity) && !EntityManager.HasComponent<PlaceholderObjectElement>(prefabEntity))
             {
                 bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
-                if ((!ctrlKeyPressed && !m_TreeControllerUISystem.RecentlySelectedPrefabSet) || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode != ObjectToolSystem.Mode.Brush))
+                if (!ctrlKeyPressed && !m_TreeControllerUISystem.RecentlySelectedPrefabSet)
                 {
                     ClearSelectedTreePrefabs();
                     SelectTreePrefab(prefab);

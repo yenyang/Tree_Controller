@@ -93,7 +93,12 @@ namespace Tree_Controller.Systems
 
                 Entity prefabEntity = currentCreationDefinition.m_Prefab;
                 Unity.Mathematics.Random random = new ((uint)currentCreationDefinition.m_RandomSeed);
-                if ((m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush) || m_ToolSystem.activeTool.toolID == "Line Tool")
+                if ((m_ToolSystem.activeTool == m_ObjectToolSystem &&
+                    (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush ||
+                    m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line ||
+                    m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create ||
+                    m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve))
+                    || m_ToolSystem.activeTool.toolID == "Line Tool")
                 {
                     prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
                     if (prefabEntity != Entity.Null)
@@ -103,7 +108,7 @@ namespace Tree_Controller.Systems
                     }
                 }
 
-                if (m_ToolSystem.activeTool.toolID != "Line Tool" && EntityManager.HasComponent<TreeData>(prefabEntity))
+                if (EntityManager.HasComponent<TreeData>(prefabEntity))
                 {
                     bool includeStump = false;
                     if (EntityManager.HasComponent<Game.Prefabs.TreeData>(prefabEntity)

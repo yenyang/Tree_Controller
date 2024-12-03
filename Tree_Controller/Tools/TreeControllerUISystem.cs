@@ -23,12 +23,14 @@ namespace Tree_Controller.Tools
     using Game.UI.InGame;
     using Tree_Controller.Domain;
     using Tree_Controller.Extensions;
+    using Tree_Controller.Patches;
     using Tree_Controller.Settings;
     using Tree_Controller.Systems;
     using Tree_Controller.Utils;
     using Unity.Collections;
     using Unity.Entities;
     using Unity.Jobs;
+    using Unity.Mathematics;
     using UnityEngine.InputSystem;
 
     /// <summary>
@@ -135,6 +137,7 @@ namespace Tree_Controller.Tools
         private ValueBindingHelper<bool> m_ShowAdvancedForestBrushPanel;
         private bool m_UpdateSelectionSet = false;
         private bool m_RecentlySelectedPrefabSet = false;
+        private bool m_ToolOrPrefabSwitchedRecently = false;
         private bool m_MultiplePrefabsSelected = false;
         private ValueBindingHelper<AdvancedForestBrushEntry[]> m_AdvanvedForestBrushEntries;
         private int m_FrameCount = 0;
@@ -476,7 +479,12 @@ namespace Tree_Controller.Tools
                 m_UiView = GameManager.instance.userInterface.view.View;
             }
 
-            if ((m_ToolSystem.activeTool == m_TreeControllerTool || m_ToolSystem.activeTool.toolID == "Line Tool" || (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush)) && m_UiView != null)
+            if ((m_ToolSystem.activeTool == m_TreeControllerTool || m_ToolSystem.activeTool.toolID == "Line Tool" ||
+                (m_ToolSystem.activeTool == m_ObjectToolSystem &&
+                (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush
+                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line
+                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create
+                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve))) && m_UiView != null)
             {
                 // This script creates the Tree Controller object if it doesn't exist.
                 m_UiView.ExecuteScript("if (yyTreeController == null) var yyTreeController = {};");
@@ -550,19 +558,20 @@ namespace Tree_Controller.Tools
                 m_MultiplePrefabsSelected = false;
             }
 
-            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush && m_ToolMode.value != (int)ToolMode.Brush)
-            {
-                m_ToolMode.Update((int)ToolMode.Brush);
-            }
-
-            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create && m_ToolMode.value != (int)ToolMode.Plop)
-            {
-                m_ToolMode.Update((int)ToolMode.Plop);
-            }
+            HandleToolModeBinding();
 
             if (TreeControllerMod.Instance.Settings.FasterFullBrushStrength && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush && m_ObjectToolSystem.brushStrength == 1f)
             {
                 m_ObjectToolSystem.brushStrength = MaxBrushStrength;
+            }
+
+            if (m_ToolOrPrefabSwitchedRecently)
+            {
+                SetAgeBinding();
+                if (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve)
+                {
+                    HandleDistanceScale();
+                }
             }
 
             base.OnUpdate();
@@ -715,37 +724,30 @@ namespace Tree_Controller.Tools
 
         private void SetAgeBinding()
         {
-            if (m_ToolSystem.activeTool == m_ObjectToolSystem
-                && (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush
-                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line
-                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve)
-                && m_ToolSystem.activePrefab is not null
-                && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity)
-                && m_PrefabSystem.EntityManager.HasComponent<TreeData>(prefabEntity))
+            var ageMaskBindingVar = m_ToolbarUISystem.GetMemberValue("m_AgeMaskBinding");
+            if (ageMaskBindingVar is ValueBinding<int>)
             {
-                var ageMaskBindingVar = m_ToolbarUISystem.GetMemberValue("m_AgeMaskBinding");
-                if (ageMaskBindingVar is ValueBinding<int>)
-                {
-                    TreeControllerMod.Instance.Logger.Debug($"{nameof(TreeControllerUISystem)}.{nameof(SetAgeBinding)} setting age mask binding");
-                    ValueBinding<int> ageMaskBinding = ageMaskBindingVar as ValueBinding<int>;
-                    ageMaskBinding.Update(0);
+                ValueBinding<int> ageMaskBinding = ageMaskBindingVar as ValueBinding<int>;
+                ageMaskBinding.Update(0);
+                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(SetAgeBinding)} Set age mask binding.");
+            }
+        }
 
-                    TreeControllerMod.Instance.Logger.Debug($"{nameof(TreeControllerUISystem)}.{nameof(SetAgeBinding)} finished age mask binding");
-                }
-            }
-            else if (m_ToolSystem.activePrefab is not null
-                && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity2)
-                && m_PrefabSystem.EntityManager.HasComponent<TreeData>(prefabEntity2))
+        private void HandleDistanceScale()
+        {
+            if (!m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.GetPrefab(), out Entity prefabEntity))
             {
-                var ageMaskBindingVar = m_ToolbarUISystem.GetMemberValue("m_AgeMaskBinding");
-                if (ageMaskBindingVar is ValueBinding<int>)
-                {
-                    TreeControllerMod.Instance.Logger.Debug($"{nameof(TreeControllerUISystem)}.{nameof(SetAgeBinding)} setting age mask binding");
-                    ValueBinding<int> ageMaskBinding = ageMaskBindingVar as ValueBinding<int>;
-                    ageMaskBinding.Update((int)m_ObjectToolSystem.ageMask);
-                    TreeControllerMod.Instance.Logger.Debug($"{nameof(TreeControllerUISystem)}.{nameof(SetAgeBinding)} finished age mask binding");
-                }
+                return;
             }
+
+            if (!EntityManager.TryGetComponent(prefabEntity, out Vegetation vegetation)
+                || !EntityManager.TryGetComponent(prefabEntity, out ObjectGeometryData objectGeometryData))
+            {
+                return;
+            }
+
+            float x = ((objectGeometryData.m_Flags & GeometryFlags.Circular) != 0) ? vegetation.m_Size.x : math.length(vegetation.m_Size.xz);
+            m_ObjectToolSystem.SetMemberValue("distanceScale", math.pow(2f, math.clamp(math.round(math.log2(x)), 0f, 5f)));
         }
 
         /// <summary>
@@ -897,6 +899,7 @@ namespace Tree_Controller.Tools
         /// <param name="tool">The new tool.</param>
         private void OnToolChanged(ToolBaseSystem tool)
         {
+            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)}");
             HandleToolOrPrefabChange(tool, tool.GetPrefab());
         }
 
@@ -906,6 +909,7 @@ namespace Tree_Controller.Tools
         /// <param name="prefab">The new prefab.</param>
         private void OnPrefabChanged(PrefabBase prefab)
         {
+            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnPrefabChanged)}");
             HandleToolOrPrefabChange(m_ToolSystem.activeTool, prefab);
         }
 
@@ -920,7 +924,7 @@ namespace Tree_Controller.Tools
                 || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve)))
                 && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
             {
-                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(OnToolChanged)} ");
+                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(HandleToolOrPrefabChange)} ");
                 Enabled = true;
                 m_IsVegetation.Update(EntityManager.HasComponent<Vegetation>(prefabEntity));
                 List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
@@ -959,14 +963,7 @@ namespace Tree_Controller.Tools
                     m_UpdateSelectionSet = true;
                 }
 
-                if (tool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create)
-                {
-                    m_ToolMode.Update((int)ToolMode.Plop);
-                }
-                else if (tool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush)
-                {
-                    m_ToolMode.Update((int)ToolMode.Brush);
-                }
+                HandleToolModeBinding();
             }
             else
             {
@@ -976,7 +973,31 @@ namespace Tree_Controller.Tools
             }
 
             HandleShowStumps();
-            SetAgeBinding();
+
+            m_ToolOrPrefabSwitchedRecently = true;
+        }
+
+        private void HandleToolModeBinding()
+        {
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush && m_ToolMode.value != (int)ToolMode.Brush)
+            {
+                m_ToolMode.Update((int)ToolMode.Brush);
+            }
+
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create && m_ToolMode.value != (int)ToolMode.Plop)
+            {
+                m_ToolMode.Update((int)ToolMode.Plop);
+            }
+
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line && m_ToolMode.value != (int)ToolMode.Line)
+            {
+                m_ToolMode.Update((int)ToolMode.Line);
+            }
+
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve && m_ToolMode.value != (int)ToolMode.Curve)
+            {
+                m_ToolMode.Update((int)ToolMode.Curve);
+            }
         }
 
         private bool ReviewPrefabSubobjects(Entity prefabEntity)

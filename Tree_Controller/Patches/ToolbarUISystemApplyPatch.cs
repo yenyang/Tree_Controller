@@ -35,16 +35,11 @@ namespace Tree_Controller.Patches
             ObjectToolSystem objectToolSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ObjectToolSystem>();
             TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
             ToolbarUISystem toolbarUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolbarUISystem>();
+
             if (toolSystem.activeTool != treeControllerTool && toolSystem.activeTool != objectToolSystem && toolSystem.activeTool.toolID != null && toolSystem.activeTool.toolID != "Line Tool")
             {
                 return;
             }
-
-            /*
-            if (toolSystem.activeTool == objectToolSystem && objectToolSystem.actualMode != ObjectToolSystem.Mode.Brush)
-            {
-                return;
-            }*/
 
             if (toolSystem.activeTool == objectToolSystem || toolSystem.activeTool.toolID == "Line Tool")
             {
@@ -66,19 +61,6 @@ namespace Tree_Controller.Patches
 
                         treeControllerUISystem.ThemeEntities = themes;
                         TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} Setting UpdateSelectionSet to true while using {toolSystem.activeTool.toolID}.");
-                    }
-
-                    if (toolSystem.activeTool == objectToolSystem && prefabSystem.EntityManager.HasComponent<TreeData>(prefabEntity))
-                    {
-                        var ageMaskBindingVar = toolbarUISystem.GetMemberValue("m_AgeMaskBinding");
-                        if (ageMaskBindingVar is ValueBinding<int>)
-                        {
-                            TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} setting age mask binding");
-                            ValueBinding<int> ageMaskBinding = ageMaskBindingVar as ValueBinding<int>;
-                            ageMaskBinding.Update(0);
-
-                            TreeControllerMod.Instance.Logger.Debug($"{nameof(ToolbarUISystemApplyPatch)}.{nameof(Postfix)} finished age mask binding");
-                        }
                     }
                 }
             }

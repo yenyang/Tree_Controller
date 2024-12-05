@@ -94,6 +94,11 @@ namespace Tree_Controller.Tools
         /// Object tool creating a curve.
         /// </summary>
         Curve = 5,
+
+        /// <summary>
+        /// Object tool making building upgrades.
+        /// </summary>
+        Upgrade = 6,
     }
 
     /// <summary>

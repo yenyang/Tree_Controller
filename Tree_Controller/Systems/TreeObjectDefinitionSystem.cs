@@ -118,7 +118,18 @@ namespace Tree_Controller.Systems
                         includeStump = true;
                     }
 
-                    TreeState nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random, includeStump);
+                    TreeState nextTreeState = TreeState.Adult;
+                    if (!m_PrefabSystem.TryGetPrefab(prefabEntity, out PrefabBase prefabBase))
+                    {
+                        nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random, includeStump);
+                    }
+                    else if (prefabBase != null)
+                    {
+                        nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random, includeStump, prefabBase.GetPrefabID().GetName());
+                        m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)}  prefabBase.GetPrefabID().GetName() =  {prefabBase.GetPrefabID().GetName()}");
+                        m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)}  prefabBase.name =  {prefabBase.name}");
+                    }
+
                     if (BrushTreeStateAges.ContainsKey(nextTreeState))
                     {
                         currentObjectDefinition.m_Age = BrushTreeStateAges[nextTreeState];

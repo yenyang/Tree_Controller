@@ -139,7 +139,7 @@ namespace Tree_Controller.Tools
         private bool m_RecentlySelectedPrefabSet = false;
         private bool m_ToolOrPrefabSwitchedRecently = false;
         private bool m_MultiplePrefabsSelected = false;
-        private ValueBindingHelper<AdvancedForestBrushEntry[]> m_AdvanvedForestBrushEntries;
+        private ValueBindingHelper<AdvancedForestBrushEntry[]> m_AdvancedForestBrushEntries;
         private int m_FrameCount = 0;
         [CanBeNull]
         private PrefabBase m_TrySetPrefabNextFrame;
@@ -264,17 +264,17 @@ namespace Tree_Controller.Tools
         /// </summary>
         /// <param name="random">A source of randomness.</param>
         /// <param name="includeStump">Should stump be included or not.</param>
+        /// <param name="selectedAges">Ages to choose between</param>
         /// <returns>A random tree state from selected or Adult if none are selected.</returns>
-        public TreeState GetNextTreeState(ref Unity.Mathematics.Random random, bool includeStump)
+        public TreeState GetNextTreeState(ref Unity.Mathematics.Random random, bool includeStump, Ages selectedAges)
         {
             List<TreeState> selectedTreeStates = new List<TreeState>();
-            Ages seletedAges = (Ages)m_SelectedAges.value;
-            if (seletedAges == Ages.None)
+            if (selectedAges == Ages.None)
             {
                 return TreeState.Adult;
             }
 
-            if (seletedAges == Ages.Stump && !includeStump)
+            if (selectedAges == Ages.Stump && !includeStump)
             {
                 if (m_ShowStump.Value)
                 {
@@ -286,32 +286,32 @@ namespace Tree_Controller.Tools
                 }
             }
 
-            if ((seletedAges & Ages.Child) == Ages.Child)
+            if ((selectedAges & Ages.Child) == Ages.Child)
             {
                 selectedTreeStates.Add(0);
             }
 
-            if ((seletedAges & Ages.Teen) == Ages.Teen)
+            if ((selectedAges & Ages.Teen) == Ages.Teen)
             {
                 selectedTreeStates.Add(TreeState.Teen);
             }
 
-            if ((seletedAges & Ages.Adult) == Ages.Adult)
+            if ((selectedAges & Ages.Adult) == Ages.Adult)
             {
                 selectedTreeStates.Add(TreeState.Adult);
             }
 
-            if ((seletedAges & Ages.Elderly) == Ages.Elderly)
+            if ((selectedAges & Ages.Elderly) == Ages.Elderly)
             {
                 selectedTreeStates.Add(TreeState.Elderly);
             }
 
-            if ((seletedAges & Ages.Dead) == Ages.Dead)
+            if ((selectedAges & Ages.Dead) == Ages.Dead)
             {
                 selectedTreeStates.Add(TreeState.Dead);
             }
 
-            if ((seletedAges & Ages.Stump) == Ages.Stump && includeStump)
+            if ((selectedAges & Ages.Stump) == Ages.Stump && includeStump)
             {
                 selectedTreeStates.Add(TreeState.Stump);
             }
@@ -361,6 +361,50 @@ namespace Tree_Controller.Tools
             }
 
             return TreeState.Adult;
+        }
+
+        /// <summary>
+        /// Gets next tree state using m_SelectedAges binding.
+        /// </summary>
+        /// <param name="random">random number generator.</param>
+        /// <param name="includeStump">Should stumps be included.</param>
+        /// <returns>TreeState.</returns>
+        public TreeState GetNextTreeState(ref Unity.Mathematics.Random random, bool includeStump)
+        {
+           return GetNextTreeState(ref random, includeStump, (Ages)m_SelectedAges.value);
+        }
+
+        /// <summary>
+        /// Gets next tree state using advanced forest brush entries and prefab name.
+        /// </summary>
+        /// <param name="random">random number generator.</param>
+        /// <param name="includeStump">Should stumps be included.</param>
+        /// <param name="prefabName">Name of the prefab.</param>
+        /// <returns>TreeState.</returns>
+        public TreeState GetNextTreeState(ref Unity.Mathematics.Random random, bool includeStump, string prefabName)
+        {
+            if (!m_MultiplePrefabsSelected
+                || m_AdvancedForestBrushEntries.Value.Length <= 0)
+            {
+                return GetNextTreeState(ref random, includeStump, (Ages)m_SelectedAges.value);
+            }
+
+            for (int i = 0; i < m_AdvancedForestBrushEntries.Value.Length; i++)
+            {
+                if (m_AdvancedForestBrushEntries.Value[i].Name != prefabName)
+                {
+                    continue;
+                }
+
+                if (((Ages)m_AdvancedForestBrushEntries.Value[i].SelectedAges & Ages.OverrideAge) == Ages.OverrideAge)
+                {
+                    return GetNextTreeState(ref random, includeStump, (Ages)m_AdvancedForestBrushEntries.Value[i].SelectedAges);
+                }
+
+                return GetNextTreeState(ref random, includeStump, (Ages)m_SelectedAges.value);
+            }
+
+            return GetNextTreeState(ref random, includeStump, (Ages)m_SelectedAges.value);
         }
 
         /// <summary>
@@ -438,7 +482,7 @@ namespace Tree_Controller.Tools
             AddBinding(m_SelectedPrefabSet = new ValueBinding<string>(ModId, "PrefabSet", string.Empty));
             m_IsEditor = CreateBinding("IsEditor", false);
             m_ShowStump = CreateBinding("ShowStump", false);
-            m_AdvanvedForestBrushEntries = CreateBinding("AdvancedForestBrushEntries", new AdvancedForestBrushEntry[] { });
+            m_AdvancedForestBrushEntries = CreateBinding("AdvancedForestBrushEntries", new AdvancedForestBrushEntry[] { });
             m_ShowAdvancedForestBrushPanel = CreateBinding("ShowForestBrushPanel", false);
 
             // This section handles trigger bindings which listen for triggers from UI and then start an event.
@@ -492,19 +536,6 @@ namespace Tree_Controller.Tools
                 if (m_MultiplePrefabsSelected == false && m_TreeControllerTool.GetSelectedPrefabs().Count > 1)
                 {
                     m_UpdateSelectionSet = true;
-                }
-
-                if (m_IsTree.value == true && m_ToolSystem.activePrefab != null && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) && !EntityManager.HasComponent<TreeData>(prefabEntity))
-                {
-                    foreach (PrefabBase prefabBase in selectedPrefabs)
-                    {
-                        if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity currentPrefabEntity) && EntityManager.HasComponent<TreeData>(currentPrefabEntity))
-                        {
-                            m_TrySetPrefabNextFrame = prefabBase;
-                            m_UpdateSelectionSet = true;
-                            break;
-                        }
-                    }
                 }
 
                 if (m_UpdateSelectionSet && m_FrameCount <= 5)
@@ -773,7 +804,7 @@ namespace Tree_Controller.Tools
                     }
                 }
 
-                m_AdvanvedForestBrushEntries.Value = new AdvancedForestBrushEntry[] { };
+                m_AdvancedForestBrushEntries.Value = new AdvancedForestBrushEntry[] { };
 
                 return;
             }
@@ -792,7 +823,7 @@ namespace Tree_Controller.Tools
                 m_TreeControllerTool.SelectTreePrefab(originallySelectedPrefab);
                 m_Log.Warn($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} could not select empty set");
 
-                m_AdvanvedForestBrushEntries.Value = new AdvancedForestBrushEntry[] { };
+                m_AdvancedForestBrushEntries.Value = new AdvancedForestBrushEntry[] { };
                 return;
             }
 
@@ -811,7 +842,7 @@ namespace Tree_Controller.Tools
                 }
             }
 
-            m_AdvanvedForestBrushEntries.Value = m_PrefabSetsLookup[prefabSetID].AdvancedForestBrushEntries;
+            m_AdvancedForestBrushEntries.Value = m_PrefabSetsLookup[prefabSetID].AdvancedForestBrushEntries;
 
             m_UpdateSelectionSet = true;
 
@@ -921,7 +952,8 @@ namespace Tree_Controller.Tools
                 (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create
                 || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush
                 || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line
-                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve)))
+                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve
+                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Upgrade)))
                 && m_PrefabSystem.TryGetEntity(prefab, out Entity prefabEntity))
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(HandleToolOrPrefabChange)} ");
@@ -997,6 +1029,11 @@ namespace Tree_Controller.Tools
             if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve && m_ToolMode.value != (int)ToolMode.Curve)
             {
                 m_ToolMode.Update((int)ToolMode.Curve);
+            }
+
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Upgrade && m_ToolMode.value != (int)ToolMode.Upgrade)
+            {
+                m_ToolMode.Update((int)ToolMode.Upgrade);
             }
         }
 
@@ -1126,8 +1163,8 @@ namespace Tree_Controller.Tools
             if (m_PrefabSetsLookup.ContainsKey(m_SelectedPrefabSet.value))
             {
                 m_PrefabSetsLookup[m_SelectedPrefabSet.value].SetProbabilityWeight(name, value);
-                m_AdvanvedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
-                m_AdvanvedForestBrushEntries.Binding.TriggerUpdate();
+                m_AdvancedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
                 TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
             }
         }
@@ -1137,8 +1174,8 @@ namespace Tree_Controller.Tools
             if (m_PrefabSetsLookup.ContainsKey(m_SelectedPrefabSet.value))
             {
                 m_PrefabSetsLookup[m_SelectedPrefabSet.value].SetMinimumElevation(name, value);
-                m_AdvanvedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
-                m_AdvanvedForestBrushEntries.Binding.TriggerUpdate();
+                m_AdvancedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
                 TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
             }
         }
@@ -1148,8 +1185,8 @@ namespace Tree_Controller.Tools
             if (m_PrefabSetsLookup.ContainsKey(m_SelectedPrefabSet.value))
             {
                 m_PrefabSetsLookup[m_SelectedPrefabSet.value].SetMaximumElevation(name, value);
-                m_AdvanvedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
-                m_AdvanvedForestBrushEntries.Binding.TriggerUpdate();
+                m_AdvancedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
                 TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
             }
         }
@@ -1159,8 +1196,8 @@ namespace Tree_Controller.Tools
             if (m_PrefabSetsLookup.ContainsKey(m_SelectedPrefabSet.value))
             {
                 m_PrefabSetsLookup[m_SelectedPrefabSet.value].SetAges(name, (Ages)toggledAge);
-                m_AdvanvedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
-                m_AdvanvedForestBrushEntries.Binding.TriggerUpdate();
+                m_AdvancedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
                 TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
             }
         }

@@ -133,9 +133,7 @@ namespace Tree_Controller.Systems
                     }
                     else if (prefabBase != null)
                     {
-                        nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random, includeStump, prefabBase.GetPrefabID().GetName());
-                        m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)}  prefabBase.GetPrefabID().GetName() =  {prefabBase.GetPrefabID().GetName()}");
-                        m_Log.Debug($"{nameof(TreeObjectDefinitionSystem)}.{nameof(OnUpdate)}  prefabBase.name =  {prefabBase.name}");
+                        nextTreeState = m_TreeControllerUISystem.GetNextTreeState(ref random, includeStump, prefabBase.name);
                     }
 
                     if (BrushTreeStateAges.ContainsKey(nextTreeState))
@@ -151,11 +149,10 @@ namespace Tree_Controller.Systems
                 }
             }
 
-            if (TreeControllerMod.Instance.Settings.ConstrainBrush
+            if ((TreeControllerMod.Instance.Settings.ConstrainBrush
                 && m_ToolSystem.activeTool == m_ObjectToolSystem
-                && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush
-                && m_ToolRaycastSystem.GetRaycastResult(out RaycastResult result)
-                && !EntityManager.HasComponent<Deleted>(result.m_Owner))
+                && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush)
+                || m_TreeControllerUISystem.AdvancedForestBrushEntries.Length > 0)
             {
                 foreach (Entity entity in entities)
                 {
@@ -164,9 +161,45 @@ namespace Tree_Controller.Systems
                         continue;
                     }
 
-                    float2 objectXZ = new (currentObjectDefinition.m_Position.x, currentObjectDefinition.m_Position.z);
-                    float2 raycastXZ = new (result.m_Hit.m_Position.x, result.m_Hit.m_Position.z);
-                    if (Vector2.Distance(objectXZ, raycastXZ) > (0.333f * m_ObjectToolSystem.brushSize))
+                    bool destroyEntity = false;
+
+                    if (m_ToolRaycastSystem.GetRaycastResult(out RaycastResult result)
+                        && !EntityManager.HasComponent<Deleted>(result.m_Owner))
+                    {
+                        float2 objectXZ = new (currentObjectDefinition.m_Position.x, currentObjectDefinition.m_Position.z);
+                        float2 raycastXZ = new (result.m_Hit.m_Position.x, result.m_Hit.m_Position.z);
+                        if (Vector2.Distance(objectXZ, raycastXZ) > (0.333f * m_ObjectToolSystem.brushSize))
+                        {
+                            destroyEntity = true;
+                        }
+                    }
+
+                    if (!EntityManager.TryGetComponent(entity, out CreationDefinition currentCreationDefinition))
+                    {
+                        if (destroyEntity)
+                        {
+                            EntityManager.DestroyEntity(entity);
+                        }
+
+                        continue;
+                    }
+
+                    if (m_TreeControllerUISystem.AdvancedForestBrushEntries.Length > 0)
+                    {
+                        for (int i = 0; i < m_TreeControllerUISystem.AdvancedForestBrushEntries.Length; i++)
+                        {
+                            if (currentCreationDefinition.m_Prefab == m_TreeControllerUISystem.AdvancedForestBrushEntries[i].GetPrefabEntity()
+                                && (currentObjectDefinition.m_Position.y < m_TreeControllerUISystem.AdvancedForestBrushEntries[i].MinimumElevation ||
+                                currentObjectDefinition.m_Position.y > m_TreeControllerUISystem.AdvancedForestBrushEntries[i].MaximumElevation))
+                            {
+                                destroyEntity = true;
+                                break;
+                            }
+                        }
+                    }
+
+
+                    if (destroyEntity)
                     {
                         EntityManager.DestroyEntity(entity);
                     }

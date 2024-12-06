@@ -613,6 +613,8 @@ namespace Tree_Controller.Tools
                 {
                     HandleDistanceScale();
                 }
+
+                m_ToolOrPrefabSwitchedRecently = false;
             }
 
             base.OnUpdate();
@@ -770,7 +772,6 @@ namespace Tree_Controller.Tools
             {
                 ValueBinding<int> ageMaskBinding = ageMaskBindingVar as ValueBinding<int>;
                 ageMaskBinding.Update(0);
-                m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(SetAgeBinding)} Set age mask binding.");
             }
         }
 

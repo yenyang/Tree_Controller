@@ -110,5 +110,21 @@ namespace Tree_Controller.Domain
             get { return m_ProbabilityWeight; }
             set { m_ProbabilityWeight = value; }
         }
+
+        /// <summary>
+        /// Gets the prefab entity for the forest brush entry.
+        /// </summary>
+        /// <returns>Prefab entity or Entity.Null.</returns>
+        public Entity GetPrefabEntity()
+        {
+            PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
+            if (prefabSystem.TryGetPrefab(new PrefabID(nameof(StaticObjectPrefab), m_Name), out PrefabBase prefabBase) &&
+                prefabSystem.TryGetEntity(prefabBase, out Entity entity))
+            {
+                return entity;
+            }
+
+            return Entity.Null;
+        }
     }
 }

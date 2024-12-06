@@ -22,6 +22,7 @@ namespace Tree_Controller.Tools
     using Game.Rendering;
     using Game.Tools;
     using Tree_Controller;
+    using Tree_Controller.Domain;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
     using Unity.Collections;
@@ -280,6 +281,65 @@ namespace Tree_Controller.Tools
                 Entity result = m_SelectedTreePrefabEntities[random.NextInt(m_SelectedTreePrefabEntities.Length)];
 
                 return result;
+            }
+
+            return Entity.Null;
+        }
+
+        /// <summary>
+        /// Gets the next prefab entity while utilized advanced forest brush entries.
+        /// </summary>
+        /// <param name="random">A random number generator.</param>
+        /// <param name="advancedForestBrushEntries">An array of advanced forest brush entries.</param>
+        /// <returns>Prefab Entity or Entity.Null.</returns>
+        public Entity GetNextPrefabEntity(ref Unity.Mathematics.Random random, AdvancedForestBrushEntry[] advancedForestBrushEntries)
+        {
+            if (m_SelectedTreePrefabEntities.Length <= 0)
+            {
+                return Entity.Null;
+            }
+
+            if (m_SelectedTreePrefabEntities.Length == 1)
+            {
+                return m_SelectedTreePrefabEntities[0];
+            }
+
+            int totalProbabilityWeight = 0;
+            Dictionary<Entity, int> probabilityWeights = new Dictionary<Entity, int>();
+            foreach (AdvancedForestBrushEntry advancedForestBrushEntry in advancedForestBrushEntries)
+            {
+                Entity prefabEntity = advancedForestBrushEntry.GetPrefabEntity();
+                if (prefabEntity != Entity.Null && !probabilityWeights.ContainsKey(prefabEntity))
+                {
+                    probabilityWeights.Add(prefabEntity, advancedForestBrushEntry.ProbabilityWeight);
+                    totalProbabilityWeight += advancedForestBrushEntry.ProbabilityWeight;
+                }
+            }
+
+            if (totalProbabilityWeight == 0)
+            {
+                return Entity.Null;
+            }
+
+            int iterations = random.NextInt(10);
+            for (int i = 0; i < iterations; i++)
+            {
+                random.NextInt();
+            }
+
+            KeyValuePair<Entity, int>[] weightedPrefabs = probabilityWeights.ToArray();
+            int probabilityResult = random.NextInt(totalProbabilityWeight);
+
+            for (int i = 0; i < weightedPrefabs.Length; i++)
+            {
+                if (weightedPrefabs[i].Value > probabilityResult)
+                {
+                    return weightedPrefabs[i].Key;
+                }
+                else
+                {
+                    probabilityResult -= weightedPrefabs[i].Value;
+                }
             }
 
             return Entity.Null;

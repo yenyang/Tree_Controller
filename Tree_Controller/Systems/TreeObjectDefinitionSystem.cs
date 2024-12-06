@@ -100,7 +100,15 @@ namespace Tree_Controller.Systems
                     m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve))
                     || m_ToolSystem.activeTool.toolID == "Line Tool")
                 {
-                    prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
+                    if (m_TreeControllerUISystem.AdvancedForestBrushEntries.Length == 0)
+                    {
+                        prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random);
+                    }
+                    else
+                    {
+                        prefabEntity = m_TreeControllerTool.GetNextPrefabEntity(ref random, m_TreeControllerUISystem.AdvancedForestBrushEntries);
+                    }
+
                     if (prefabEntity != Entity.Null)
                     {
                         currentCreationDefinition.m_Prefab = prefabEntity;

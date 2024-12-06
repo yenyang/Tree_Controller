@@ -197,6 +197,16 @@ namespace Tree_Controller.Tools
         public PrefabBase TrySetPrefabNextFrame { set => m_TrySetPrefabNextFrame = value; }
 
         /// <summary>
+        /// Gets a value indicating the advanced forest brushe entries.
+        /// </summary>
+        public AdvancedForestBrushEntry[] AdvancedForestBrushEntries { get => m_AdvancedForestBrushEntries.Value; }
+
+        /// <summary>
+        /// Gets the selected prefab set.
+        /// </summary>
+        public string PrefabSet { get => m_SelectedPrefabSet.value; }
+
+        /// <summary>
         /// Resets the selected prefab set.
         /// </summary>
         public void ResetPrefabSets()

@@ -149,51 +149,15 @@ namespace Tree_Controller.Systems
                         includeStump = true;
                     }
 
-                    Unity.Mathematics.Random random = new (pseudoRandomSeed.m_Seed);
-                    TreeState nextTreeState = m_UISystem.GetNextTreeState(ref random, includeStump);
-                    tree.m_State = nextTreeState;
-                    EntityManager.SetComponentData(entity, tree);
-                }
-            }
-
-            if (!m_AppliedQuery.IsEmptyIgnoreFilter)
-            {
-                int i = 0;
-                NativeArray<Entity> entities = m_AppliedQuery.ToEntityArray(Allocator.Temp);
-                foreach (Entity entity in entities)
-                {
-                    if (!EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)
-                        || !EntityManager.TryGetComponent(entity, out Game.Objects.Tree tree)
-                        || !EntityManager.TryGetComponent(entity, out PseudoRandomSeed pseudoRandomSeed)
-                        || !EntityManager.TryGetComponent(entity, out Owner owner)
+                    // Currently excluding street tree placement.
+                    if (!EntityManager.TryGetComponent(entity, out Owner owner)
                         || !EntityManager.HasComponent<Edge>(owner.m_Owner))
                     {
-                        continue;
+                        Unity.Mathematics.Random random = new (pseudoRandomSeed.m_Seed);
+                        TreeState nextTreeState = m_UISystem.GetNextTreeState(ref random, includeStump);
+                        tree.m_State = nextTreeState;
+                        EntityManager.SetComponentData(entity, tree);
                     }
-
-                    if (m_RandomSeed + i < ushort.MaxValue)
-                    {
-                        pseudoRandomSeed.m_Seed = (ushort)(m_RandomSeed + i);
-                    }
-                    else
-                    {
-                        pseudoRandomSeed.m_Seed = (ushort)(m_RandomSeed - i);
-                    }
-
-                    i++;
-                    EntityManager.SetComponentData(entity, pseudoRandomSeed);
-
-                    bool includeStump = false;
-                    if (EntityManager.TryGetBuffer(prefabRef.m_Prefab, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
-                       && subMeshBuffer.Length > 5)
-                    {
-                        includeStump = true;
-                    }
-
-                    Unity.Mathematics.Random random = new (pseudoRandomSeed.m_Seed);
-                    TreeState nextTreeState = m_UISystem.GetNextTreeState(ref random, includeStump);
-                    tree.m_State = nextTreeState;
-                    EntityManager.SetComponentData(entity, tree);
                 }
             }
 

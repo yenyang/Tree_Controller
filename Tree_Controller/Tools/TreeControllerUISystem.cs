@@ -31,6 +31,7 @@ namespace Tree_Controller.Tools
     using Unity.Entities;
     using Unity.Jobs;
     using Unity.Mathematics;
+    using UnityEngine;
     using UnityEngine.InputSystem;
 
     /// <summary>
@@ -485,6 +486,7 @@ namespace Tree_Controller.Tools
             // This section handles binding couples between C# and UI.
             AddBinding(m_ToolMode = new ValueBinding<int>(ModId, "ToolMode", (int)ToolMode.Plop));
             AddBinding(m_SelectedAges = new ValueBinding<int>(ModId, "SelectedAges", (int)Ages.Adult));
+            SetObjectToolAgeMask(Ages.Adult);
             AddBinding(m_SelectionMode = new ValueBinding<int>(ModId, "SelectionMode", (int)Selection.Radius));
             AddBinding(m_IsVegetation = new ValueBinding<bool>(ModId, "IsVegetation", false));
             AddBinding(m_IsTree = new ValueBinding<bool>(ModId, "IsTree", false));
@@ -663,6 +665,7 @@ namespace Tree_Controller.Tools
         {
             Ages selectedAges = (Ages)m_SelectedAges.value;
             Ages toggledAge = (Ages)age;
+
             m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeSelectedAge)} selectedAges = {selectedAges}");
             m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeSelectedAge)} toggled = {toggledAge}");
             if (toggledAge != Ages.All && (selectedAges & Ages.All) == Ages.All)
@@ -699,6 +702,18 @@ namespace Tree_Controller.Tools
 
             m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeSelectedAge)} selectedAges = {selectedAges}");
             m_SelectedAges.Update((int)selectedAges);
+            SetObjectToolAgeMask(selectedAges);
+        }
+
+        private void SetObjectToolAgeMask(Ages ages)
+        {
+            int conversion = Mathf.Clamp((int)ages, 0, (int)Ages.Elderly);
+            if (conversion == 0)
+            {
+                conversion = (int)Game.Tools.AgeMask.Mature;
+            }
+
+            m_ObjectToolSystem.ageMask = (Game.Tools.AgeMask)conversion;
         }
 
         private void ChangeSelectionMode(int selectionMode)

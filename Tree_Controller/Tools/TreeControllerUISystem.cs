@@ -19,6 +19,7 @@ namespace Tree_Controller.Tools
     using Game.Objects;
     using Game.Prefabs;
     using Game.SceneFlow;
+    using Game.Simulation;
     using Game.Tools;
     using Game.UI.InGame;
     using Tree_Controller.Domain;
@@ -118,6 +119,8 @@ namespace Tree_Controller.Tools
         private cohtml.Net.View m_UiView;
         private ToolSystem m_ToolSystem;
         private PrefabSystem m_PrefabSystem;
+        private TerrainSystem m_TerrainSystem;
+        private WaterSystem m_WaterSystem;
         private ObjectToolSystem m_ObjectToolSystem;
         private TreeObjectDefinitionSystem m_TreeObjectDefinitionSystem;
         private TreeControllerTool m_TreeControllerTool;
@@ -132,10 +135,12 @@ namespace Tree_Controller.Tools
         private ValueBinding<float> m_Radius;
         private ValueBinding<bool> m_IsVegetation;
         private ValueBinding<bool> m_IsTree;
+        private ValueBindingHelper<int> m_MaxElevation; 
         private ValueBindingHelper<bool> m_ShowStump;
         private ValueBinding<string> m_SelectedPrefabSet;
         private ValueBindingHelper<bool> m_IsEditor;
         private ValueBindingHelper<bool> m_ShowAdvancedForestBrushPanel;
+        private ValueBindingHelper<int> m_SeaLevel;
         private bool m_UpdateSelectionSet = false;
         private bool m_RecentlySelectedPrefabSet = false;
         private bool m_ToolOrPrefabSwitchedRecently = false;
@@ -443,10 +448,14 @@ namespace Tree_Controller.Tools
             if (mode.IsEditor())
             {
                 m_IsEditor.Value = true;
-            } else
+            }
+            else
             {
                 m_IsEditor.Value = false;
             }
+
+            m_MaxElevation.Value = (int)m_TerrainSystem.heightScaleOffset.x;
+            m_SeaLevel.Value = (int)WaterSystem.SeaLevel;
         }
 
         /// <inheritdoc/>
@@ -457,7 +466,9 @@ namespace Tree_Controller.Tools
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_ObjectToolSystem = World.GetOrCreateSystemManaged<ObjectToolSystem>();
+            m_WaterSystem = World.GetOrCreateSystemManaged<WaterSystem>();
             m_TreeObjectDefinitionSystem = World.GetOrCreateSystemManaged<TreeObjectDefinitionSystem>();
+            m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
             m_UiView = GameManager.instance.userInterface.view.View;
             m_ToolbarUISystem = World.GetOrCreateSystemManaged<ToolbarUISystem>();
             m_ThemeEntities = new List<Entity>();
@@ -496,6 +507,8 @@ namespace Tree_Controller.Tools
             m_ShowStump = CreateBinding("ShowStump", false);
             m_AdvancedForestBrushEntries = CreateBinding("AdvancedForestBrushEntries", new AdvancedForestBrushEntry[] { });
             m_ShowAdvancedForestBrushPanel = CreateBinding("ShowForestBrushPanel", false);
+            m_MaxElevation = CreateBinding("MaxElevation", 4096);
+            m_SeaLevel = CreateBinding("SeaLevel", 0);
 
             // This section handles trigger bindings which listen for triggers from UI and then start an event.
             AddBinding(new TriggerBinding<int>(ModId, "ChangeToolMode", ChangeToolMode));
@@ -619,6 +632,11 @@ namespace Tree_Controller.Tools
                 m_ToolOrPrefabSwitchedRecently = false;
             }
 
+            if (m_SeaLevel.Value != (int)WaterSystem.SeaLevel)
+            {
+                m_SeaLevel.Value = (int)WaterSystem.SeaLevel;
+            }
+            
             base.OnUpdate();
             return;
         }

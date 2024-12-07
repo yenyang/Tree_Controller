@@ -4,7 +4,7 @@ export interface AdvancedForestBrushEntry {
     Name: string,
     Src: string,
     SelectedAges: Ages,
-    ProbabilityWeight: Number,
-    MinimumElevation: Number,
-    MaximumElevation: Number,
+    ProbabilityWeight: number,
+    MinimumElevation: number,
+    MaximumElevation: number,
 }

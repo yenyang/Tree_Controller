@@ -8,6 +8,7 @@ namespace Tree_Controller.Settings
     using Game.Input;
     using Game.Modding;
     using Game.Settings;
+    using Game.Simulation;
     using Game.UI;
     using Tree_Controller.Systems;
     using Unity.Entities;

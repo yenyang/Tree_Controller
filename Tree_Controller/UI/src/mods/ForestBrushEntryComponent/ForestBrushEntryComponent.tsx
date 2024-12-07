@@ -15,6 +15,10 @@ import locale from "../lang/en-US.json";
 const uilStandard =                         "coui://uil/Standard/";
 const minusSrc =            uilStandard + "Minus.svg"
 
+
+const MaxElevation$ =            bindValue<number> (mod.id, 'MaxElevation');
+const SeaLevel$ =            bindValue<number> (mod.id, 'SeaLevel');
+
 const descriptionToolTipStyle = getModule("game-ui/common/tooltip/description-tooltip/description-tooltip.module.scss", "classes");
 
 const SliderField : any = getModule("game-ui/editor/widgets/fields/number-slider-field.tsx", "FloatSliderField");
@@ -24,6 +28,10 @@ function changeValue(event:string, name:string, value : number) {
 }
 
 export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEntry }) => {
+
+    const MaxElevation = useValue(MaxElevation$);
+    const SeaLevel = useValue(SeaLevel$);
+
     const { translate } = useLocalization();
 
     const childTooltipTitle = translate("ToolOptions.TOOLTIP_DESCRIPTION[Sapling]");
@@ -33,6 +41,7 @@ export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEn
     const deadTooltipTitle = translate("YY_TREE_CONTROLLER[dead]",locale["YY_TREE_CONTROLLER[dead]"]);    
     const clearAgeTooltipTitle = translate("YY_TREE_CONTROLLER[clear-ages]",locale["YY_TREE_CONTROLLER[clear-ages]"]);
     const clearAgeTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[clear-ages]", locale["YY_TREE_CONTROLLER_DESCRIPTION[clear-ages]"]);
+
     return (
         <div className={classNames(styles.rowGroup)}>
             <div className={classNames(styles.columnGroup, styles.centered, styles.PrefabThumbnailWidth)}>
@@ -77,12 +86,12 @@ export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEn
                 </VanillaComponentResolver.instance.Section>
                 <VanillaComponentResolver.instance.Section title={"Minimum Elevation"}>
                     <div className={styles.SliderFieldWidth}>
-                        <SliderField value={props.entry.MinimumElevation} min={0} max={4000} fractionDigits={0} onChange={(e: number) => {changeValue("SetMinimumElevation", props.entry.Name ,e)}}></SliderField>
+                        <SliderField value={props.entry.MinimumElevation-SeaLevel} min={-SeaLevel} max={MaxElevation-SeaLevel} fractionDigits={0} onChange={(e: number) => {changeValue("SetMinimumElevation", props.entry.Name ,e+SeaLevel)}}></SliderField>
                     </div>
                 </VanillaComponentResolver.instance.Section>
                 <VanillaComponentResolver.instance.Section title={"Maximum Elevation"}>
                     <div className={styles.SliderFieldWidth}>
-                        <SliderField value={props.entry.MaximumElevation} min={0} max={4000} fractionDigits={0} onChange={(e: number) => {changeValue("SetMaximumElevation", props.entry.Name ,e)}}></SliderField>
+                        <SliderField value={props.entry.MaximumElevation-SeaLevel} min={-SeaLevel} max={MaxElevation-SeaLevel} fractionDigits={0} onChange={(e: number) => {changeValue("SetMaximumElevation", props.entry.Name ,e+SeaLevel)}}></SliderField>
                     </div>
                 </VanillaComponentResolver.instance.Section>
             </div>

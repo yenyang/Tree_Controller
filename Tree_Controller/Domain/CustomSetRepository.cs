@@ -18,7 +18,7 @@ namespace Tree_Controller.Domain
     {
         private readonly int DefaultProbabilityWeight = 100;
         private readonly int DefaultMinimumElevation = 0;
-        private readonly int DefaultMaximumElevation = 4000;
+        private readonly int DefaultMaximumElevation = 4096;
         private readonly Tools.Ages DefaultAge = Tools.Ages.Adult;
 
         private int m_Version;

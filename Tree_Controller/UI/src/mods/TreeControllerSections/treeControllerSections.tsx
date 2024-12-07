@@ -31,6 +31,7 @@ export enum ToolMode
     ChangeType = 3,
     Line = 4,
     Curve = 5,
+    Upgrade = 6,
 }
 
 enum Selection

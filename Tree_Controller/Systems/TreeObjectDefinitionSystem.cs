@@ -148,10 +148,9 @@ namespace Tree_Controller.Systems
                 }
             }
 
-            if ((TreeControllerMod.Instance.Settings.ConstrainBrush
+            if (TreeControllerMod.Instance.Settings.ConstrainBrush
                 && m_ToolSystem.activeTool == m_ObjectToolSystem
                 && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush)
-                || m_TreeControllerUISystem.AdvancedForestBrushEntries.Length > 0)
             {
                 foreach (Entity entity in entities)
                 {
@@ -162,8 +161,11 @@ namespace Tree_Controller.Systems
 
                     bool destroyEntity = false;
 
-                    if (m_ToolRaycastSystem.GetRaycastResult(out RaycastResult result)
-                        && !EntityManager.HasComponent<Deleted>(result.m_Owner))
+                    if (TreeControllerMod.Instance.Settings.ConstrainBrush &&
+                        m_ToolSystem.activeTool == m_ObjectToolSystem &&
+                        m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush &&
+                        m_ToolRaycastSystem.GetRaycastResult(out RaycastResult result) &&
+                        !EntityManager.HasComponent<Deleted>(result.m_Owner))
                     {
                         float2 objectXZ = new (currentObjectDefinition.m_Position.x, currentObjectDefinition.m_Position.z);
                         float2 raycastXZ = new (result.m_Hit.m_Position.x, result.m_Hit.m_Position.z);

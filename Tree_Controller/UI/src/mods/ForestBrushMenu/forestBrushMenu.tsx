@@ -15,6 +15,7 @@ const uilStandard =                         "coui://uil/Standard/";
 
 const closeSrc =         uilStandard +  "XClose.svg";
 const arrowUpSrc =           uilStandard +  "ArrowUpThickStroke.svg";
+const temporarySrc = uilStandard + "ClockArrowBackward.svg";
 
 const ToolMode$ =            bindValue<number> (mod.id, 'ToolMode');
 const IsVegetation$ =        bindValue<boolean>(mod.id, 'IsVegetation');
@@ -64,18 +65,19 @@ export const ForestBrushMenuComponent = () => {
     
     return (
         <>
-            {ShowPanel && !isPhotoMode && (((objectToolActive || treeControllerToolActive || lineToolActive || netToolActive) && (IsVegetation || IsTree)) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge)) && (
+            {ShowPanel && !isPhotoMode && (objectToolActive || treeControllerToolActive || lineToolActive || netToolActive) && IsVegetation && (
                 <Portal>
                     <Panel
                         className={styles.panel}
                         header={(
                             <VanillaComponentResolver.instance.Section title={"Forest Brush Advanced Options"}>
-                                <Button className={roundButtonHighlightStyle.button} variant="icon" onSelect={() => handleClick("ToggleForestBrushPanel")} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
+                                <Button className={roundButtonHighlightStyle.button} variant="icon" onSelect={() => handleClick("ForestBrushPanelToggled")} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
                                     <img src={closeSrc}></img>
                                 </Button>
                             </VanillaComponentResolver.instance.Section>
                         )}>
                         <VanillaComponentResolver.instance.Section title={translate("YY_TREE_CONTROLLER[Sets]",locale["YY_TREE_CONTROLLER[Sets]"])}>
+                            <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == ""}                   tooltip={descriptionTooltip("Temporary", "Temporary Description")}                      onSelect={() => changePrefabSet("")}                  src={temporarySrc}                                                                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                             <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == deciduousTreesID}     tooltip={descriptionTooltip(deciduousTooltipTitle,deciduousTooltipDescription)}         onSelect={() => changePrefabSet(deciduousTreesID)}    src={deciduousSrc}                                                                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                             <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == evergreenTreesID}     tooltip={descriptionTooltip(evergreenTooltipTitle, evergreenTooltipDescription)}        onSelect={() => changePrefabSet(evergreenTreesID)}    src={evergreenSrc}                                                                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                             <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == wildBushesID}         tooltip={descriptionTooltip(wildBushesTooltipTitle, wildBushesTooltipDescription)}      onSelect={() => changePrefabSet(wildBushesID)}        src={bushesSrc}                                                                                       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>

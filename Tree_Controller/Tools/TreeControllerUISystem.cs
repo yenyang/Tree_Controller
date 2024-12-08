@@ -141,6 +141,7 @@ namespace Tree_Controller.Tools
         private ValueBindingHelper<bool> m_IsEditor;
         private ValueBindingHelper<bool> m_ShowAdvancedForestBrushPanel;
         private ValueBindingHelper<int> m_SeaLevel;
+        private CustomSetRepository m_TemporaryCustomSetRepository;
         private bool m_UpdateSelectionSet = false;
         private bool m_RecentlySelectedPrefabSet = false;
         private bool m_ToolOrPrefabSwitchedRecently = false;
@@ -223,6 +224,7 @@ namespace Tree_Controller.Tools
             }
 
             m_SelectedPrefabSet.Update(string.Empty);
+            m_AdvancedForestBrushEntries.Value = new AdvancedForestBrushEntry[0];
             m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ResetPrefabSets)} Resetting prefab sets.");
         }
 
@@ -521,7 +523,19 @@ namespace Tree_Controller.Tools
             CreateTrigger<string, int>("SetMinimumElevation", SetMinimumElevation);
             CreateTrigger<string, int>("SetMaximumElevation", SetMaximumElevation);
             CreateTrigger<string, int>("SetEntryAge", SetEntryAge);
-            CreateTrigger("ForestBrushPanelToggled", () => m_ShowAdvancedForestBrushPanel.Value = !m_ShowAdvancedForestBrushPanel.Value);
+            CreateTrigger("ForestBrushPanelToggled", () =>
+            {
+                m_ShowAdvancedForestBrushPanel.Value = !m_ShowAdvancedForestBrushPanel.Value;
+                if (m_ShowAdvancedForestBrushPanel.Value
+                    && m_SelectedPrefabSet.value == string.Empty
+                    && m_TreeControllerTool.GetSelectedPrefabs().Count > 1
+                    && m_AdvancedForestBrushEntries.Value.Length == 0)
+                {
+                    m_TemporaryCustomSetRepository = new CustomSetRepository(m_TreeControllerTool.GetSelectedPrefabs());
+                    m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
+                    m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+                }
+            });
 
             m_VegetationQuery = GetEntityQuery(ComponentType.ReadOnly<Vegetation>());
 
@@ -629,6 +643,16 @@ namespace Tree_Controller.Tools
                     HandleDistanceScale();
                 }
 
+                if (m_ShowAdvancedForestBrushPanel.Value
+                    && m_SelectedPrefabSet.value == string.Empty
+                    && m_TreeControllerTool.GetSelectedPrefabs().Count > 1
+                    && m_AdvancedForestBrushEntries.Value.Length == 0)
+                {
+                    m_TemporaryCustomSetRepository = new CustomSetRepository(m_TreeControllerTool.GetSelectedPrefabs());
+                    m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
+                    m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+                }
+
                 m_ToolOrPrefabSwitchedRecently = false;
             }
 
@@ -636,7 +660,7 @@ namespace Tree_Controller.Tools
             {
                 m_SeaLevel.Value = (int)WaterSystem.SeaLevel;
             }
-            
+
             base.OnUpdate();
             return;
         }
@@ -848,7 +872,9 @@ namespace Tree_Controller.Tools
                     }
                 }
 
+                m_TemporaryCustomSetRepository = new CustomSetRepository();
                 m_AdvancedForestBrushEntries.Value = new AdvancedForestBrushEntry[] { };
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
 
                 return;
             }
@@ -867,7 +893,9 @@ namespace Tree_Controller.Tools
                 m_TreeControllerTool.SelectTreePrefab(originallySelectedPrefab);
                 m_Log.Warn($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} could not select empty set");
 
+                m_TemporaryCustomSetRepository = new CustomSetRepository();
                 m_AdvancedForestBrushEntries.Value = new AdvancedForestBrushEntry[] { };
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
                 return;
             }
 
@@ -887,6 +915,7 @@ namespace Tree_Controller.Tools
             }
 
             m_AdvancedForestBrushEntries.Value = m_PrefabSetsLookup[prefabSetID].AdvancedForestBrushEntries;
+            m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
 
             m_UpdateSelectionSet = true;
 
@@ -1068,11 +1097,13 @@ namespace Tree_Controller.Tools
             if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line && m_ToolMode.value != (int)ToolMode.Line)
             {
                 m_ToolMode.Update((int)ToolMode.Line);
+                HandleDistanceScale();
             }
 
             if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve && m_ToolMode.value != (int)ToolMode.Curve)
             {
                 m_ToolMode.Update((int)ToolMode.Curve);
+                HandleDistanceScale();
             }
 
             if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Upgrade && m_ToolMode.value != (int)ToolMode.Upgrade)
@@ -1211,6 +1242,12 @@ namespace Tree_Controller.Tools
                 m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
                 TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
             }
+            else if (m_TemporaryCustomSetRepository.Count > 0 && m_AdvancedForestBrushEntries.Value.Length > 0)
+            {
+                m_TemporaryCustomSetRepository.SetProbabilityWeight(name, value);
+                m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+            }
         }
 
         private void SetMinimumElevation(string name, int value)
@@ -1221,6 +1258,12 @@ namespace Tree_Controller.Tools
                 m_AdvancedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
                 m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
                 TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
+            }
+            else if (m_TemporaryCustomSetRepository.Count > 0 && m_AdvancedForestBrushEntries.Value.Length > 0)
+            {
+                m_TemporaryCustomSetRepository.SetMinimumElevation(name, value);
+                m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
             }
         }
 
@@ -1233,6 +1276,12 @@ namespace Tree_Controller.Tools
                 m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
                 TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
             }
+            else if (m_TemporaryCustomSetRepository.Count > 0 && m_AdvancedForestBrushEntries.Value.Length > 0)
+            {
+                m_TemporaryCustomSetRepository.SetMaximumElevation(name, value);
+                m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+            }
         }
 
         private void SetEntryAge(string name, int toggledAge)
@@ -1243,6 +1292,12 @@ namespace Tree_Controller.Tools
                 m_AdvancedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
                 m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
                 TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
+            }
+            else if (m_TemporaryCustomSetRepository.Count > 0 && m_AdvancedForestBrushEntries.Value.Length > 0)
+            {
+                m_TemporaryCustomSetRepository.SetAges(name, (Ages)toggledAge);
+                m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
             }
         }
     }

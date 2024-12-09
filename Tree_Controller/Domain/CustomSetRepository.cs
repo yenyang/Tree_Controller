@@ -4,12 +4,14 @@
 
 namespace Tree_Controller.Domain
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Colossal.Logging;
     using Game.Prefabs;
     using Tree_Controller.Tools;
     using Unity.Entities;
+    using UnityEngine;
 
     /// <summary>
     /// A class to use for XML serialization and deserialization for storing prefabs used in a custom set.
@@ -189,6 +191,34 @@ namespace Tree_Controller.Domain
         }
 
         /// <summary>
+        /// Removes an entry from advanced forest brush entries by name.
+        /// </summary>
+        /// <param name="name">Name of prefab to remove.</param>
+        public void RemoveEntry(string name)
+        {
+            bool foundEntryToRemove = false;
+            AdvancedForestBrushEntry[] advancedForestBrushEntries = new AdvancedForestBrushEntry[m_AdvancedForestBrushEntries.Length - 1];
+            int j = 0;
+            for (int i = 0; i < m_AdvancedForestBrushEntries.Length; i++)
+            {
+                if (m_AdvancedForestBrushEntries[i].Name != name && j < advancedForestBrushEntries.Length)
+                {
+                    advancedForestBrushEntries[j] = m_AdvancedForestBrushEntries[i];
+                    j++;
+                }
+                else
+                {
+                    foundEntryToRemove = true;
+                }
+            }
+
+            if (foundEntryToRemove)
+            {
+                m_AdvancedForestBrushEntries = advancedForestBrushEntries;
+            }
+        }
+
+        /// <summary>
         /// Sets the probability weight for an advanced forest brush entry based on name.
         /// </summary>
         /// <param name="name">The prefab's name.</param>
@@ -220,6 +250,11 @@ namespace Tree_Controller.Domain
                 if (m_AdvancedForestBrushEntries[i].Name == name)
                 {
                     m_AdvancedForestBrushEntries[i].MinimumElevation = minimumElevation;
+                    if (m_AdvancedForestBrushEntries[i].MaximumElevation <= minimumElevation)
+                    {
+                        m_AdvancedForestBrushEntries[i].MaximumElevation = Mathf.Clamp(minimumElevation + 1, DefaultMinimumElevation, DefaultMaximumElevation);
+                    }
+
                     return;
                 }
             }
@@ -237,6 +272,11 @@ namespace Tree_Controller.Domain
                 if (m_AdvancedForestBrushEntries[i].Name == name)
                 {
                     m_AdvancedForestBrushEntries[i].MaximumElevation = maxElevation;
+                    if (m_AdvancedForestBrushEntries[i].MinimumElevation >= maxElevation)
+                    {
+                        m_AdvancedForestBrushEntries[i].MinimumElevation = Mathf.Clamp(maxElevation - 1, DefaultMinimumElevation, DefaultMaximumElevation);
+                    }
+
                     return;
                 }
             }
@@ -302,6 +342,22 @@ namespace Tree_Controller.Domain
 
                     m_AdvancedForestBrushEntries[i].SelectedAges = (int)selectedAges;
 
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Resets an entry based on the name of the prefab.
+        /// </summary>
+        /// <param name="name">Prefab name.</param>
+        public void ResetEntry(string name)
+        {
+            for (int i = 0; i < m_AdvancedForestBrushEntries.Length; i++)
+            {
+                if (m_AdvancedForestBrushEntries[i].Name == name)
+                {
+                    m_AdvancedForestBrushEntries[i] = GetDefaultAdvancedForestBrushEntry(name);
                     return;
                 }
             }

@@ -134,6 +134,21 @@ namespace Tree_Controller.Settings
                 { "YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]", "Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click this button to save a custom set. Once a set has been saved, click this button to select that set. Hold Ctrl while switching themes to maintain the custom set." },
                 { "YY_TREE_CONTROLLER[change]", "Change" },
                 { TooltipTitleKey("Stump"), "Stump" },
+                { TooltipTitleKey("AdvancedSetControlPanel"), "Advanced Set Control Panel" },
+                { TooltipDescriptionKey("AdvancedSetControlPanel"), "Toggles showing or hiding the Advanced Set Control Panel. This panel allows for setting Ages, Probability Weights, Minimum Elevations and Maximum Elevations for each individual tree or plant in a Set. Ages and Probability weights work while placing single objects, brushing multiple objects, and using Line tool. Minimum and Maximum Elevations only work while brushing multiple objects. The temporary Set is not saved. Changes to any other Set are saved." },
+                { TooltipTitleKey("TemporarySet"), "Temporary Set" },
+                { TooltipDescriptionKey("TemporarySet"), "An advanced set that is not saved. Any changes will be lost as soon as the temporary set is no longer being used." },
+                { TooltipTitleKey("RemoveAsset"), "Remove Asset" },
+                { TooltipDescriptionKey("RemoveAsset"), "Removes this asset from the set." },
+                { TooltipTitleKey("ResetAssetEntry"), "Reset Advanced Settings for this Asset" },
+                { TooltipTitleKey("OverrideAge"), "Override Age" },
+                { TooltipDescriptionKey("OverrideAge"), "When selected, the Age from this setting will be used rather than global Age setting. When unselected, age will be assigned from global Age setting." },
+                { TooltipTitleKey("ProbabilityWeight"), "Probability Weight" },
+                { TooltipDescriptionKey("ProbabilityWeight"), "Increases or decreases the likelyhood that this vegetation asset will be chosen randomly using this set while placing single objects, brushing multiple objects, and using Line tool." },
+                { TooltipTitleKey("MinimumElevation"), "Minimum Elevation" },
+                { TooltipDescriptionKey("MinimumElevation"), "Sets a Minimum Elevation while brushing multiple objects such that this asset will not generate below that elevation. Elevations are relative to sea level." },
+                { TooltipTitleKey("MaximumElevation"), "Maximum Elevation" },
+                { TooltipDescriptionKey("MaximumElevation"), "Sets a Maximum Elevation while brushing multiple objects such that this asset will not generate above that elevation. Elevations are relative to sea level." },
             };
         }
 

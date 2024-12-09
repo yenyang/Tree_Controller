@@ -262,10 +262,12 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
         const changeAgeTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[change-age-tool]",locale["YY_TREE_CONTROLLER_DESCRIPTION[change-age-tool]"]);
         const changePrefabTooltipTitle = translate("YY_TREE_CONTROLLER[change-prefab-tool]",locale["YY_TREE_CONTROLLER[change-prefab-tool]"]);
         const changePrefabTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[change-prefab-tool]",locale["YY_TREE_CONTROLLER_DESCRIPTION[change-prefab-tool]"]);
+        const showPanelTooltipTitle = translate("Tree_Controller.TOOLTIP_TITLE[AdvancedSetControlPanel]" ,locale["Tree_Controller.TOOLTIP_TITLE[AdvancedSetControlPanel]"]);
+        const showPanelTooltipDescription = translate("Tree_Controller.TOOLTIP_DESCRIPTION[AdvancedSetControlPanel]", locale["Tree_Controller.TOOLTIP_DESCRIPTION[AdvancedSetControlPanel]"]);
 
         var result = Component();
         
-        if (((objectToolActive || treeControllerToolActive || lineToolActive || netToolActive) && (IsVegetation || IsTree)) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge) ) 
+        if (((objectToolActive || treeControllerToolActive || lineToolActive) && (IsVegetation || IsTree)) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge) ) 
         {
             result.props.children?.push
             (
@@ -277,7 +279,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                 <>
                     { (((objectToolActive) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType) || lineToolActive) && IsVegetation) && (
                     <VanillaComponentResolver.instance.Section title={translate("YY_TREE_CONTROLLER[Sets]",locale["YY_TREE_CONTROLLER[Sets]"])}>
-                        <VanillaComponentResolver.instance.ToolButton  selected={ShowPanel}                         tooltip={"Show Panel"}                                                                  onSelect={() => handleClick("ForestBrushPanelToggled")}         src={gearSrc}                                           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                        <VanillaComponentResolver.instance.ToolButton  selected={ShowPanel}                         tooltip={descriptionTooltip(showPanelTooltipTitle,showPanelTooltipDescription)}         onSelect={() => handleClick("ForestBrushPanelToggled")}         src={gearSrc}                                           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == deciduousTreesID}     tooltip={descriptionTooltip(deciduousTooltipTitle,deciduousTooltipDescription)}         onSelect={() => changePrefabSet(deciduousTreesID)}    src={deciduousSrc}                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == evergreenTreesID}     tooltip={descriptionTooltip(evergreenTooltipTitle, evergreenTooltipDescription)}        onSelect={() => changePrefabSet(evergreenTreesID)}    src={evergreenSrc}                                                focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                         <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == wildBushesID}         tooltip={descriptionTooltip(wildBushesTooltipTitle, wildBushesTooltipDescription)}      onSelect={() => changePrefabSet(wildBushesID)}        src={bushesSrc}                                                   focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>

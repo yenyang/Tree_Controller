@@ -491,6 +491,9 @@ namespace Tree_Controller.Tools
                 { "YYTC-custom-set-5", new CustomSetRepository(m_DefaultCustomSet5Prefabs) },
             };
 
+            TryLoadCustomPrefabSet("YYTC-wild-deciduous-trees");
+            TryLoadCustomPrefabSet("YYTC-evergreen-trees");
+            TryLoadCustomPrefabSet("YYTC-wild-bushes");
             for (int i = 1; i <= 5; i++)
             {
                 TryLoadCustomPrefabSet($"YYTC-custom-set-{i}");
@@ -536,7 +539,8 @@ namespace Tree_Controller.Tools
                     m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
                 }
             });
-
+            CreateTrigger<string>("ResetEntry", ResetEntry);
+            CreateTrigger<string>("RemoveEntry", RemoveEntry);
             m_VegetationQuery = GetEntityQuery(ComponentType.ReadOnly<Vegetation>());
 
             m_Log.Info($"{nameof(TreeControllerUISystem)}.{nameof(OnCreate)}");
@@ -1045,7 +1049,7 @@ namespace Tree_Controller.Tools
                 {
                     isTree = true;
                 }
-                else if (selectedPrefabs.Count > 1)
+                else if (selectedPrefabs.Count > 1 && m_IsVegetation.value)
                 {
                     foreach (PrefabBase prefabBase in selectedPrefabs)
                     {
@@ -1298,6 +1302,40 @@ namespace Tree_Controller.Tools
                 m_TemporaryCustomSetRepository.SetAges(name, (Ages)toggledAge);
                 m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
                 m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+            }
+        }
+
+        private void ResetEntry(string name)
+        {
+            if (m_PrefabSetsLookup.ContainsKey(m_SelectedPrefabSet.value))
+            {
+                m_PrefabSetsLookup[m_SelectedPrefabSet.value].ResetEntry(name);
+                m_AdvancedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+                TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
+            }
+            else if (m_TemporaryCustomSetRepository.Count > 0 && m_AdvancedForestBrushEntries.Value.Length > 0)
+            {
+                m_TemporaryCustomSetRepository.ResetEntry(name);
+                m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+            }
+        }
+
+        private void RemoveEntry(string name)
+        {
+            if (m_PrefabSetsLookup.ContainsKey(m_SelectedPrefabSet.value) && m_AdvancedForestBrushEntries.Value.Length > 2 && m_SelectedPrefabSet.value.Contains("custom"))
+            {
+                m_PrefabSetsLookup[m_SelectedPrefabSet.value].RemoveEntry(name);
+                TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
+                ChangePrefabSet(m_SelectedPrefabSet.value);
+            }
+            else if (m_TemporaryCustomSetRepository.Count > 2 && m_AdvancedForestBrushEntries.Value.Length > 2)
+            {
+                m_TemporaryCustomSetRepository.RemoveEntry(name);
+                m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+                m_UpdateSelectionSet = true;
             }
         }
     }

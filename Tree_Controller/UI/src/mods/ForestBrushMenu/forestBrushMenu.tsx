@@ -42,7 +42,6 @@ export const ForestBrushMenuComponent = () => {
 
     const CurrentToolMode = useValue(ToolMode$);
     const IsVegetation = useValue(IsVegetation$);
-    const IsTree = useValue(IsTree$);
 
     const { translate } = useLocalization();
 
@@ -62,22 +61,24 @@ export const ForestBrushMenuComponent = () => {
     const customSet4TooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[custom-set-4]",locale["YY_TREE_CONTROLLER_DESCRIPTION[custom-set-4]"]);
     const customSet5TooltipTitle = translate("YY_TREE_CONTROLLER[custom-set-5]",locale["YY_TREE_CONTROLLER[custom-set-5]"]);
     const customSet5TooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]",locale["YY_TREE_CONTROLLER_DESCRIPTION[custom-set-5]"]);
+    const temporaryTooltipTitle = translate("Tree_Controller.TOOLTIP_TITLE[TemporarySet]" ,locale["Tree_Controller.TOOLTIP_TITLE[TemporarySet]"]);
+    const temporaryTooltipDescription = translate("Tree_Controller.TOOLTIP_DESCRIPTION[TemporarySet]" ,locale["Tree_Controller.TOOLTIP_DESCRIPTION[TemporarySet]"]);
     
     return (
         <>
-            {ShowPanel && !isPhotoMode && (objectToolActive || treeControllerToolActive || lineToolActive || netToolActive) && IsVegetation && (
+            {ShowPanel && !isPhotoMode && (objectToolActive || treeControllerToolActive || lineToolActive) && IsVegetation && (
                 <Portal>
                     <Panel
                         className={styles.panel}
                         header={(
-                            <VanillaComponentResolver.instance.Section title={"Forest Brush Advanced Options"}>
+                            <VanillaComponentResolver.instance.Section title={translate("Tree_Controller.TOOLTIP_TITLE[AdvancedSetControlPanel]",locale["Tree_Controller.TOOLTIP_TITLE[AdvancedSetControlPanel]"])}>
                                 <Button className={roundButtonHighlightStyle.button} variant="icon" onSelect={() => handleClick("ForestBrushPanelToggled")} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}>
                                     <img src={closeSrc}></img>
                                 </Button>
                             </VanillaComponentResolver.instance.Section>
                         )}>
                         <VanillaComponentResolver.instance.Section title={translate("YY_TREE_CONTROLLER[Sets]",locale["YY_TREE_CONTROLLER[Sets]"])}>
-                            <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == ""}                   tooltip={descriptionTooltip("Temporary", "Temporary Description")}                      onSelect={() => changePrefabSet("")}                  src={temporarySrc}                                                                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                            <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == ""}                   tooltip={descriptionTooltip(temporaryTooltipTitle, temporaryTooltipDescription)}        onSelect={() => changePrefabSet("")}                  src={temporarySrc}                                                                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                             <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == deciduousTreesID}     tooltip={descriptionTooltip(deciduousTooltipTitle,deciduousTooltipDescription)}         onSelect={() => changePrefabSet(deciduousTreesID)}    src={deciduousSrc}                                                                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                             <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == evergreenTreesID}     tooltip={descriptionTooltip(evergreenTooltipTitle, evergreenTooltipDescription)}        onSelect={() => changePrefabSet(evergreenTreesID)}    src={evergreenSrc}                                                                                    focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                             <VanillaComponentResolver.instance.ToolButton  selected={PrefabSet == wildBushesID}         tooltip={descriptionTooltip(wildBushesTooltipTitle, wildBushesTooltipDescription)}      onSelect={() => changePrefabSet(wildBushesID)}        src={bushesSrc}                                                                                       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
@@ -89,7 +90,7 @@ export const ForestBrushMenuComponent = () => {
                         </VanillaComponentResolver.instance.Section>
                         { AdvancedForestBrushEntries.map((currentEntry) => (
                             <div className={styles.rowGroup}>
-                                <ForestBrushEntryComponent entry={currentEntry}></ForestBrushEntryComponent>
+                                <ForestBrushEntryComponent entry={currentEntry} numberOfEntries={AdvancedForestBrushEntries.length}></ForestBrushEntryComponent>
                             </div>
                         ))}
                     </Panel>

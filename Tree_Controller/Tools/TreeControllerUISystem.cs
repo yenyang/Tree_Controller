@@ -1335,7 +1335,11 @@ namespace Tree_Controller.Tools
                 m_TemporaryCustomSetRepository.RemoveEntry(name);
                 m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
                 m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
-                m_UpdateSelectionSet = true;
+                m_RecentlySelectedPrefabSet = true;
+                if (m_PrefabSystem.TryGetPrefab(new PrefabID(nameof(StaticObjectPrefab), name), out PrefabBase prefabBase))
+                {
+                    m_TreeControllerTool.UnselectTreePrefab(prefabBase);
+                }
             }
         }
     }

@@ -582,6 +582,24 @@ namespace Tree_Controller.Tools
                     m_UpdateSelectionSet = true;
                 }
 
+                if (m_ToolSystem.activeTool == m_ObjectToolSystem
+                    && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create
+                    && m_TreeControllerTool.GetSelectedPrefabs().Count > 1
+                    && m_ToolSystem.activePrefab != null
+                    && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity)
+                    && EntityManager.HasComponent<TreeData>(prefabEntity))
+                {
+                    foreach (PrefabBase prefabBase in selectedPrefabs)
+                    {
+                        if (m_PrefabSystem.TryGetEntity(prefabBase, out Entity currentPrefabEntity) && !EntityManager.HasComponent<TreeData>(currentPrefabEntity))
+                        {
+                            m_TrySetPrefabNextFrame = prefabBase;
+                            m_UpdateSelectionSet = true;
+                            break;
+                        }
+                    }
+                }
+
                 if (m_UpdateSelectionSet && m_FrameCount <= 5)
                 {
                     if (m_FrameCount < 5)
@@ -624,13 +642,6 @@ namespace Tree_Controller.Tools
 
                     m_FrameCount++;
                 }
-            }
-            else if (m_UiView != null && m_MultiplePrefabsSelected && m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create)
-            {
-                m_UiView.ExecuteScript("if (yyTreeController == null) var yyTreeController = {};");
-                UnselectPrefabs();
-                SelectPrefab(m_ToolSystem.activePrefab);
-                m_MultiplePrefabsSelected = false;
             }
 
             HandleToolModeBinding();

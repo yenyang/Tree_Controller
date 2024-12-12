@@ -39,7 +39,6 @@ namespace Tree_Controller.Domain
         /// <param name="customSet">List of prefab bases.</param>
         public CustomSetRepository(List<PrefabBase> customSet)
         {
-            // m_PrefabNames = ConvertToArray(customSet);
             m_Version = 2;
             GenerateDefaultAdvancedForestBrushEntries(ConvertToArray(customSet));
         }
@@ -50,7 +49,6 @@ namespace Tree_Controller.Domain
         /// <param name="customSet">list of prefab IDs for the custom set.</param>
         public CustomSetRepository(List<PrefabID> customSet)
         {
-            // m_PrefabNames = ConvertToArray(customSet);
             m_Version = 2;
             GenerateDefaultAdvancedForestBrushEntries(ConvertToArray(customSet));
         }

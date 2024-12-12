@@ -287,6 +287,7 @@ namespace Tree_Controller.Tools
         public TreeState GetNextTreeState(ref Unity.Mathematics.Random random, bool includeStump, Ages selectedAges)
         {
             List<TreeState> selectedTreeStates = new List<TreeState>();
+            selectedAges &= ~(Ages.ShowStump | Ages.OverrideAge | Ages.Hide);
             if (selectedAges == Ages.None)
             {
                 return TreeState.Adult;
@@ -536,7 +537,7 @@ namespace Tree_Controller.Tools
                 {
                     m_TemporaryCustomSetRepository = new CustomSetRepository(m_TreeControllerTool.GetSelectedPrefabs());
                     m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
-                    m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+                    HandleShowStumpsForAdvancedSetAndTriggerUpdate();
                 }
             });
             CreateTrigger<string>("ResetEntry", ResetEntry);
@@ -654,7 +655,7 @@ namespace Tree_Controller.Tools
                 {
                     m_TemporaryCustomSetRepository = new CustomSetRepository(m_TreeControllerTool.GetSelectedPrefabs());
                     m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
-                    m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+                    HandleShowStumpsForAdvancedSetAndTriggerUpdate();
                 }
 
                 m_ToolOrPrefabSwitchedRecently = false;
@@ -919,7 +920,7 @@ namespace Tree_Controller.Tools
             }
 
             m_AdvancedForestBrushEntries.Value = m_PrefabSetsLookup[prefabSetID].AdvancedForestBrushEntries;
-            m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+            HandleShowStumpsForAdvancedSetAndTriggerUpdate();
 
             m_UpdateSelectionSet = true;
 
@@ -1082,6 +1083,7 @@ namespace Tree_Controller.Tools
             }
 
             HandleShowStumps();
+            HandleShowStumpsForAdvancedSetAndTriggerUpdate();
 
             m_ToolOrPrefabSwitchedRecently = true;
         }
@@ -1311,14 +1313,14 @@ namespace Tree_Controller.Tools
             {
                 m_PrefabSetsLookup[m_SelectedPrefabSet.value].ResetEntry(name);
                 m_AdvancedForestBrushEntries.Value = m_PrefabSetsLookup[m_SelectedPrefabSet.value].AdvancedForestBrushEntries;
-                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+                HandleShowStumpsForAdvancedSetAndTriggerUpdate();
                 TrySaveCustomPrefabSet(m_SelectedPrefabSet.value);
             }
             else if (m_TemporaryCustomSetRepository.Count > 0 && m_AdvancedForestBrushEntries.Value.Length > 0)
             {
                 m_TemporaryCustomSetRepository.ResetEntry(name);
                 m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
-                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+                HandleShowStumpsForAdvancedSetAndTriggerUpdate();
             }
         }
 
@@ -1341,6 +1343,40 @@ namespace Tree_Controller.Tools
                     m_TreeControllerTool.UnselectTreePrefab(prefabBase);
                 }
             }
+        }
+
+        private void HandleShowStumpsForAdvancedSetAndTriggerUpdate()
+        {
+            if (m_AdvancedForestBrushEntries.Value.Length <= 0)
+            {
+                m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
+                return;
+            }
+
+            AdvancedForestBrushEntry[] revisedAdvancedForestBrushEntries = m_AdvancedForestBrushEntries.Value;
+            for (int i = 0; i < revisedAdvancedForestBrushEntries.Length; i++)
+            {
+                if (TreeControllerMod.Instance.Settings.IncludeStumps
+                    && m_PrefabSystem.TryGetPrefab(new PrefabID(nameof(StaticObjectPrefab), revisedAdvancedForestBrushEntries[i].Name), out PrefabBase prefabBase)
+                    && m_PrefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity)
+                    && EntityManager.HasComponent<TreeData>(prefabEntity)
+                    && EntityManager.TryGetBuffer(prefabEntity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
+                    && subMeshBuffer.Length > 5)
+                {
+                    Ages ages = (Ages)revisedAdvancedForestBrushEntries[i].SelectedAges;
+                    ages |= Ages.ShowStump;
+                    revisedAdvancedForestBrushEntries[i].SelectedAges = (int)ages;
+                }
+                else
+                {
+                    Ages ages = (Ages)revisedAdvancedForestBrushEntries[i].SelectedAges;
+                    ages &= ~Ages.ShowStump;
+                    revisedAdvancedForestBrushEntries[i].SelectedAges = (int)ages;
+                }
+            }
+
+            m_AdvancedForestBrushEntries.Value = revisedAdvancedForestBrushEntries;
+            m_AdvancedForestBrushEntries.Binding.TriggerUpdate();
         }
     }
 }

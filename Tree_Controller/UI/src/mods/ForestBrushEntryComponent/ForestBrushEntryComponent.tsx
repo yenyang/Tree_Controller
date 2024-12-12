@@ -45,7 +45,9 @@ export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEn
     const deadTooltipTitle = translate("YY_TREE_CONTROLLER[dead]",locale["YY_TREE_CONTROLLER[dead]"]);    
     const clearAgeTooltipTitle = translate("YY_TREE_CONTROLLER[clear-ages]",locale["YY_TREE_CONTROLLER[clear-ages]"]);
     const clearAgeTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[clear-ages]", locale["YY_TREE_CONTROLLER_DESCRIPTION[clear-ages]"]);
-    let isDefault : boolean = (props.entry.ProbabilityWeight == 100 && (props.entry.SelectedAges == Ages.Adult || (props.entry.SelectedAges & Ages.Hide) == Ages.Hide) && props.entry.MinimumElevation == 0 && props.entry.MaximumElevation == MaxElevation)
+    let actualAges : Ages = props.entry.SelectedAges;
+    actualAges &= ~(Ages.Hide | Ages.ShowStump);
+    let isDefault : boolean = (props.entry.ProbabilityWeight == 100 && actualAges == Ages.Adult && props.entry.MinimumElevation == 0 && props.entry.MaximumElevation == MaxElevation)
     let removeable : boolean = ((PrefabSet.includes("custom") || PrefabSet == "") && props.numberOfEntries > 2);
 
     return (
@@ -66,6 +68,9 @@ export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEn
                     {(!isDefault) && (                    
                         <VanillaComponentResolver.instance.ToolButton  tooltip={translate("Tree_Controller.TOOLTIP_TITLE[ResetAssetEntry]",locale["Tree_Controller.TOOLTIP_TITLE[ResetAssetEntry]"])}      onSelect={() => {trigger(mod.id, "ResetEntry", props.entry.Name)}}        src={resetSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>  
                     )}
+                    { !removeable && isDefault && (
+                        <div className={styles.verticalSpacer}></div>
+                    )}
                 </div>
             </div>
             <div className={styles.columnGroup}>
@@ -76,7 +81,7 @@ export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEn
                          tooltip={descriptionTooltip(translate("Tree_Controller.TOOLTIP_TITLE[OverrideAge]", locale["Tree_Controller.TOOLTIP_TITLE[OverrideAge]"]), translate("Tree_Controller.TOOLTIP_DESCRIPTION[OverrideAge]", locale["Tree_Controller.TOOLTIP_DESCRIPTION[OverrideAge]"]))}
                     >
                         <>
-                            <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.OverrideAge) == Ages.OverrideAge}         tooltip={descriptionTooltip(translate("Tree_Controller.TOOLTIP_TITLE[OverrideAge]", locale["Tree_Controller.TOOLTIP_TITLE[OverrideAge]"]), translate("Tree_Controller.TOOLTIP_DESCRIPTION[OverrideAge]", locale["Tree_Controller.TOOLTIP_DESCRIPTION[OverrideAge]"]))}      onSelect={() => {changeValue("SetEntryAge", props.entry.Name ,Ages.OverrideAge); console.log("yes")}}        src={ageChangSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                            <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.OverrideAge) == Ages.OverrideAge}         tooltip={descriptionTooltip(translate("Tree_Controller.TOOLTIP_TITLE[OverrideAge]", locale["Tree_Controller.TOOLTIP_TITLE[OverrideAge]"]), translate("Tree_Controller.TOOLTIP_DESCRIPTION[OverrideAge]", locale["Tree_Controller.TOOLTIP_DESCRIPTION[OverrideAge]"]))}      onSelect={() => {changeValue("SetEntryAge", props.entry.Name ,Ages.OverrideAge);}}        src={ageChangSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                             {( (props.entry.SelectedAges & Ages.OverrideAge) == Ages.OverrideAge && 
                                 <>
                                     <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.All) == Ages.All}         tooltip={descriptionTooltip(clearAgeTooltipTitle, clearAgeTooltipDescription)}      onSelect={() => changeValue("SetEntryAge", props.entry.Name ,Ages.All)}        src={clearAgesSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
@@ -85,11 +90,12 @@ export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEn
                                     <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.Adult) == Ages.Adult}     tooltip={adultTooltipTitle}            onSelect={() => changeValue("SetEntryAge", props.entry.Name ,Ages.Adult)}      src={adultSrc}           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                                     <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.Elderly) == Ages.Elderly} tooltip={elderlyTooltipTitle}        onSelect={() => changeValue("SetEntryAge", props.entry.Name ,Ages.Elderly)}    src={elderlySrc}         focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                                     <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.Dead) == Ages.Dead}       tooltip={deadTooltipTitle}              onSelect={() =>changeValue("SetEntryAge", props.entry.Name ,Ages.Dead)}       src={deadSrc}            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                                    {(( props.entry.SelectedAges & Ages.ShowStump) == Ages.ShowStump && 
+                                        <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.Stump) == Ages.Stump} tooltip={translate("Tree_Controller.TOOLTIP_TITLE[Stump]", locale["Tree_Controller.TOOLTIP_TITLE[Stump]"])}     onSelect={() =>changeValue("SetEntryAge", props.entry.Name ,Ages.Stump)}        src={stumpSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                                    )}
                                 </>
                             )}
-                            {( false && 
-                                <VanillaComponentResolver.instance.ToolButton  selected={(props.entry.SelectedAges & Ages.Stump) == Ages.Stump} tooltip={translate("Tree_Controller.TOOLTIP_TITLE[Stump]", locale["Tree_Controller.TOOLTIP_TITLE[Stump]"])}     onSelect={() => console.log("stump")}        src={stumpSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
-                            )}
+                           
                         </>
                     </EntrySectionComponent>
                 )}

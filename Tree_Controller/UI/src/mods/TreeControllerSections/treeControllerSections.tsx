@@ -21,6 +21,7 @@ export enum Ages
     All = 64,
     Hide = 128,
     OverrideAge = 256,
+    ShowStump = 512,
 }
 
 export enum ToolMode 

@@ -8,6 +8,7 @@ namespace Tree_Controller.Domain
     using Game.UI;
     using Tree_Controller.Tools;
     using Unity.Entities;
+    using static Colossal.AssetPipeline.Diagnostic.Report;
 
     /// <summary>
     /// A class to use for UI binding for advance forest brushes.
@@ -15,7 +16,6 @@ namespace Tree_Controller.Domain
     public class AdvancedForestBrushEntry
     {
         private string m_Name;
-        private string m_Src;
         private Ages m_Ages;
         private int m_ProbabilityWeight;
         private int m_MinimumElevation;
@@ -43,18 +43,6 @@ namespace Tree_Controller.Domain
             m_ProbabilityWeight = probablity;
             m_MinimumElevation = minElev;
             m_MaximumElevation = maxElev;
-
-            PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
-            ImageSystem imageSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ImageSystem>();
-            if (prefabSystem.TryGetPrefab(prefabID, out PrefabBase prefabBase)
-                && prefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity))
-            {
-                m_Src = imageSystem.GetThumbnail(prefabEntity);
-            }
-            else
-            {
-                m_Src = imageSystem.placeholderIcon;
-            }
         }
 
         /// <summary>
@@ -94,12 +82,11 @@ namespace Tree_Controller.Domain
         }
 
         /// <summary>
-        /// Gets or sets the image source string.
+        /// Gets the image source string.
         /// </summary>
         public string Src
         {
-            get { return m_Src; }
-            set { m_Src = value; }
+            get { return GetThumbnailOrPlaceholder(new PrefabID(nameof(StaticObjectPrefab), Name)); }
         }
 
         /// <summary>
@@ -125,6 +112,21 @@ namespace Tree_Controller.Domain
             }
 
             return Entity.Null;
+        }
+
+        private string GetThumbnailOrPlaceholder(PrefabID prefabID)
+        {
+            PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
+            ImageSystem imageSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ImageSystem>();
+            if (prefabSystem.TryGetPrefab(prefabID, out PrefabBase prefabBase)
+                && prefabSystem.TryGetEntity(prefabBase, out Entity prefabEntity))
+            {
+                return imageSystem.GetThumbnail(prefabEntity);
+            }
+            else
+            {
+                return imageSystem.placeholderIcon;
+            }
         }
     }
 }

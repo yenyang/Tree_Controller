@@ -58,6 +58,11 @@ namespace Tree_Controller.Tools
         /// Match global binding instead of a specific override.
         /// </summary>
         OverrideAge = 256,
+
+        /// <summary>
+        /// Flag for whether to show stump or not.
+        /// </summary>
+        ShowStump = 512,
     }
 
     /// <summary>

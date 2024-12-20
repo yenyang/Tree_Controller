@@ -9,6 +9,7 @@ namespace Tree_Controller.Domain
     using System.Linq;
     using Colossal.Logging;
     using Game.Prefabs;
+    using Game.Simulation;
     using Tree_Controller.Tools;
     using Unity.Entities;
     using UnityEngine;
@@ -19,8 +20,6 @@ namespace Tree_Controller.Domain
     public class CustomSetRepository
     {
         private readonly int DefaultProbabilityWeight = 100;
-        private readonly int DefaultMinimumElevation = 0;
-        private readonly int DefaultMaximumElevation = 4096;
         private readonly Tools.Ages DefaultAge = Tools.Ages.Adult;
 
         private int m_Version;
@@ -243,6 +242,7 @@ namespace Tree_Controller.Domain
         /// <param name="minimumElevation">New minimum elevation.</param>
         public void SetMinimumElevation(string name, int minimumElevation)
         {
+            TerrainSystem terrainSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TerrainSystem>();
             for (int i = 0; i < m_AdvancedForestBrushEntries.Length; i++)
             {
                 if (m_AdvancedForestBrushEntries[i].Name == name)
@@ -250,7 +250,7 @@ namespace Tree_Controller.Domain
                     m_AdvancedForestBrushEntries[i].MinimumElevation = minimumElevation;
                     if (m_AdvancedForestBrushEntries[i].MaximumElevation <= minimumElevation)
                     {
-                        m_AdvancedForestBrushEntries[i].MaximumElevation = Mathf.Clamp(minimumElevation + 1, DefaultMinimumElevation, DefaultMaximumElevation);
+                        m_AdvancedForestBrushEntries[i].MaximumElevation = Mathf.Clamp(minimumElevation + 1, Mathf.FloorToInt(terrainSystem.heightScaleOffset.y), Mathf.CeilToInt(terrainSystem.heightScaleOffset.x));
                     }
 
                     return;
@@ -265,6 +265,7 @@ namespace Tree_Controller.Domain
         /// <param name="maxElevation">New probability weight.</param>
         public void SetMaximumElevation(string name, int maxElevation)
         {
+            TerrainSystem terrainSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TerrainSystem>();
             for (int i = 0; i < m_AdvancedForestBrushEntries.Length; i++)
             {
                 if (m_AdvancedForestBrushEntries[i].Name == name)
@@ -272,7 +273,7 @@ namespace Tree_Controller.Domain
                     m_AdvancedForestBrushEntries[i].MaximumElevation = maxElevation;
                     if (m_AdvancedForestBrushEntries[i].MinimumElevation >= maxElevation)
                     {
-                        m_AdvancedForestBrushEntries[i].MinimumElevation = Mathf.Clamp(maxElevation - 1, DefaultMinimumElevation, DefaultMaximumElevation);
+                        m_AdvancedForestBrushEntries[i].MinimumElevation = Mathf.Clamp(maxElevation - 1, Mathf.FloorToInt(terrainSystem.heightScaleOffset.y), Mathf.CeilToInt(terrainSystem.heightScaleOffset.x));
                     }
 
                     return;
@@ -422,6 +423,7 @@ namespace Tree_Controller.Domain
         private AdvancedForestBrushEntry GetDefaultAdvancedForestBrushEntry(string name)
         {
             PrefabSystem prefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<PrefabSystem>();
+            TerrainSystem terrainSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TerrainSystem>();
             PrefabID prefabID = new PrefabID("StaticObjectPrefab", name);
             Tools.Ages age = DefaultAge;
             if (prefabSystem.TryGetPrefab(prefabID, out PrefabBase prefabBase)
@@ -431,7 +433,7 @@ namespace Tree_Controller.Domain
                 age = Tools.Ages.Hide;
             }
 
-            return new AdvancedForestBrushEntry(prefabID, age, DefaultProbabilityWeight, DefaultMinimumElevation, DefaultMaximumElevation);
+            return new AdvancedForestBrushEntry(prefabID, age, DefaultProbabilityWeight, Mathf.FloorToInt(terrainSystem.heightScaleOffset.y), Mathf.CeilToInt(terrainSystem.heightScaleOffset.x));
         }
     }
 }

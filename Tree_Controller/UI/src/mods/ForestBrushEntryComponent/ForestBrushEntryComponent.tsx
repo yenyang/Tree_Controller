@@ -46,8 +46,8 @@ export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEn
     const clearAgeTooltipTitle = translate("YY_TREE_CONTROLLER[clear-ages]",locale["YY_TREE_CONTROLLER[clear-ages]"]);
     const clearAgeTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[clear-ages]", locale["YY_TREE_CONTROLLER_DESCRIPTION[clear-ages]"]);
     let actualAges : Ages = props.entry.SelectedAges;
-    actualAges &= ~(Ages.Hide | Ages.ShowStump);
-    let isDefault : boolean = (props.entry.ProbabilityWeight == 100 && actualAges == Ages.Adult && props.entry.MinimumElevation == 0 && props.entry.MaximumElevation == MaxElevation)
+    actualAges &= ~(Ages.ShowStump);
+    let isDefault : boolean = (props.entry.ProbabilityWeight == 100 && (actualAges == Ages.Adult || (actualAges & Ages.Hide) == Ages.Hide) && props.entry.MinimumElevation == 0 && props.entry.MaximumElevation == MaxElevation)
     let removeable : boolean = ((PrefabSet.includes("custom") || PrefabSet == "") && props.numberOfEntries > 2);
 
     return (

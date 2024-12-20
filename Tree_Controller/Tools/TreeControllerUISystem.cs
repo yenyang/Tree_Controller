@@ -135,7 +135,7 @@ namespace Tree_Controller.Tools
         private ValueBinding<float> m_Radius;
         private ValueBinding<bool> m_IsVegetation;
         private ValueBinding<bool> m_IsTree;
-        private ValueBindingHelper<int> m_MaxElevation; 
+        private ValueBindingHelper<int> m_MaxElevation;
         private ValueBindingHelper<bool> m_ShowStump;
         private ValueBinding<string> m_SelectedPrefabSet;
         private ValueBindingHelper<bool> m_IsEditor;
@@ -457,7 +457,9 @@ namespace Tree_Controller.Tools
                 m_IsEditor.Value = false;
             }
 
-            m_MaxElevation.Value = (int)m_TerrainSystem.heightScaleOffset.x;
+            m_MaxElevation.Value = Mathf.CeilToInt(m_TerrainSystem.heightScaleOffset.x);
+            m_Log.Debug($"m_TerrainSystem.heightScaleOffset.x: {m_TerrainSystem.heightScaleOffset.x}");
+            m_Log.Debug($"m_TerrainSystem.heightScaleOffset.y: {m_TerrainSystem.heightScaleOffset.y}");
             m_SeaLevel.Value = (int)WaterSystem.SeaLevel;
         }
 
@@ -927,6 +929,7 @@ namespace Tree_Controller.Tools
                     m_TreeControllerTool.SelectTreePrefab(prefab);
                     SelectPrefab(prefab);
                     validPrefabIDs.Add(id);
+                    HandleToolOrPrefabChange(m_ToolSystem.activeTool, prefab);
                 }
             }
 
@@ -1035,6 +1038,8 @@ namespace Tree_Controller.Tools
 
         private void HandleToolOrPrefabChange(ToolBaseSystem tool, PrefabBase prefab)
         {
+            bool prefabSubobjectsReview = false;
+
             if (prefab != null &&
                 (tool == m_TreeControllerTool || tool.toolID == "Line Tool" ||
                 (tool == m_ObjectToolSystem &&
@@ -1073,9 +1078,9 @@ namespace Tree_Controller.Tools
                     }
                 }
 
-                if (!isTree && ReviewPrefabSubobjects(prefabEntity))
+                if (!isTree)
                 {
-                    isTree = true;
+                    isTree = prefabSubobjectsReview = ReviewPrefabSubobjects(prefabEntity);
                 }
 
                 m_IsTree.Update(isTree);
@@ -1093,7 +1098,11 @@ namespace Tree_Controller.Tools
                 m_IsVegetation.Update(false);
             }
 
-            HandleShowStumps();
+            if (!prefabSubobjectsReview)
+            {
+                HandleShowStumps();
+            }
+
             HandleShowStumpsForAdvancedSetAndTriggerUpdate();
 
             m_ToolOrPrefabSwitchedRecently = true;
@@ -1132,7 +1141,6 @@ namespace Tree_Controller.Tools
         private bool ReviewPrefabSubobjects(Entity prefabEntity)
         {
             bool isTree = false;
-            m_ShowStump.Value = false;
 
             if (EntityManager.TryGetBuffer(prefabEntity, isReadOnly: true, out DynamicBuffer<Game.Prefabs.SubObject> subobjectsBuffer))
             {
@@ -1172,6 +1180,7 @@ namespace Tree_Controller.Tools
                 }
             }
 
+            m_ShowStump.Value = false;
             return isTree;
         }
 

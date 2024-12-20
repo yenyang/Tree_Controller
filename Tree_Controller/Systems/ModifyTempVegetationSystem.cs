@@ -80,6 +80,8 @@ namespace Tree_Controller.Systems
                 .WithAll<Updated, Applied, Game.Objects.Tree, PseudoRandomSeed, Owner>()
                 .WithNone<Deleted, Overridden, Temp>()
                 .Build();
+
+            Enabled = false;
         }
 
         /// <inheritdoc/>

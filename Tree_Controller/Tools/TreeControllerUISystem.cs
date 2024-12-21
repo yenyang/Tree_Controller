@@ -461,6 +461,29 @@ namespace Tree_Controller.Tools
             m_Log.Debug($"m_TerrainSystem.heightScaleOffset.x: {m_TerrainSystem.heightScaleOffset.x}");
             m_Log.Debug($"m_TerrainSystem.heightScaleOffset.y: {m_TerrainSystem.heightScaleOffset.y}");
             m_SeaLevel.Value = (int)WaterSystem.SeaLevel;
+
+            if (m_PrefabSetsLookup is null)
+            {
+                m_PrefabSetsLookup = new Dictionary<string, CustomSetRepository>()
+                {
+                    { "YYTC-wild-deciduous-trees", new CustomSetRepository(m_VanillaDeciduousPrefabIDs) },
+                    { "YYTC-evergreen-trees", new CustomSetRepository(m_VanillaEvergreenPrefabIDs) },
+                    { "YYTC-wild-bushes", new CustomSetRepository(m_VanillaWildBushPrefabs) },
+                    { "YYTC-custom-set-1", new CustomSetRepository(m_DefaultCustomSet1Prefabs) },
+                    { "YYTC-custom-set-2", new CustomSetRepository(m_DefaultCustomSet2Prefabs) },
+                    { "YYTC-custom-set-3", new CustomSetRepository(m_DefaultCustomSet3Prefabs) },
+                    { "YYTC-custom-set-4", new CustomSetRepository(m_DefaultCustomSet4Prefabs) },
+                    { "YYTC-custom-set-5", new CustomSetRepository(m_DefaultCustomSet5Prefabs) },
+                };
+
+                TryLoadCustomPrefabSet("YYTC-wild-deciduous-trees");
+                TryLoadCustomPrefabSet("YYTC-evergreen-trees");
+                TryLoadCustomPrefabSet("YYTC-wild-bushes");
+                for (int i = 1; i <= 5; i++)
+                {
+                    TryLoadCustomPrefabSet($"YYTC-custom-set-{i}");
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -482,25 +505,6 @@ namespace Tree_Controller.Tools
             System.IO.Directory.CreateDirectory(m_ContentFolder);
             m_ToolSystem.EventToolChanged += OnToolChanged;
             m_ToolSystem.EventPrefabChanged += OnPrefabChanged;
-            m_PrefabSetsLookup = new Dictionary<string, CustomSetRepository>()
-            {
-                { "YYTC-wild-deciduous-trees", new CustomSetRepository(m_VanillaDeciduousPrefabIDs) },
-                { "YYTC-evergreen-trees", new CustomSetRepository(m_VanillaEvergreenPrefabIDs) },
-                { "YYTC-wild-bushes", new CustomSetRepository(m_VanillaWildBushPrefabs) },
-                { "YYTC-custom-set-1", new CustomSetRepository(m_DefaultCustomSet1Prefabs) },
-                { "YYTC-custom-set-2", new CustomSetRepository(m_DefaultCustomSet2Prefabs) },
-                { "YYTC-custom-set-3", new CustomSetRepository(m_DefaultCustomSet3Prefabs) },
-                { "YYTC-custom-set-4", new CustomSetRepository(m_DefaultCustomSet4Prefabs) },
-                { "YYTC-custom-set-5", new CustomSetRepository(m_DefaultCustomSet5Prefabs) },
-            };
-
-            TryLoadCustomPrefabSet("YYTC-wild-deciduous-trees");
-            TryLoadCustomPrefabSet("YYTC-evergreen-trees");
-            TryLoadCustomPrefabSet("YYTC-wild-bushes");
-            for (int i = 1; i <= 5; i++)
-            {
-                TryLoadCustomPrefabSet($"YYTC-custom-set-{i}");
-            }
 
             // This section handles binding couples between C# and UI.
             AddBinding(m_ToolMode = new ValueBinding<int>(ModId, "ToolMode", (int)ToolMode.Plop));

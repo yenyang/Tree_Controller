@@ -77,8 +77,22 @@ namespace Tree_Controller.Domain
         /// </summary>
         public int MaximumElevation
         {
-            get { return m_MaximumElevation; }
-            set { m_MaximumElevation = value; }
+            get
+            {
+                return m_MaximumElevation;
+            }
+
+            set
+            {
+                if (value > 0)
+                {
+                    m_MaximumElevation = value;
+                }
+                else
+                {
+                    m_MaximumElevation = 4096;
+                }
+            }
         }
 
         /// <summary>

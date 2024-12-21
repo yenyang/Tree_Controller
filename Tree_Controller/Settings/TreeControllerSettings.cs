@@ -8,6 +8,7 @@ namespace Tree_Controller.Settings
     using Game.Input;
     using Game.Modding;
     using Game.Settings;
+    using Game.Simulation;
     using Game.UI;
     using Tree_Controller.Systems;
     using Unity.Entities;
@@ -136,10 +137,42 @@ namespace Tree_Controller.Settings
         public AgeSelectionOptions AgeSelectionTechnique { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to include stumps.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
+        public bool IncludeStumps { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to increase brush strength at 100%.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
+        public bool FasterFullBrushStrength { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to limit tree overlapping checks to trunks.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
+        [SettingsUISetter(typeof(TreeControllerSettings), nameof(ToggleLimitedTreeAnarchy))]
+        public bool LimitedTreeAnarchy { get; set; }
+
+        /// <summary>
         /// Gets or sets a enum that defines the type of Seasonal foliage color set preference.
         /// </summary>
         [SettingsUISection(General, Stable)]
         public ColorVariationSetYYTC ColorVariationSet { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to make vegetation costs free.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
+        [SettingsUISetter(typeof(TreeControllerSettings), nameof(ToggleVegetationCost))]
+        public bool FreeVegetation { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to constrain the brush.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
+        public bool ConstrainBrush { get; set; }
 
         /// <summary>
         /// Sets a value indicating whether the mod needs to safely remove components and reset models.
@@ -169,6 +202,11 @@ namespace Tree_Controller.Settings
                 ColorVariationSet = ColorVariationSetYYTC.Vanilla;
                 UseDeadModelDuringWinter = false;
                 AgeSelectionTechnique = AgeSelectionOptions.RandomWeighted;
+                FreeVegetation = false;
+                ConstrainBrush = true;
+                IncludeStumps = false;
+                FasterFullBrushStrength = false;
+                LimitedTreeAnarchy = false;
                 ApplyAndSave();
             }
         }
@@ -338,6 +376,11 @@ namespace Tree_Controller.Settings
             WindDirectionVariance = 25f;
             WindDirectionVariancePeriod = 15f;
             WindInterpolationDuration = 0.5f;
+            FreeVegetation = false;
+            IncludeStumps = false;
+            ConstrainBrush = true;
+            FasterFullBrushStrength = false;
+            LimitedTreeAnarchy = false;
         }
 
         /// <summary>
@@ -370,5 +413,39 @@ namespace Tree_Controller.Settings
         /// </summary>
         /// <returns>True if disabled, false if not.</returns>
         public bool WindDisabled() => SelectedWindOption == WindOptions.Disabled;
+
+        /// <summary>
+        /// Toggles the vegetation cost by calling public methods from FreeVegetationSystem.
+        /// </summary>
+        /// <param name="free">Should vegeation be free or regular cost.</param>
+        public void ToggleVegetationCost(bool free)
+        {
+            ModifyVegetationPrefabsSystem modifyVegeationPrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ModifyVegetationPrefabsSystem>();
+            if (free)
+            {
+                modifyVegeationPrefabSystem.SetVegetationCostsToZero();
+            }
+            else
+            {
+                modifyVegeationPrefabSystem.ResetVegetationCosts();
+            }
+        }
+
+        /// <summary>
+        /// Toggles the limited tree anarchy on or off.
+        /// </summary>
+        /// <param name="toggleState">should object geometry sizes be decreased or reset.</param>
+        public void ToggleLimitedTreeAnarchy(bool toggleState)
+        {
+            ModifyVegetationPrefabsSystem modifyVegeationPrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ModifyVegetationPrefabsSystem>();
+            if (toggleState)
+            {
+                modifyVegeationPrefabSystem.DecreaseObjectGeometrySize();
+            }
+            else
+            {
+                modifyVegeationPrefabSystem.ResetObjectGeometrySize();
+            }
+        }
     }
 }

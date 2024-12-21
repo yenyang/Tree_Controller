@@ -1,0 +1,20 @@
+.rowGroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.columnGroup {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;    
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    padding-bottom: 5rem;
+}
+
+.rightAligned {
+    width: 5rem !important;
+}

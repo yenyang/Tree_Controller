@@ -4,12 +4,14 @@
 
 namespace Tree_Controller.Patches
 {
+    using Colossal.UI.Binding;
     using Game.Prefabs;
     using Game.Tools;
     using Game.UI.InGame;
     using HarmonyLib;
     using System.Collections.Generic;
     using Tree_Controller.Tools;
+    using Tree_Controller.Utils;
     using Unity.Entities;
 
     /// <summary>
@@ -32,12 +34,9 @@ namespace Tree_Controller.Patches
             ToolSystem toolSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolSystem>();
             ObjectToolSystem objectToolSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ObjectToolSystem>();
             TreeControllerUISystem treeControllerUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<TreeControllerUISystem>();
-            if (toolSystem.activeTool != treeControllerTool && toolSystem.activeTool != objectToolSystem && toolSystem.activeTool.toolID != null && toolSystem.activeTool.toolID != "Line Tool")
-            {
-                return;
-            }
+            ToolbarUISystem toolbarUISystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ToolbarUISystem>();
 
-            if (toolSystem.activeTool == objectToolSystem && objectToolSystem.actualMode != ObjectToolSystem.Mode.Brush)
+            if (toolSystem.activeTool != treeControllerTool && toolSystem.activeTool != objectToolSystem && toolSystem.activeTool.toolID != null && toolSystem.activeTool.toolID != "Line Tool")
             {
                 return;
             }

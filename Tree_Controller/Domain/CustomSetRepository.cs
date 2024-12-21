@@ -433,6 +433,11 @@ namespace Tree_Controller.Domain
                 age = Tools.Ages.Hide;
             }
 
+            if (terrainSystem.heightScaleOffset.x <= 0)
+            {
+                return new AdvancedForestBrushEntry(prefabID, age, DefaultProbabilityWeight, 0, 4096);
+            }
+
             return new AdvancedForestBrushEntry(prefabID, age, DefaultProbabilityWeight, Mathf.FloorToInt(terrainSystem.heightScaleOffset.y), Mathf.CeilToInt(terrainSystem.heightScaleOffset.x));
         }
     }

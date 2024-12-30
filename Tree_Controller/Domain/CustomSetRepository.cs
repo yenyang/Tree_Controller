@@ -62,7 +62,10 @@ namespace Tree_Controller.Domain
                 List<string> names = new List<string>();
                 foreach (AdvancedForestBrushEntry entry in m_AdvancedForestBrushEntries)
                 {
-                    names.Add(entry.Name);
+                    if (!names.Contains(entry.Name))
+                    {
+                        names.Add(entry.Name);
+                    }
                 }
 
                 return names.ToArray();
@@ -127,7 +130,7 @@ namespace Tree_Controller.Domain
                 PrefabID prefabID = new PrefabID("StaticObjectPrefab", name);
                 if (prefabSystem.TryGetPrefab(prefabID, out PrefabBase prefab))
                 {
-                    if (prefab != null)
+                    if (prefab != null && !prefabs.Contains(prefab))
                     {
                         prefabs.Add(prefab);
                     }
@@ -147,7 +150,10 @@ namespace Tree_Controller.Domain
             foreach (string name in PrefabNames)
             {
                 PrefabID prefabID = new PrefabID("StaticObjectPrefab", name);
-                prefabIDs.Add(prefabID);
+                if (!prefabIDs.Contains(prefabID))
+                {
+                    prefabIDs.Add(prefabID);
+                }
             }
 
             return prefabIDs;
@@ -372,14 +378,7 @@ namespace Tree_Controller.Domain
             AdvancedForestBrushEntry[] newEntries = new AdvancedForestBrushEntry[customSet.Count];
             for (int i = 0; i < customSet.Count; i++)
             {
-                if (i < m_AdvancedForestBrushEntries.Length && names.Contains(m_AdvancedForestBrushEntries[i].Name))
-                {
-                    newEntries[i] = m_AdvancedForestBrushEntries[i];
-                }
-                else
-                {
-                    newEntries[i] = GetDefaultAdvancedForestBrushEntry(customSet[i].name);
-                }
+                newEntries[i] = FindEntryOrDefault(names[i]);
             }
 
             m_AdvancedForestBrushEntries = newEntries;
@@ -439,6 +438,19 @@ namespace Tree_Controller.Domain
             }
 
             return new AdvancedForestBrushEntry(prefabID, age, DefaultProbabilityWeight, Mathf.FloorToInt(terrainSystem.heightScaleOffset.y), Mathf.CeilToInt(terrainSystem.heightScaleOffset.x));
+        }
+
+        private AdvancedForestBrushEntry FindEntryOrDefault(string name)
+        {
+            for (int i = 0; i < m_AdvancedForestBrushEntries.Length; i++)
+            {
+                if (m_AdvancedForestBrushEntries[i].Name == name)
+                {
+                    return m_AdvancedForestBrushEntries[i];
+                }
+            }
+
+            return GetDefaultAdvancedForestBrushEntry(name);
         }
     }
 }

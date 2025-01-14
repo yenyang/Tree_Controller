@@ -1,4 +1,4 @@
-﻿# Patch v1.6.3
+﻿# Patch v1.6.4
 * Updated localization.
 * Updated tool actions.
 * Removed I18n Everywhere dependency.

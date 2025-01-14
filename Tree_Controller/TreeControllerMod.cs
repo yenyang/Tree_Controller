@@ -166,7 +166,7 @@ namespace Tree_Controller
                     }
                     else
                     {
-                        Logger.Info($"Did not find localization file {resourceName}");
+                        Logger.Debug($"Did not find localization file {resourceName}");
                     }
                 }
             }

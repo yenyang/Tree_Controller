@@ -28,16 +28,6 @@ namespace Tree_Controller
     public class TreeControllerMod : IMod
     {
         /// <summary>
-        /// Fake keybind action for apply.
-        /// </summary>
-        public const string ApplyMimicAction = "ApplyMimic";
-
-        /// <summary>
-        /// Fake keybind action for secondary apply.
-        /// </summary>
-        public const string SecondaryApplyMimicAction = "SecondaryApplyMimic";
-
-        /// <summary>
         /// An id used for bindings between UI and C#.
         /// </summary>
         public static readonly string Id = "Tree_Controller";

@@ -50,13 +50,7 @@ namespace Tree_Controller.Systems
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_UISystem = World.GetOrCreateSystemManaged<TreeControllerUISystem>();
-            m_ApplyAction = TreeControllerMod.Instance.Settings.GetAction(TreeControllerMod.ApplyMimicAction);
-            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) =>
-            {
-                Enabled = tool == m_ObjectToolSystem || (tool.toolID != null && tool.toolID == "Line Tool") || tool == m_NetToolSystem;
-                m_ApplyAction.shouldBeEnabled = Enabled;
-            };
-
+            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_ObjectToolSystem || (tool.toolID != null && tool.toolID == "Line Tool") || tool == m_NetToolSystem;
             m_Random = new Unity.Mathematics.Random((ushort)DateTime.Now.Millisecond);
             m_RandomSeed = (ushort)m_Random.NextInt(0, ushort.MaxValue);
 

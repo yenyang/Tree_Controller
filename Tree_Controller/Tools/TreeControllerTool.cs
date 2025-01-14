@@ -38,8 +38,6 @@ namespace Tree_Controller.Tools
     /// </summary>
     public partial class TreeControllerTool : ToolBaseSystem
     {
-        private ProxyAction m_ApplyAction;
-        private ProxyAction m_SecondaryApplyAction;
         private OverlayRenderSystem m_OverlayRenderSystem;
         private ToolOutputBarrier m_ToolOutputBarrier;
         private EntityQuery m_VegetationQuery;
@@ -402,25 +400,14 @@ namespace Tree_Controller.Tools
             });
 
             RequireForUpdate(m_VegetationQuery);
-
-            m_ApplyAction = TreeControllerMod.Instance.Settings.GetAction(TreeControllerMod.ApplyMimicAction);
-
-            m_SecondaryApplyAction = TreeControllerMod.Instance.Settings.GetAction(TreeControllerMod.SecondaryApplyMimicAction);
         }
 
         /// <inheritdoc/>
         protected override void OnStartRunning()
         {
-            m_ApplyAction.shouldBeEnabled = true;
-            m_SecondaryApplyAction.shouldBeEnabled = true;
-            m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(OnStartRunning)}");
-        }
-
-        /// <inheritdoc/>
-        protected override void OnStopRunning()
-        {
-            m_ApplyAction.shouldBeEnabled = false;
-            m_SecondaryApplyAction.shouldBeEnabled = false;
+            base.OnStartRunning();
+            applyAction.enabled = true;
+            secondaryApplyAction.enabled = true;
         }
 
         /// <inheritdoc/>
@@ -454,7 +441,7 @@ namespace Tree_Controller.Tools
                 m_OverlayRenderSystem.AddBufferWriter(inputDeps);
             }
 
-            if (m_ApplyAction.WasPressedThisFrame())
+            if (applyAction.WasPressedThisFrame())
             {
                 if (m_TreeControllerUISystem.SelectionMode == Selection.Single || m_TreeControllerUISystem.SelectionMode == Selection.BuildingOrNet)
                 {
@@ -509,7 +496,7 @@ namespace Tree_Controller.Tools
                     }
                 }
             }
-            else if (m_ApplyAction.IsPressed() && m_TreeControllerUISystem.SelectionMode == Selection.Radius && raycastFlag)
+            else if (applyAction.IsPressed() && m_TreeControllerUISystem.SelectionMode == Selection.Radius && raycastFlag)
             {
                 bool overridePrefab = !m_SelectedTreePrefabEntities.IsEmpty;
                 if (m_TreeControllerUISystem.AtLeastOneAgeSelected || overridePrefab)
@@ -536,7 +523,7 @@ namespace Tree_Controller.Tools
                     m_ToolOutputBarrier.AddJobHandleForProducer(inputDeps);
                 }
             }
-            else if (m_SecondaryApplyAction.WasPressedThisFrame() && m_TreeControllerUISystem.SelectionMode == Selection.Map && raycastFlag)
+            else if (secondaryApplyAction.WasPressedThisFrame() && m_TreeControllerUISystem.SelectionMode == Selection.Map && raycastFlag)
             {
                 bool overridePrefab = !m_SelectedTreePrefabEntities.IsEmpty;
                 if (m_TreeControllerUISystem.AtLeastOneAgeSelected || overridePrefab)
@@ -610,7 +597,7 @@ namespace Tree_Controller.Tools
                 }
             }
 
-            if (m_ApplyAction.WasReleasedThisFrame() && m_TreeControllerUISystem.SelectionMode == Selection.Radius)
+            if (applyAction.WasReleasedThisFrame() && m_TreeControllerUISystem.SelectionMode == Selection.Radius)
             {
                 applyMode = ApplyMode.Clear;
             }

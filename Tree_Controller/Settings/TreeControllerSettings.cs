@@ -19,8 +19,6 @@ namespace Tree_Controller.Settings
     [FileLocation("Mods_Yenyang_Tree_Controller")]
     [SettingsUITabOrder(General, WindTab)]
     [SettingsUIGroupOrder(Stable, DisableWinds, Override, Remove, Reset, Info)]
-    [SettingsUIMouseAction(TreeControllerMod.ApplyMimicAction, "TreeControllerTool")]
-    [SettingsUIMouseAction(TreeControllerMod.SecondaryApplyMimicAction, "TreeControllerTool")]
     public class TreeControllerSettings : ModSetting
     {
         /// <summary>
@@ -231,22 +229,6 @@ namespace Tree_Controller.Settings
         /// </summary>
         [SettingsUISection(General, Info)]
         public string Version => TreeControllerMod.Instance.Version;
-
-        /// <summary>
-        /// Gets or sets hidden keybinding for apply action.
-        /// </summary>
-        [SettingsUIMouseBinding(TreeControllerMod.ApplyMimicAction)]
-        [SettingsUIBindingMimic(InputManager.kToolMap, "Apply")]
-        [SettingsUIHidden]
-        public ProxyBinding ApplyMimic { get; set; }
-
-        /// <summary>
-        /// Gets or sets hidden keybinding for secondary apply action.
-        /// </summary>
-        [SettingsUIMouseBinding(TreeControllerMod.SecondaryApplyMimicAction)]
-        [SettingsUIBindingMimic(InputManager.kToolMap, "Secondary Apply")]
-        [SettingsUIHidden]
-        public ProxyBinding SecondaryApplyMimic { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether wind is enabled.

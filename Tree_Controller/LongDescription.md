@@ -5,8 +5,6 @@ Video Demo available on YouTube.
 # Dependencies
 Unified Icon Library
 
-I18n Everywhere (Soft dependency required for loading languages other than English.)
-
 ## Donations
 If you want to say thank you with a donation you can do so on Paypal.
 
@@ -15,7 +13,7 @@ I am looking for volunteers to help translate the mod into the official language
 Fully or Partially Supported Languages: German, Spanish, Italian, Brazilian Portuguese, Chinese Simplified, Polish, French, Japanese, Korean, Russian, Chinese Traditional and European Portuguese.
 
 ## Supplemental Mods
-European Portuguese Localization (Only needed for European Portuguese Translations)
+European Portuguese Localization and I18n Everywhere (Only needed for European Portuguese Translations)
 
 # Detailed Description:
 Includes a tree controller tool that lets you change the age or types of existing trees and/or bushes on the following selections:

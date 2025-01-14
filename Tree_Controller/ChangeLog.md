@@ -1,4 +1,5 @@
-﻿# Patch v1.6.2
-* Updated localization
-* Fix overwriting sets sometimes accidently produces set with duplicate vegetation prefabs.
-* Fix exception during serialization with custom sets that accidently have duplicates.
+﻿# Patch v1.6.4
+* Updated localization.
+* Updated tool actions.
+* Removed I18n Everywhere dependency.
+* Translations for officially supported languages are handled internally with embedded resource files.

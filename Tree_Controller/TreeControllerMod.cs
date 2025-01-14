@@ -12,6 +12,7 @@ namespace Tree_Controller
     using System.Reflection;
     using Colossal;
     using Colossal.IO.AssetDatabase;
+    using Colossal.Localization;
     using Colossal.Logging;
     using Game;
     using Game.Modding;
@@ -27,16 +28,6 @@ namespace Tree_Controller
     /// </summary>
     public class TreeControllerMod : IMod
     {
-        /// <summary>
-        /// Fake keybind action for apply.
-        /// </summary>
-        public const string ApplyMimicAction = "ApplyMimic";
-
-        /// <summary>
-        /// Fake keybind action for secondary apply.
-        /// </summary>
-        public const string SecondaryApplyMimicAction = "SecondaryApplyMimic";
-
         /// <summary>
         /// An id used for bindings between UI and C#.
         /// </summary>
@@ -90,7 +81,9 @@ namespace Tree_Controller
             AssetDatabase.global.LoadSettings(nameof(TreeControllerMod), Settings, new TreeControllerSettings(this));
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} finished loading settings.");
             GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(Settings));
-
+            Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} loaded localization for en-US.");
+            LoadNonEnglishLocalizations();
+            Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} loaded localization for other languages.");
 #if DEBUG
             Logger.Info($"{nameof(TreeControllerMod)}.{nameof(OnLoad)} Exporting localization");
             var localeDict = new LocaleEN(Settings).ReadEntries(new List<IDictionaryEntryError>(), new Dictionary<string, int>()).ToDictionary(pair => pair.Key, pair => pair.Value);
@@ -104,8 +97,6 @@ namespace Tree_Controller
                 Logger.Error(ex.ToString());
             }
 #endif
-
-            Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} loaded localization for en-US.");
             Logger.Info($"{nameof(TreeControllerMod)}.{nameof(OnLoad)} Injecting Harmony Patches.");
             m_Harmony = new Harmony("Mods_Yenyang_Tree_Controller");
             m_Harmony.PatchAll();
@@ -139,5 +130,50 @@ namespace Tree_Controller
             }
         }
 
+        private void LoadNonEnglishLocalizations()
+        {
+            Assembly thisAssembly = Assembly.GetExecutingAssembly();
+            string[] resourceNames = thisAssembly.GetManifestResourceNames();
+
+            try
+            {
+                Logger.Debug($"Reading localizations");
+
+                foreach (string localeID in GameManager.instance.localizationManager.GetSupportedLocales())
+                {
+                    string resourceName = $"{thisAssembly.GetName().Name}.l10n.{localeID}.json";
+                    if (resourceNames.Contains(resourceName))
+                    {
+                        Logger.Debug($"Found localization file {resourceName}");
+                        try
+                        {
+                            Logger.Debug($"Reading embedded translation file {resourceName}");
+
+                            // Read embedded file.
+                            using StreamReader reader = new (thisAssembly.GetManifestResourceStream(resourceName));
+                            {
+                                string entireFile = reader.ReadToEnd();
+                                Colossal.Json.Variant varient = Colossal.Json.JSON.Load(entireFile);
+                                Dictionary<string, string> translations = varient.Make<Dictionary<string, string>>();
+                                GameManager.instance.localizationManager.AddSource(localeID, new MemorySource(translations));
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            // Don't let a single failure stop us.
+                            Logger.Error(e, $"Exception reading localization from embedded file {resourceName}");
+                        }
+                    }
+                    else
+                    {
+                        Logger.Debug($"Did not find localization file {resourceName}");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "Exception reading embedded settings localization files");
+            }
+        }
     }
 }

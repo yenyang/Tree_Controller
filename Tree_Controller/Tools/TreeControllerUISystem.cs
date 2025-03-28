@@ -21,6 +21,7 @@ namespace Tree_Controller.Tools
     using Game.SceneFlow;
     using Game.Simulation;
     using Game.Tools;
+    using Game.UI;
     using Game.UI.InGame;
     using Tree_Controller.Domain;
     using Tree_Controller.Extensions;
@@ -146,6 +147,7 @@ namespace Tree_Controller.Tools
         private bool m_RecentlySelectedPrefabSet = false;
         private bool m_ToolOrPrefabSwitchedRecently = false;
         private bool m_MultiplePrefabsSelected = false;
+        private ImageSystem m_ImageSystem;
         private ValueBindingHelper<AdvancedForestBrushEntry[]> m_AdvancedForestBrushEntries;
         private int m_FrameCount = 0;
         [CanBeNull]
@@ -441,7 +443,7 @@ namespace Tree_Controller.Tools
             m_UiView.ExecuteScript("if (yyTreeController == null) var yyTreeController = {};");
 
             // This script searches through all img and adds selected if the src of that image contains the name of the prefab.
-            m_UiView.ExecuteScript($"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{prefab.name}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.add(\"selected\");  }} }} ");
+            m_UiView.ExecuteScript($"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{ImageSystem.GetThumbnail(prefab)}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.add(\"selected\"); yyTreeController.tagElements[yyTreeController.i].parentNode.parentNode.classList.add(\"selected\");  }} }} ");
         }
 
         /// <inheritdoc/>
@@ -497,6 +499,7 @@ namespace Tree_Controller.Tools
             m_WaterSystem = World.GetOrCreateSystemManaged<WaterSystem>();
             m_TreeObjectDefinitionSystem = World.GetOrCreateSystemManaged<TreeObjectDefinitionSystem>();
             m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
+            m_ImageSystem = World.GetOrCreateSystemManaged<ImageSystem>();
             m_UiView = GameManager.instance.userInterface.view.View;
             m_ToolbarUISystem = World.GetOrCreateSystemManaged<ToolbarUISystem>();
             m_ThemeEntities = new List<Entity>();
@@ -508,7 +511,7 @@ namespace Tree_Controller.Tools
 
             // This section handles binding couples between C# and UI.
             AddBinding(m_ToolMode = new ValueBinding<int>(ModId, "ToolMode", (int)ToolMode.Plop));
-            AddBinding(m_SelectedAges = new ValueBinding<int>(ModId, "SelectedAges", (int)Ages.Adult));
+            AddBinding(m_SelectedAges = new ValueBinding<int>(ModId, "SelectedAges", (int)TreeControllerMod.Instance.Settings.PreviousAgeSelection));
             SetObjectToolAgeMask(Ages.Adult);
             AddBinding(m_SelectionMode = new ValueBinding<int>(ModId, "SelectionMode", (int)Selection.Radius));
             AddBinding(m_IsVegetation = new ValueBinding<bool>(ModId, "IsVegetation", false));
@@ -557,6 +560,7 @@ namespace Tree_Controller.Tools
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
+            base.OnUpdate();
             List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
 
             if (m_TrySetPrefabNextFrame != null)
@@ -683,7 +687,6 @@ namespace Tree_Controller.Tools
                 m_SeaLevel.Value = (int)WaterSystem.SeaLevel;
             }
 
-            base.OnUpdate();
             return;
         }
 
@@ -767,6 +770,8 @@ namespace Tree_Controller.Tools
             m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangeSelectedAge)} selectedAges = {selectedAges}");
             m_SelectedAges.Update((int)selectedAges);
             SetObjectToolAgeMask(selectedAges);
+            TreeControllerMod.Instance.Settings.PreviousAgeSelection = selectedAges;
+            TreeControllerMod.Instance.Settings.ApplyAndSave();
         }
 
         private void SetObjectToolAgeMask(Ages ages)

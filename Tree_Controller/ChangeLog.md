@@ -1,5 +1,5 @@
-﻿# Patch v1.6.4
+﻿# Patch v1.6.5
 * Updated localization.
-* Updated tool actions.
-* Removed I18n Everywhere dependency.
-* Translations for officially supported languages are handled internally with embedded resource files.
+* Fixed minor incompatibility with Asset Icon Library v3.1 which made multiple vegetation prefabs selected not have selected highlight.
+* Fixed Add object menu prefabs are not highlighted when selecting multiple vegetation prefabs.
+* Added hidden setting for previously selected tree age.

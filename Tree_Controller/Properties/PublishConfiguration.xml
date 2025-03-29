@@ -118,8 +118,9 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <ChangeLog># Patch v1.6.5
 * Updated localization.
 * Fixed minor incompatibility with Asset Icon Library v3.1 which made multiple vegetation prefabs selected not have selected highlight.
-* Fixed Add object menu prefabs are not highlighted when selecting multiple vegetation prefabs.
-* Added hidden setting for previously selected tree age.</ChangeLog>
+* Improved use of Add object menu for selecting multiple vegetation prefabs.
+* Added hidden setting for previously selected tree age.
+* Fix vanilla age buttons being shown sometimes.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

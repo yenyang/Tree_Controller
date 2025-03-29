@@ -582,7 +582,10 @@ namespace Tree_Controller.Tools
                 (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush
                 || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line
                 || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create
-                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve))) && m_UiView != null)
+                || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve))) &&
+                m_UiView != null &&
+                m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) &&
+                EntityManager.HasComponent<Vegetation>(prefabEntity))
             {
                 // This script creates the Tree Controller object if it doesn't exist.
                 m_UiView.ExecuteScript("if (yyTreeController == null) var yyTreeController = {};");
@@ -596,7 +599,6 @@ namespace Tree_Controller.Tools
                     && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create
                     && m_TreeControllerTool.GetSelectedPrefabs().Count > 1
                     && m_ToolSystem.activePrefab != null
-                    && m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity)
                     && EntityManager.HasComponent<TreeData>(prefabEntity))
                 {
                     foreach (PrefabBase prefabBase in selectedPrefabs)
@@ -663,7 +665,6 @@ namespace Tree_Controller.Tools
 
             if (m_ToolOrPrefabSwitchedRecently)
             {
-                SetAgeBinding();
                 if (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve)
                 {
                     HandleDistanceScale();
@@ -849,16 +850,6 @@ namespace Tree_Controller.Tools
             m_ToolSystem.activeTool = m_ObjectToolSystem;
         }
 
-        private void SetAgeBinding()
-        {
-            var ageMaskBindingVar = m_ToolbarUISystem.GetMemberValue("m_AgeMaskBinding");
-            if (ageMaskBindingVar is ValueBinding<int>)
-            {
-                ValueBinding<int> ageMaskBinding = ageMaskBindingVar as ValueBinding<int>;
-                ageMaskBinding.Update(0);
-            }
-        }
-
         private void HandleDistanceScale()
         {
             if (!m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.GetPrefab(), out Entity prefabEntity))
@@ -960,27 +951,6 @@ namespace Tree_Controller.Tools
             }
         }
 
-        private void UnselectPrefabs()
-        {
-            NativeList<Entity> m_VegetationPrefabEntities = m_VegetationQuery.ToEntityListAsync(Allocator.Temp, out JobHandle jobHandle);
-            jobHandle.Complete();
-
-            foreach (Entity e in m_VegetationPrefabEntities)
-            {
-                if (m_PrefabSystem.TryGetPrefab(e, out PrefabBase prefab))
-                {
-                    // This script creates the Tree Controller object if it doesn't exist.
-                    m_UiView.ExecuteScript("if (yyTreeController == null) var yyTreeController = {};");
-
-                    // This script searches through all img and adds removes selected if the src of that image contains the name of the prefab and is not the active prefab.
-                    m_UiView.ExecuteScript($"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{ImageSystem.GetThumbnail(prefab)}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.remove(\"selected\"); yyTreeController.tagElements[yyTreeController.i].parentNode.parentNode.classList.remove(\"selected\");   }} }} ");
-                }
-            }
-
-            m_VegetationPrefabEntities.Dispose();
-            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(UnselectPrefabs)}");
-        }
-
         /// <summary>
         /// Increases the radius.
         /// </summary>
@@ -1048,7 +1018,7 @@ namespace Tree_Controller.Tools
         private void HandleToolOrPrefabChange(ToolBaseSystem tool, PrefabBase prefab)
         {
             bool prefabSubobjectsReview = false;
-
+            m_ObjectToolSystem.SetMemberValue("allowAge", false);
             if (prefab != null &&
                 (tool == m_TreeControllerTool || tool.toolID == "Line Tool" ||
                 (tool == m_ObjectToolSystem &&
@@ -1061,6 +1031,7 @@ namespace Tree_Controller.Tools
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(HandleToolOrPrefabChange)} ");
                 Enabled = true;
+                bool wasVegetation = m_IsVegetation.value;
                 m_IsVegetation.Update(EntityManager.HasComponent<Vegetation>(prefabEntity));
                 List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
                 if (m_IsVegetation.value && selectedPrefabs.Count == 0)
@@ -1068,6 +1039,10 @@ namespace Tree_Controller.Tools
                     m_TreeControllerTool.SelectTreePrefab(prefab);
                     selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
                     m_UpdateSelectionSet = true;
+                }
+                else if (!m_IsVegetation.value && wasVegetation)
+                {
+                    UnselectPrefabs();
                 }
 
                 bool isTree = false;
@@ -1103,6 +1078,11 @@ namespace Tree_Controller.Tools
             else
             {
                 Enabled = false;
+                if (m_IsVegetation.value)
+                {
+                    UnselectPrefabs();
+                }
+
                 m_IsTree.Update(false);
                 m_IsVegetation.Update(false);
             }
@@ -1116,6 +1096,31 @@ namespace Tree_Controller.Tools
 
             m_ToolOrPrefabSwitchedRecently = true;
         }
+
+        /// <summary>
+        /// Clears all selected vegetation prefabs.
+        /// </summary>
+        private void UnselectPrefabs()
+        {
+            NativeList<Entity> m_VegetationPrefabEntities = m_VegetationQuery.ToEntityListAsync(Allocator.Temp, out JobHandle jobHandle);
+            jobHandle.Complete();
+
+            foreach (Entity e in m_VegetationPrefabEntities)
+            {
+                if (m_PrefabSystem.TryGetPrefab(e, out PrefabBase prefab))
+                {
+                    // This script creates the Tree Controller object if it doesn't exist.
+                    m_UiView.ExecuteScript("if (yyTreeController == null) var yyTreeController = {};");
+
+                    // This script searches through all img and adds removes selected if the src of that image contains the name of the prefab and is not the active prefab.
+                    m_UiView.ExecuteScript($"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{ImageSystem.GetThumbnail(prefab)}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.remove(\"selected\"); yyTreeController.tagElements[yyTreeController.i].parentNode.parentNode.classList.remove(\"selected\");   }} }} ");
+                }
+            }
+
+            m_VegetationPrefabEntities.Dispose();
+            m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(UnselectPrefabs)}");
+        }
+
 
         private void HandleToolModeBinding()
         {

@@ -11,6 +11,7 @@ namespace Tree_Controller.Settings
     using Game.Simulation;
     using Game.UI;
     using Tree_Controller.Systems;
+    using Tree_Controller.Tools;
     using Unity.Entities;
 
     /// <summary>
@@ -171,6 +172,12 @@ namespace Tree_Controller.Settings
         /// </summary>
         [SettingsUISection(General, Stable)]
         public bool ConstrainBrush { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating the previuos age selection.
+        /// </summary>
+        [SettingsUIHidden]
+        public Ages PreviousAgeSelection { get; set; }
 
         /// <summary>
         /// Sets a value indicating whether the mod needs to safely remove components and reset models.
@@ -363,6 +370,7 @@ namespace Tree_Controller.Settings
             ConstrainBrush = true;
             FasterFullBrushStrength = false;
             LimitedTreeAnarchy = false;
+            PreviousAgeSelection = Ages.Adult;
         }
 
         /// <summary>

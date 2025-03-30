@@ -109,18 +109,14 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/tree-controller.1644992/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.6.5" />
+  <ModVersion Value="1.6.6" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.2.*" />
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.12" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Patch v1.6.5
-* Updated localization.
-* Fixed minor incompatibility with Asset Icon Library v3.1 which made multiple vegetation prefabs selected not have selected highlight.
-* Fix vanilla age buttons being shown sometimes.
-* Added hidden setting for previously selected tree age so when you open game selected ages match what they were when you closed the game.
-* Improved use of Add object menu for selecting multiple vegetation prefabs. Issues still present.</ChangeLog>
+  <ChangeLog># Patch v1.6.6
+* Fix trying to get prefab entity with null prefab errors that caused soft lock when switching between tree age and tree type tools.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

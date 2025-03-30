@@ -584,6 +584,7 @@ namespace Tree_Controller.Tools
                 || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create
                 || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve))) &&
                 m_UiView != null &&
+                m_ToolSystem.activePrefab != null &&
                 m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out Entity prefabEntity) &&
                 EntityManager.HasComponent<Vegetation>(prefabEntity))
             {

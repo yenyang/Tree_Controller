@@ -841,7 +841,7 @@ namespace Tree_Controller.Tools
 
 
         /// <summary>
-        /// activates tree controller tool.
+        /// activates object tool system brush mode.
         /// </summary>
         private void ActivateBrushTrees()
         {

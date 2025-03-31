@@ -1,3 +1,4 @@
-﻿# Patch v1.6.6
-* Fix trying to get prefab entity with null prefab errors that caused soft lock when switching between tree age and tree type tools.
+﻿# Patch v1.6.7
+* Fix street tree placement always sapling tree. Now back to vanilla Sapling - Elderly. Dead and Stump still not supported.
+* Updated Localization
 

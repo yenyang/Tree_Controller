@@ -129,6 +129,7 @@ namespace Tree_Controller.Systems
             if (!m_TempOwnedTreeQuery.IsEmptyIgnoreFilter)
             {
                 NativeArray<Entity> entities = m_TempOwnedTreeQuery.ToEntityArray(Allocator.Temp);
+                bool placingStreetTrees = false;
                 foreach (Entity entity in entities)
                 {
                     if (!EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)
@@ -149,11 +150,25 @@ namespace Tree_Controller.Systems
                     if (!EntityManager.TryGetComponent(entity, out Owner owner)
                         || !EntityManager.HasComponent<Edge>(owner.m_Owner))
                     {
-                        Unity.Mathematics.Random random = new (pseudoRandomSeed.m_Seed);
+                        Unity.Mathematics.Random random = new(pseudoRandomSeed.m_Seed);
                         TreeState nextTreeState = m_UISystem.GetNextTreeState(ref random, includeStump);
                         tree.m_State = nextTreeState;
                         EntityManager.SetComponentData(entity, tree);
                     }
+                    else if (EntityManager.TryGetComponent(entity, out Owner owner2) ||
+                            !EntityManager.HasComponent<Edge>(owner2.m_Owner))
+                    {
+                        placingStreetTrees = true;
+                    }
+                }
+
+                if (placingStreetTrees && !m_ObjectToolSystem.allowAge)
+                {
+                    m_ObjectToolSystem.SetMemberValue("allowAge", true);
+                }
+                else if (!placingStreetTrees && m_ObjectToolSystem.allowAge)
+                {
+                    m_ObjectToolSystem.SetMemberValue("allowAge", false);
                 }
             }
 

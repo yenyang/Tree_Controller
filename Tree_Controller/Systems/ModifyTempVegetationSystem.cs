@@ -155,8 +155,8 @@ namespace Tree_Controller.Systems
                         tree.m_State = nextTreeState;
                         EntityManager.SetComponentData(entity, tree);
                     }
-                    else if (EntityManager.TryGetComponent(entity, out Owner owner2) ||
-                            !EntityManager.HasComponent<Edge>(owner2.m_Owner))
+                    else if (EntityManager.TryGetComponent(entity, out Owner owner2) &&
+                             EntityManager.HasComponent<Edge>(owner2.m_Owner))
                     {
                         placingStreetTrees = true;
                     }

@@ -319,7 +319,7 @@ namespace Tree_Controller.Systems
                         }
 
                         if ((TreeControllerMod.Instance.Settings.UseDeadModelDuringWinter && m_Season == FoliageUtils.Season.Spring && meshSeasonIdentifier.m_Season == FoliageUtils.Season.Winter && TreeControllerMod.Instance.Settings.ColorVariationSet != TreeControllerSettings.ColorVariationSetYYTC.Autumn)
-                            || (TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Spring && (season == FoliageUtils.Season.Autumn || season == FoliageUtils.Season.Winter))
+                            || (TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Spring)
                             || ((TreeControllerMod.Instance.Settings.ColorVariationSet == TreeControllerSettings.ColorVariationSetYYTC.Yenyangs && !EntityManager.HasComponent<TreeData>(e) && !m_YenyangsColorSets.ContainsKey(meshSeasonIdentifier)) && (season == FoliageUtils.Season.Autumn || season == FoliageUtils.Season.Winter)))
                         {
                             if (m_SpringColorSets.ContainsKey(meshSeasonIdentifier))

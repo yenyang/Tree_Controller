@@ -33,7 +33,7 @@ namespace Tree_Controller.Utils
             /// <summary>
             /// Spring time.
             /// </summary>
-            Spring,
+            Spring = 1,
 
             /// <summary>
             /// Summer time.
@@ -99,7 +99,7 @@ namespace Tree_Controller.Utils
         public static bool TryGetSeasonFromColorGroupID(ColorGroupID colorGroupID, out Season season)
         {
             season = Season.Spring;
-            for (int i = 0; i <= 3; i++)
+            for (int i = (int)Season.Spring; i <= (int)Season.Winter; i++)
             {
                 if (colorGroupID == new ColorGroupID(i))
                 {

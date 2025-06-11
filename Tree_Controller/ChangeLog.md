@@ -1,4 +1,5 @@
-﻿# Patch v1.6.7
-* Fix street tree placement always sapling tree. Now back to vanilla Sapling - Elderly. Dead and Stump still not supported.
-* Updated Localization
+﻿# Patch v1.6.8
+* Adjust group IDs to game update v1.3.3f1.
+* Small fix to spring color variation set.
+* Updated Localization.
 

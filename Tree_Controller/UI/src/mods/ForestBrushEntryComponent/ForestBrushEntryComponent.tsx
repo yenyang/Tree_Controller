@@ -23,7 +23,7 @@ const SeaLevel$ =            bindValue<number> (mod.id, 'SeaLevel');
 const PrefabSet$ =           bindValue<string>(mod.id, 'PrefabSet');
 
 const descriptionToolTipStyle = getModule("game-ui/common/tooltip/description-tooltip/description-tooltip.module.scss", "classes");
-
+const assetItem = getModule("game-ui/game/components/item-grid/item-grid.module.scss", "classes");
 const SliderField : any = getModule("game-ui/editor/widgets/fields/number-slider-field.tsx", "FloatSliderField");
    
 function changeValue(event:string, name:string, value : number) {
@@ -55,8 +55,8 @@ export const ForestBrushEntryComponent = (props: { entry : AdvancedForestBrushEn
             <div className={classNames(styles.columnGroup, styles.centered, styles.PrefabThumbnailWidth)}>
                 <div className={classNames(styles.rowGroup, styles.centered)}>
                     <Tooltip tooltip={translate("Assets.DESCRIPTION["+props.entry.Name+"]")}>
-                        <div className={classNames(VanillaComponentResolver.instance.assetGridTheme.item)}>
-                            <img src={props.entry.Src} className={classNames(VanillaComponentResolver.instance.assetGridTheme.thumbnail)}></img>
+                        <div className={classNames(assetItem.item)}>
+                            <img src={props.entry.Src} className={classNames(assetItem.thumbnail)}></img>
                         </div>
                     </Tooltip>
                 </div>

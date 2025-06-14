@@ -115,10 +115,8 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.12" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Patch v1.6.8
-* Adjust group IDs to game update v1.3.3f1.
-* Small fix to spring color variation set.
-* Updated Localization.</ChangeLog>
+  <ChangeLog># Patch v1.6.9
+* Fix UI Crash when selecting Advanced Set Control Panel.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

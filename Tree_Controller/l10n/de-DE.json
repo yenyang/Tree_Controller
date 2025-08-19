@@ -107,7 +107,7 @@
   "YY_TREE_CONTROLLER[change]": "Ändern",
   "Tree_Controller.TOOLTIP_TITLE[Stump]": "Baumstumpf",
   "Tree_Controller.TOOLTIP_TITLE[AdvancedSetControlPanel]": "Erweitertes Set Control Panel",
-  "Tree_Controller.TOOLTIP_DESCRIPTION[AdvancedSetControlPanel]": "Toggles showing or hiding the Advanced Set Control Panel. This panel allows for setting Ages, Probability Weights, Minimum Elevations and Maximum Elevations for each individual tree or plant in a Set. Ages and Probability weights work while placing single objects, brushing multiple objects, using line tool mode, curve tool mode, and Line Tool. Minimum and Maximum Elevations only work while brushing multiple objects. The temporary Set is not saved. Changes to any other Set are saved.",
+  "Tree_Controller.TOOLTIP_DESCRIPTION[AdvancedSetControlPanel]": "Schaltet die Anzeige des erweiterten Einstellungsfensters ein oder aus. In diesem Fenster können Sie Alter, Wahrscheinlichkeitsgewichtungen, minimale und maximale Höhen für jeden einzelnen Baum oder jede einzelne Pflanze in einem Set festlegen. Alter und Wahrscheinlichkeitsgewichtungen wirken beim Platzieren einzelner Objekte, beim Auswählen mehrerer Objekte, beim Verwenden des Linienwerkzeugmodus, des Kurvenwerkzeugmodus und des Linienwerkzeugs. Minimale und maximale Höhen wirken nur beim Auswählen mehrerer Objekte. Das temporäre Set wird nicht gespeichert. Änderungen an anderen Sets werden gespeichert.",
   "Tree_Controller.TOOLTIP_TITLE[TemporarySet]": "Temporäres Set",
   "Tree_Controller.TOOLTIP_DESCRIPTION[TemporarySet]": "Ein erweitertes Set das nicht gespeichert wird. Alle Änderungen gehen verloren, sobald das temporäre Set nicht mehr verwendet wird.",
   "Tree_Controller.TOOLTIP_TITLE[RemoveAsset]": "Asset entfernen",

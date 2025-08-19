@@ -116,7 +116,8 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.12" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
   <ChangeLog># Patch v1.6.10
-* Revert shift in ColorGroup IDs to fix Yenyang's color variation set.</ChangeLog>
+* Revert shift in ColorGroup IDs to fix Yenyang's color variation set.
+* Update Localization.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

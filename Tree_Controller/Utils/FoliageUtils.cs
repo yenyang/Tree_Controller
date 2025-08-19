@@ -33,7 +33,7 @@ namespace Tree_Controller.Utils
             /// <summary>
             /// Spring time.
             /// </summary>
-            Spring = 1,
+            Spring = 0,
 
             /// <summary>
             /// Summer time.

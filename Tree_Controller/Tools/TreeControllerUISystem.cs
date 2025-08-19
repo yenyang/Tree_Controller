@@ -462,7 +462,7 @@ namespace Tree_Controller.Tools
             m_MaxElevation.Value = Mathf.CeilToInt(m_TerrainSystem.heightScaleOffset.x);
             m_Log.Debug($"m_TerrainSystem.heightScaleOffset.x: {m_TerrainSystem.heightScaleOffset.x}");
             m_Log.Debug($"m_TerrainSystem.heightScaleOffset.y: {m_TerrainSystem.heightScaleOffset.y}");
-            m_SeaLevel.Value = (int)WaterSystem.SeaLevel;
+            m_SeaLevel.Value = (int)m_WaterSystem.SeaLevel;
 
             if (m_PrefabSetsLookup is null)
             {
@@ -684,9 +684,9 @@ namespace Tree_Controller.Tools
                 m_ToolOrPrefabSwitchedRecently = false;
             }
 
-            if (m_SeaLevel.Value != (int)WaterSystem.SeaLevel)
+            if (m_SeaLevel.Value != (int)m_WaterSystem.SeaLevel)
             {
-                m_SeaLevel.Value = (int)WaterSystem.SeaLevel;
+                m_SeaLevel.Value = (int)m_WaterSystem.SeaLevel;
             }
 
             return;

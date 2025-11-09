@@ -406,8 +406,8 @@ namespace Tree_Controller.Tools
         protected override void OnStartRunning()
         {
             base.OnStartRunning();
-            applyAction.enabled = true;
-            secondaryApplyAction.enabled = true;
+            applyAction.shouldBeEnabled = true;
+            secondaryApplyAction.shouldBeEnabled = true;
         }
 
         /// <inheritdoc/>

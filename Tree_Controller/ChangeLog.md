@@ -1,3 +1,2 @@
-﻿# Patch v1.6.10
-* Revert shift in ColorGroup IDs to fix Yenyang's color variation set.
-* Update Localization.
+﻿# Patch v1.6.11
+* Minor compatibility fixes for game version 1.3.6f1.

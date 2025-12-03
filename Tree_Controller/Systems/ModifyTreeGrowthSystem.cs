@@ -109,7 +109,7 @@ namespace Tree_Controller.Systems
             ClimatePrefab climatePrefab = m_PrefabSystem.GetPrefab<ClimatePrefab>(m_ClimateSystem.currentClimate);
 
             FoliageUtils.Season lastSeason = m_Season;
-            m_Season = FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.m_NameID);
+            m_Season = FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.name);
 
             if (!m_LumberQuery.IsEmptyIgnoreFilter)
             {

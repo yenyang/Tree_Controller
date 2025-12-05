@@ -118,7 +118,7 @@ namespace Tree_Controller.Systems
                 m_EntityType = SystemAPI.GetEntityTypeHandle(),
                 m_DeciduousTreeDataType = SystemAPI.GetComponentTypeHandle<DeciduousData>(),
                 buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
-                m_Season = FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.m_NameID),
+                m_Season = FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.name),
                 m_LumberLookup = SystemAPI.GetComponentLookup<Lumber>(),
             };
             JobHandle jobHandle = JobChunkExtensions.ScheduleParallel(treeSeasonChangeJob, m_DeciduousTreeQuery, Dependency);

@@ -123,6 +123,6 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <ExternalLink Type="github" Url="https://github.com/yenyang/Tree_Controller" />
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=YoyMliyWJQU" />
   <ExternalLink Type="crowdin" Url="https://crowdin.com/project/csl2-mod-water-features" />
-	<!-- Supported values Public, Private, Unlisted -->
-	<AccessLevel Value="Public" />
+  <!-- Supported values Public, Private, Unlisted -->
+  <AccessLevel Value="Public" />
 </Publish>

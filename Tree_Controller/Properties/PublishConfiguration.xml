@@ -109,14 +109,14 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/tree-controller.1644992/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.6.12" />
+  <ModVersion Value="1.6.13" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.5.*" />
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Patch v1.6.12
-* Minor compatibility fixes for game version 1.5.2f1.</ChangeLog>
+  <ChangeLog># Patch v1.6.13
+* Fix Incorrect Season IDs resulting in log spam and occasional error pop-up. Also fixes whatever functionality depended on that method.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

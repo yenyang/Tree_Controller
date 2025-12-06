@@ -1,2 +1,2 @@
-﻿# Patch v1.6.12
-* Minor compatibility fixes for game version 1.5.2f1.
+﻿# Patch v1.6.13
+* Fix Incorrect Season IDs resulting in log spam and occasional error pop-up. Also fixes whatever functionality depended on that method.

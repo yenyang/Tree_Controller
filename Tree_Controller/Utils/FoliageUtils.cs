@@ -19,10 +19,10 @@ namespace Tree_Controller.Utils
         /// </summary>
         private static readonly Dictionary<string, Season> SeasonDictionary = new ()
         {
-                { "Climate.SEASON[Spring]", Season.Spring },
-                { "Climate.SEASON[Summer]", Season.Summer },
-                { "Climate.SEASON[Autumn]", Season.Autumn },
-                { "Climate.SEASON[Winter]", Season.Winter },
+                { "SeasonSpring", Season.Spring },
+                { "SeasonSummer", Season.Summer },
+                { "SeasonAutumn", Season.Autumn },
+                { "SeasonWinter", Season.Winter },
         };
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Tree_Controller.Utils
                 return SeasonDictionary1[seasonID];
             }
 
-            TreeControllerMod.Instance.Logger.Info($"[FoliageColorData.GetSeasonFromSeasonID] couldn't find season for {seasonID}.");
+            TreeControllerMod.Instance.Logger.Debug($"[FoliageColorData.GetSeasonFromSeasonID] couldn't find season for {seasonID}.");
             return Season.Spring;
         }
 

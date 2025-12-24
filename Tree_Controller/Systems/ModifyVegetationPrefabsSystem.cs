@@ -6,14 +6,17 @@ namespace Tree_Controller.Systems
 {
     using Colossal.Entities;
     using Colossal.Logging;
+    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
     using Game.Prefabs;
+    using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
+    using static Colossal.Animations.Animation;
 
     /// <summary>
-    /// Modifies the prices of vegetation prefabs.
+    /// Modifies the prices of vegetation prefabs, and handles Vegetation prefab component.
     /// </summary>
     public partial class ModifyVegetationPrefabsSystem : GameSystemBase
     {
@@ -21,6 +24,8 @@ namespace Tree_Controller.Systems
         private EntityQuery m_TreeObjectGeometryQuery;
         private ILog m_Log;
         private PrefabSystem m_PrefabSystem;
+        private EntityQuery m_PlantDataWithOutVegetationQuery;
+        private ToolOutputBarrier m_Barrier;
 
         /// <summary>
         /// Sets the construction cost of vegetation prefabs to 0.
@@ -121,6 +126,7 @@ namespace Tree_Controller.Systems
             m_Log.Info($"{nameof(ModifyVegetationPrefabsSystem)}.OnCreate");
 
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_Barrier = World.GetOrCreateSystemManaged<ToolOutputBarrier>();
 
             m_FreeVegetationQuery = SystemAPI.QueryBuilder()
                .WithAllRW<PlaceableObjectData>()
@@ -134,13 +140,52 @@ namespace Tree_Controller.Systems
                .WithNone<Deleted, Overridden>()
                .Build();
 
-            Enabled = false;
+            m_PlantDataWithOutVegetationQuery = SystemAPI.QueryBuilder()
+                .WithAllRW<ObjectGeometryData>()
+                .WithAll<PlantData>()
+                .WithNone<Deleted, Vegetation>()
+                .Build();
+
+            RequireForUpdate(m_PlantDataWithOutVegetationQuery);
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            return;
+            NativeArray<Entity> prefabEntities = m_PlantDataWithOutVegetationQuery.ToEntityArray(Allocator.Temp);
+            EntityCommandBuffer buffer = m_Barrier.CreateCommandBuffer();
+
+            foreach (Entity prefabEntity in prefabEntities)
+            {
+                buffer.AddComponent<Vegetation>(prefabEntity);
+                if (EntityManager.TryGetComponent(prefabEntity, out ObjectGeometryData objectGeometryData))
+                {
+                    m_Log.Debug($"{nameof(FindTreesAndBushesSystem)}.{nameof(OnGameLoadingComplete)} objectGeometryData.m_size = {objectGeometryData.m_Size.x}:{objectGeometryData.m_Size.z}");
+                    Vegetation vegetation = new Vegetation(new Unity.Mathematics.float3(objectGeometryData.m_Size.x, 0, objectGeometryData.m_Size.z));
+                    buffer.SetComponent(prefabEntity, vegetation);
+
+                    if (TreeControllerMod.Instance.Settings.LimitedTreeAnarchy
+                        && EntityManager.HasComponent<TreeData>(prefabEntity)
+                        && EntityManager.TryGetBuffer(prefabEntity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
+                        && subMeshBuffer.Length > 5)
+                    {
+                        objectGeometryData.m_Size.x = objectGeometryData.m_LegSize.x;
+                        objectGeometryData.m_Size.z = objectGeometryData.m_LegSize.z;
+                        buffer.SetComponent(prefabEntity, objectGeometryData);
+                    }
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
+
+            if (TreeControllerMod.Instance.Settings.FreeVegetation)
+            {
+                SetVegetationCostsToZero();
+            }
         }
     }
 }

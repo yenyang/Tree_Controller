@@ -966,9 +966,13 @@ namespace Tree_Controller.Tools
             {
                 radius += 50;
             }
-            else if (radius < 1000)
+            else if (radius >= 10  && radius < 100)
             {
                 radius += 10;
+            }
+            else if (radius < 1000)
+            {
+                radius += 1;
             }
 
             m_Radius.Update(radius);
@@ -980,7 +984,11 @@ namespace Tree_Controller.Tools
         private void DecreaseRadius()
         {
             float radius = m_Radius.value;
-            if (radius <= 100 && radius > 10)
+            if (radius <= 10 && radius > 1)
+            {
+                radius -= 1;
+            }
+            else if (radius <= 100 && radius > 10)
             {
                 radius -= 10;
             }
@@ -1201,9 +1209,11 @@ namespace Tree_Controller.Tools
 
         private void HandleShowStumps()
         {
+            bool showStump = false;
             m_ShowStump.Value = false;
             List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
-            if (m_IsTree.value && TreeControllerMod.Instance.Settings.IncludeStumps)
+            if (TreeControllerMod.Instance.Settings.IncludeStumps &&
+                m_IsTree.value)
             {
                 foreach (PrefabBase prefab in selectedPrefabs)
                 {
@@ -1212,11 +1222,18 @@ namespace Tree_Controller.Tools
                         && EntityManager.TryGetBuffer(prefabEntity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
                         && subMeshBuffer.Length > 5)
                     {
-                        m_ShowStump.Value = true;
+                        showStump = true;
                         break;
                     }
                 }
             }
+            else if (TreeControllerMod.Instance.Settings.IncludeStumps &&
+                     CurrentToolMode == ToolMode.ChangeAge)
+            {
+                showStump = true;
+            }
+
+            m_ShowStump.Value = showStump;
         }
 
         private bool TrySaveCustomPrefabSet(string prefabSetID)

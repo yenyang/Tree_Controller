@@ -6,10 +6,6 @@
 #define BURST
 namespace Tree_Controller.Tools
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Runtime.CompilerServices;
     using Colossal.Annotations;
     using Colossal.Entities;
     using Colossal.Logging;
@@ -22,6 +18,10 @@ namespace Tree_Controller.Tools
     using Game.Prefabs;
     using Game.Rendering;
     using Game.Tools;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Runtime.CompilerServices;
     using Tree_Controller;
     using Tree_Controller.Domain;
     using Unity.Burst;
@@ -32,6 +32,7 @@ namespace Tree_Controller.Tools
     using Unity.Mathematics;
     using UnityEngine;
     using UnityEngine.InputSystem;
+    using static Colossal.AssetPipeline.Diagnostic.Report;
 
 
     /// <summary>
@@ -448,16 +449,20 @@ namespace Tree_Controller.Tools
                 {
                     if (raycastFlag && isVegetationPrefabFlag)
                     {
-                        if (m_TreeControllerUISystem.AtLeastOneAgeSelected && hasTreeComponentFlag)
+                        if (m_TreeControllerUISystem.AtLeastOneAgeSelected &&
+                            hasTreeComponentFlag &&
+                            EntityManager.TryGetComponent(e, out PrefabRef prefabRef1))
                         {
 
-                            ChangeTreeStateJob changeTreeStateJob = new ()
+                            ChangeTreeStateJob changeTreeStateJob = new()
                             {
                                 m_Entity = e,
-                                m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
+                                m_Random = new((uint)UnityEngine.Random.Range(1, 100000)),
                                 m_Ages = selectedTreeStates,
                                 m_Tree = EntityManager.GetComponentData<Tree>(e),
                                 buffer = m_ToolOutputBarrier.CreateCommandBuffer(),
+                                m_Prefab = prefabRef1,
+                                m_SubMeshLookup = SystemAPI.GetBufferLookup<SubMesh>(isReadOnly: false),
                             };
                             inputDeps = changeTreeStateJob.Schedule(inputDeps);
                             m_ToolOutputBarrier.AddJobHandleForProducer(inputDeps);
@@ -486,6 +491,7 @@ namespace Tree_Controller.Tools
                                 m_Ages = selectedTreeStates,
                                 m_TreeDataLookup = SystemAPI.GetComponentLookup<TreeData>(isReadOnly: true),
                                 m_TreeLookup = SystemAPI.GetComponentLookup<Tree>(isReadOnly: true),
+                                m_SubMeshLookup = SystemAPI.GetBufferLookup<SubMesh>(isReadOnly: true),
                             };
                             inputDeps = changePrefabRefJob.Schedule(inputDeps);
                             m_ToolOutputBarrier.AddJobHandleForProducer(inputDeps);
@@ -684,16 +690,19 @@ namespace Tree_Controller.Tools
                         Game.Objects.Transform currentTransform = EntityManager.GetComponentData<Game.Objects.Transform>(subObject);
                         if (CheckForHoveringOverTree(new Vector3(hit.m_HitPosition.x, hit.m_Position.y, hit.m_HitPosition.z), currentTransform.m_Position, 2f) || m_TreeControllerUISystem.SelectionMode == Selection.BuildingOrNet)
                         {
-                            if (m_TreeControllerUISystem.AtLeastOneAgeSelected && EntityManager.HasComponent<Tree>(subObject))
+                            if (m_TreeControllerUISystem.AtLeastOneAgeSelected && EntityManager.HasComponent<Tree>(subObject) &&
+                                EntityManager.TryGetComponent(subObject, out PrefabRef prefabRef1))
                             {
                                 NativeList<TreeState> selectedTreeStates = m_TreeControllerUISystem.GetSelectedAges();
-                                ChangeTreeStateJob changeTreeStateJob = new ()
+                                ChangeTreeStateJob changeTreeStateJob = new()
                                 {
                                     m_Entity = subObject,
-                                    m_Random = new ((uint)UnityEngine.Random.Range(1, 100000)),
+                                    m_Random = new((uint)UnityEngine.Random.Range(1, 100000)),
                                     m_Ages = selectedTreeStates,
                                     m_Tree = EntityManager.GetComponentData<Tree>(subObject),
                                     buffer = m_ToolOutputBarrier.CreateCommandBuffer(),
+                                    m_Prefab = prefabRef1.m_Prefab,
+                                    m_SubMeshLookup = SystemAPI.GetBufferLookup<SubMesh>(isReadOnly: true),
                                 };
                                 jobHandle = changeTreeStateJob.Schedule(jobHandle);
                                 m_ToolOutputBarrier.AddJobHandleForProducer(jobHandle);
@@ -724,6 +733,7 @@ namespace Tree_Controller.Tools
                                     m_Ages = selectedTreeStates,
                                     m_TreeDataLookup = SystemAPI.GetComponentLookup<TreeData>(isReadOnly: true),
                                     m_TreeLookup = SystemAPI.GetComponentLookup<Tree>(isReadOnly: true),
+                                    m_SubMeshLookup = SystemAPI.GetBufferLookup<SubMesh>(isReadOnly: true),
                                 };
                                 jobHandle = changePrefabRefJob.Schedule(jobHandle);
                                 m_ToolOutputBarrier.AddJobHandleForProducer(jobHandle);
@@ -1074,6 +1084,7 @@ namespace Tree_Controller.Tools
             public NativeList<TreeState> m_Ages;
             public ComponentLookup<TreeData> m_TreeDataLookup;
             public ComponentLookup<Tree> m_TreeLookup;
+            public BufferLookup<SubMesh> m_SubMeshLookup;
 
             /// <summary>
             /// Changes prefab ref for specified entity.
@@ -1090,6 +1101,12 @@ namespace Tree_Controller.Tools
                     {
                         buffer.AddComponent<Tree>(m_Entity);
                         Tree tree = new () { m_Growth = 0, m_State = GetTreeState(m_Ages) };
+                        if (tree.m_State == TreeState.Stump &&
+                            m_SubMeshLookup.TryGetBuffer(prefabRef, out DynamicBuffer<SubMesh> subMeshBuffer) &&
+                            subMeshBuffer.Length <= 5)
+                        {
+                            tree.m_State = TreeState.Dead;
+                        }
                         buffer.SetComponent(m_Entity, tree);
                     }
 
@@ -1133,6 +1150,8 @@ namespace Tree_Controller.Tools
             public NativeList<TreeState> m_Ages;
             public EntityCommandBuffer buffer;
             public Unity.Mathematics.Random m_Random;
+            public Entity m_Prefab;
+            public BufferLookup<SubMesh> m_SubMeshLookup;
 
             /// <summary>
             /// Changes TreeState for specfied tree entity.
@@ -1140,6 +1159,13 @@ namespace Tree_Controller.Tools
             public void Execute()
             {
                 m_Tree.m_State = GetTreeState(m_Ages, m_Tree);
+                if (m_Tree.m_State == TreeState.Stump &&
+                    m_SubMeshLookup.TryGetBuffer(m_Prefab, out DynamicBuffer<SubMesh> subMeshBuffer) &&
+                    subMeshBuffer.Length <= 5)
+                {
+                    m_Tree.m_State = TreeState.Dead;
+                }
+
                 buffer.SetComponent(m_Entity, m_Tree);
                 buffer.AddComponent<BatchesUpdated>(m_Entity);
             }

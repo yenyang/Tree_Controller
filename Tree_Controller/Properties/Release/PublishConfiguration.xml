@@ -1,6 +1,6 @@
 <Publish>
   <!--Id must be set in order to update existed mod. it is not required for publishing mod for the first time-->
-  <ModId Value="" />
+  <ModId Value="129656" />
   <!--Name of the mod to display to players-->
   <DisplayName Value="Tree Controller [Temporary Beta]" />
   <!--Short description of the mod-->
@@ -96,7 +96,7 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
 * Localization: Hendrix, Fuchs23, and FearMyFeedEU (German), Nyoko and Citadino (Spanish), Mazi and Furios (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak, Morgan (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st and Hinanchovo (Korean), _hayrynenart, SivenesisI,and krugl1y (Russian), allegretic (Chinese Traditional), Ti4goc (European Portuguese), 
 * Tigon Ologdring, code:witch - Testing, Feedback</LongDescription>
   <!--Thumbnail-->
-  <Thumbnail Value="Properties/Thumbnail.png" />
+  <Thumbnail Value="Properties/Release/Thumbnail.png" />
   <!--Screenshot, can be set multiple times-->
   <Screenshot Value="Properties/Previews/treeControllerToolScreenshot.jpg" />
   <Screenshot Value="Properties/Previews/fall2.jpg" />

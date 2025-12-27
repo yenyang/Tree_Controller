@@ -821,6 +821,7 @@ namespace Tree_Controller.Tools
                                 buffer.AddComponent<RecentlyChanged>(unfilteredChunkIndex, currentEntity);
                                 buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
                             }
+
                             continue;
                         }
 
@@ -893,7 +894,7 @@ namespace Tree_Controller.Tools
             /// <returns>True if tree position is within radius of position. False if not.</returns>
             private bool CheckForHoveringOverTree(float3 cursorPosition, float3 treePosition, float radius)
             {
-                float minRadius = 5f;
+                float minRadius = 0.1f;
                 radius = Mathf.Max(radius, minRadius);
                 if (Unity.Mathematics.math.distance(cursorPosition, treePosition) < radius)
                 {

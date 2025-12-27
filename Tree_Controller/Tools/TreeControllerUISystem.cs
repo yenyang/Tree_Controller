@@ -958,21 +958,25 @@ namespace Tree_Controller.Tools
         private void IncreaseRadius()
         {
             float radius = m_Radius.value;
-            if (radius >= 500 && radius < 1000)
+            if (radius >= 500f && radius < 1000f)
             {
-                radius += 100;
+                radius += 100f;
             }
-            else if (radius >= 100 && radius < 500)
+            else if (radius >= 100f && radius < 500f)
             {
-                radius += 50;
+                radius += 50f;
             }
-            else if (radius >= 10  && radius < 100)
+            else if (radius >= 10f && radius < 100f)
             {
-                radius += 10;
+                radius += 10f;
+            }
+            else if (radius >= 1f && radius < 10f)
+            {
+                radius += 1f;
             }
             else if (radius < 1000)
             {
-                radius += 1;
+                radius += 0.1f;
             }
 
             m_Radius.Update(radius);
@@ -984,21 +988,25 @@ namespace Tree_Controller.Tools
         private void DecreaseRadius()
         {
             float radius = m_Radius.value;
-            if (radius <= 10 && radius > 1)
+            if (radius <= 1f && radius > 0.1f)
             {
-                radius -= 1;
+                radius -= 0.1f;
             }
-            else if (radius <= 100 && radius > 10)
+            else if (radius <= 10f && radius > 1f)
             {
-                radius -= 10;
+                radius -= 1f;
             }
-            else if (radius <= 500 && radius > 100)
+            else if (radius <= 100f && radius > 10f)
             {
-                radius -= 50;
+                radius -= 10f;
             }
-            else if (radius > 500)
+            else if (radius <= 500f && radius > 100f)
             {
-                radius -= 100;
+                radius -= 50f;
+            }
+            else if (radius > 500f)
+            {
+                radius -= 100f;
             }
 
             m_Radius.Update(radius);

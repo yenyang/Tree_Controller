@@ -1,3 +1,2 @@
-﻿# Patch v1.6.13.102
-* Radius for Tree Changing Tools can go down to 0.1 now.
-* Fix radius UI saying smaller than it would actually remove.
+﻿# Patch v1.6.13.103
+* Fix constrain brush option required to use custom set with max or min elevation.

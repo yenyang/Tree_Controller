@@ -12,7 +12,6 @@ namespace Tree_Controller.Tools
     using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
-    using Game.Input;
     using Game.Net;
     using Game.Objects;
     using Game.Prefabs;
@@ -21,7 +20,7 @@ namespace Tree_Controller.Tools
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.CompilerServices;
+    using System.Reflection;
     using Tree_Controller;
     using Tree_Controller.Domain;
     using Unity.Burst;
@@ -32,7 +31,6 @@ namespace Tree_Controller.Tools
     using Unity.Mathematics;
     using UnityEngine;
     using UnityEngine.InputSystem;
-    using static Colossal.AssetPipeline.Diagnostic.Report;
 
 
     /// <summary>
@@ -49,6 +47,7 @@ namespace Tree_Controller.Tools
         private PrefabBase m_OriginallySelectedPrefab;
         private ILog m_Log;
         private TreeControllerUISystem m_TreeControllerUISystem;
+        private bool m_FoundTopoToggle;
 
         /// <inheritdoc/>
         public override string toolID => "Tree Controller Tool";
@@ -121,8 +120,11 @@ namespace Tree_Controller.Tools
         public override void GetAvailableSnapMask(out Snap onMask, out Snap offMask)
         {
             base.GetAvailableSnapMask(out onMask, out offMask);
-            onMask |= Snap.ContourLines;
-            offMask |= Snap.ContourLines;
+            if (!m_FoundTopoToggle)
+            {
+                onMask |= Snap.ContourLines;
+                offMask |= Snap.ContourLines;
+            }
         }
 
 
@@ -349,6 +351,7 @@ namespace Tree_Controller.Tools
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
             base.OnGameLoadingComplete(purpose, mode);
+#if DEBUG
             m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(OnGameLoadingComplete)} Old Tool Order:");
             foreach (ToolBaseSystem toolBaseSystem in m_ToolSystem.tools)
             {
@@ -356,12 +359,27 @@ namespace Tree_Controller.Tools
             }
 
             m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(OnGameLoadingComplete)} New Order:");
+#endif
             m_ToolSystem.tools.Remove(this);
             m_ToolSystem.tools.Insert(0, this);
-
+#if DEBUG
             foreach (ToolBaseSystem toolBaseSystem in m_ToolSystem.tools)
             {
                 m_Log.Debug($"{nameof(TreeControllerTool)}.{nameof(OnGameLoadingComplete)} {toolBaseSystem.toolID}");
+            }
+#endif
+
+            // Topo toggle compatibility
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            foreach (Assembly assembly in assemblies)
+            {
+                if (assembly.FullName.Contains("TopoToggle,"))
+                {
+                    m_Log.Info($"{nameof(TreeControllerTool)}.{nameof(OnGameLoadingComplete)} Found Assembly: {assembly.FullName}");
+                    m_FoundTopoToggle = true;
+                    break;
+                }
             }
         }
 

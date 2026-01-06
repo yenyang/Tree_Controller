@@ -1,2 +1,2 @@
-﻿# Patch v1.6.13.103
-* Fix constrain brush option required to use custom set with max or min elevation.
+﻿# Patch v1.6.13.104
+* Compatibility fixes for use alongside Topo Toggle Mod.

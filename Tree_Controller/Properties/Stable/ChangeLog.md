@@ -4,3 +4,4 @@
 * Improved handling of prefab entities being regenerated from scratch for compatibility with other mods including Customize Editor Component.
 * Added stump to Tree Age Changer tool when option is selected.
 * Fix constrain brush option required to use custom set with max or min elevation.
+* Compatibility fixes for use alongside Topo Toggle Mod.

@@ -3,6 +3,7 @@ import { TreeControllerComponent } from "mods/TreeControllerSections/treeControl
 import { VanillaComponentResolver } from "mods/VanillaComponentResolver/VanillaComponentResolver";
 import mod from "../mod.json";
 import { ForestBrushMenuComponent } from "mods/ForestBrushMenu/forestBrushMenu";
+import { ToolOptionsVisibility } from "mods/ToolOptionsVisible/toolOptionsVisible";
 
 const register: ModRegistrar = (moduleRegistry) => {
       // console.log('mr', moduleRegistry);
@@ -16,6 +17,9 @@ const register: ModRegistrar = (moduleRegistry) => {
      moduleRegistry.append('Game', ForestBrushMenuComponent);
 
      moduleRegistry.append('Editor', ForestBrushMenuComponent);
+
+     // Ensures tool option is visible for Tree Controller Tool.
+      moduleRegistry.extend("game-ui/game/components/tool-options/tool-options-panel.tsx", 'useToolOptionsVisible', ToolOptionsVisibility);
      
      // This is just to verify using UI console that all the component registriations was completed.
      console.log(mod.id + " UI module registrations completed.");

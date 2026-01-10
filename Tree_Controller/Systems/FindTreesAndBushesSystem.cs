@@ -5,16 +5,13 @@
 #define BURST
 namespace Tree_Controller.Systems
 {
-    using Colossal.Entities;
     using Colossal.Logging;
-    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
     using Game.Objects;
     using Game.Prefabs;
     using Game.Simulation;
     using Game.Tools;
-    using System;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
     using Unity.Collections;
@@ -36,8 +33,6 @@ namespace Tree_Controller.Systems
         private SafelyRemoveSystem m_SafelyRemoveSystem;
         private ILog m_Log;
         private EndFrameBarrier m_EndFrameBarrier;
-        private PrefabSystem m_PrefabSystem;
-        private ModifyVegetationPrefabsSystem m_ModifyVegetationPrefabsSystem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FindTreesAndBushesSystem"/> class.
@@ -61,8 +56,6 @@ namespace Tree_Controller.Systems
             m_SimulationSystem = World.GetOrCreateSystemManaged<SimulationSystem>();
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
             m_SafelyRemoveSystem = World.GetOrCreateSystemManaged<SafelyRemoveSystem>();
-            m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
-            m_ModifyVegetationPrefabsSystem = World.GetOrCreateSystemManaged<ModifyVegetationPrefabsSystem>();
             m_TreeQuery = SystemAPI.QueryBuilder()
                 .WithAll<UpdateFrame, Game.Prefabs.PrefabRef, Game.Objects.Tree>()
                 .WithNone<Deleted, Temp, Evergreen, DeciduousData, Overridden, Lumber>()
@@ -98,72 +91,6 @@ namespace Tree_Controller.Systems
             }
         }
 
-        /// <inheritdoc/>
-        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
-        {
-            PrefabID vegetationPrefabID = new PrefabID("UIAssetCategoryPrefab", "Vegetation");
-            if (!m_PrefabSystem.TryGetPrefab(vegetationPrefabID, out PrefabBase vegetationPrefab))
-            {
-                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab prefab"));
-                return;
-            }
-
-            if (!m_PrefabSystem.TryGetEntity(vegetationPrefab, out Entity vegetationEntity))
-            {
-                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab entity"));
-                return;
-            }
-
-            if (!EntityManager.TryGetBuffer(vegetationEntity, true, out DynamicBuffer<UIGroupElement> buffer))
-            {
-                m_Log.Error(new Exception("Tree controller cound not find the vegetation tab group element buffer."));
-                return;
-            }
-
-            foreach (UIGroupElement element in buffer)
-            {
-                if (EntityManager.HasComponent<Vegetation>(element.m_Prefab))
-                {
-                    continue;
-                }
-
-                EntityManager.AddComponent<Vegetation>(element.m_Prefab);
-                if (EntityManager.TryGetComponent(element.m_Prefab, out ObjectGeometryData objectGeometryData))
-                {
-                    m_Log.Debug($"{nameof(FindTreesAndBushesSystem)}.{nameof(OnGameLoadingComplete)} objectGeometryData.m_size = {objectGeometryData.m_Size.x}:{objectGeometryData.m_Size.z}");
-                    Vegetation vegetation = new Vegetation(new Unity.Mathematics.float3(objectGeometryData.m_Size.x, 0, objectGeometryData.m_Size.z));
-                    EntityManager.SetComponentData(element.m_Prefab, vegetation);
-
-                    if (TreeControllerMod.Instance.Settings.LimitedTreeAnarchy
-                        && EntityManager.HasComponent<TreeData>(element.m_Prefab)
-                        && EntityManager.TryGetBuffer(element.m_Prefab, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
-                        && subMeshBuffer.Length > 5)
-                    {
-                        objectGeometryData.m_Size.x = objectGeometryData.m_LegSize.x;
-                        objectGeometryData.m_Size.z = objectGeometryData.m_LegSize.z;
-                        EntityManager.SetComponentData(element.m_Prefab, objectGeometryData);
-                    }
-                }
-                else
-                {
-                    if (m_PrefabSystem.TryGetPrefab(element.m_Prefab, out PrefabBase prefabBase))
-                    {
-                        m_Log.Info($"{nameof(FindTreesAndBushesSystem)}.{nameof(OnGameLoadingComplete)} A vegetation prefab: {prefabBase.name} didn't have Object Geometry Data.'");
-                    }
-                    else
-                    {
-                        m_Log.Info($"{nameof(FindTreesAndBushesSystem)}.{nameof(OnGameLoadingComplete)} An unknown vegetation prefab didn't have Object Geometry Data.'");
-                    }
-                }
-            }
-
-            if (TreeControllerMod.Instance.Settings.FreeVegetation)
-            {
-                m_ModifyVegetationPrefabsSystem.SetVegetationCostsToZero();
-            }
-
-            base.OnGameLoadingComplete(purpose, mode);
-        }
 
 #if BURST
         [BurstCompile]

@@ -958,17 +958,25 @@ namespace Tree_Controller.Tools
         private void IncreaseRadius()
         {
             float radius = m_Radius.value;
-            if (radius >= 500 && radius < 1000)
+            if (radius >= 500f && radius < 1000f)
             {
-                radius += 100;
+                radius += 100f;
             }
-            else if (radius >= 100 && radius < 500)
+            else if (radius >= 100f && radius < 500f)
             {
-                radius += 50;
+                radius += 50f;
+            }
+            else if (radius >= 10f && radius < 100f)
+            {
+                radius += 10f;
+            }
+            else if (radius >= 1f && radius < 10f)
+            {
+                radius += 1f;
             }
             else if (radius < 1000)
             {
-                radius += 10;
+                radius += 0.1f;
             }
 
             m_Radius.Update(radius);
@@ -980,17 +988,25 @@ namespace Tree_Controller.Tools
         private void DecreaseRadius()
         {
             float radius = m_Radius.value;
-            if (radius <= 100 && radius > 10)
+            if (radius <= 1f && radius > 0.1f)
             {
-                radius -= 10;
+                radius -= 0.1f;
             }
-            else if (radius <= 500 && radius > 100)
+            else if (radius <= 10f && radius > 1f)
             {
-                radius -= 50;
+                radius -= 1f;
             }
-            else if (radius > 500)
+            else if (radius <= 100f && radius > 10f)
             {
-                radius -= 100;
+                radius -= 10f;
+            }
+            else if (radius <= 500f && radius > 100f)
+            {
+                radius -= 50f;
+            }
+            else if (radius > 500f)
+            {
+                radius -= 100f;
             }
 
             m_Radius.Update(radius);
@@ -1201,9 +1217,11 @@ namespace Tree_Controller.Tools
 
         private void HandleShowStumps()
         {
+            bool showStump = false;
             m_ShowStump.Value = false;
             List<PrefabBase> selectedPrefabs = m_TreeControllerTool.GetSelectedPrefabs();
-            if (m_IsTree.value && TreeControllerMod.Instance.Settings.IncludeStumps)
+            if (TreeControllerMod.Instance.Settings.IncludeStumps &&
+                m_IsTree.value)
             {
                 foreach (PrefabBase prefab in selectedPrefabs)
                 {
@@ -1212,11 +1230,18 @@ namespace Tree_Controller.Tools
                         && EntityManager.TryGetBuffer(prefabEntity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
                         && subMeshBuffer.Length > 5)
                     {
-                        m_ShowStump.Value = true;
+                        showStump = true;
                         break;
                     }
                 }
             }
+            else if (TreeControllerMod.Instance.Settings.IncludeStumps &&
+                     CurrentToolMode == ToolMode.ChangeAge)
+            {
+                showStump = true;
+            }
+
+            m_ShowStump.Value = showStump;
         }
 
         private bool TrySaveCustomPrefabSet(string prefabSetID)

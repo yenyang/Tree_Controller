@@ -115,6 +115,7 @@ namespace Tree_Controller
             updateSystem.UpdateAt<DetectAreaChangeSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateAt<DestroyFoliageSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateBefore<ModifyTempVegetationSystem>(SystemUpdatePhase.Modification5);
+            updateSystem.UpdateAt<ModifyVegetationPrefabsSystem>(SystemUpdatePhase.ToolUpdate);
             Logger.Info($"[{nameof(TreeControllerMod)}] {nameof(OnLoad)} finished systems");
         }
 

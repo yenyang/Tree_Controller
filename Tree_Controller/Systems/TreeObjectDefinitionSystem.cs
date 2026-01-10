@@ -148,8 +148,7 @@ namespace Tree_Controller.Systems
                 }
             }
 
-            if (TreeControllerMod.Instance.Settings.ConstrainBrush
-                && m_ToolSystem.activeTool == m_ObjectToolSystem
+            if (m_ToolSystem.activeTool == m_ObjectToolSystem
                 && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush)
             {
                 foreach (Entity entity in entities)

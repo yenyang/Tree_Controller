@@ -38,7 +38,7 @@ namespace Tree_Controller.Systems
                 if (EntityManager.TryGetComponent(entity, out PlaceableObjectData placeableObjectData))
                 {
                     placeableObjectData.m_ConstructionCost = 0; // PlaceableObjectData is a copy of the component from the Prefab Entity. This sets the construction cost to 0.
-                    EntityManager.SetComponentData(entity, placeableObjectData); // This sets the component on the Entity. EntityManager.SetComponentData causes an immediate sync point which is not ideal, so this may become an Entity Command Buffer eventually as that will produce less sync points and have better performance.
+                    EntityManager.SetComponentData(entity, placeableObjectData); // This sets the component on the Entity.
                 }
             }
 
@@ -58,7 +58,7 @@ namespace Tree_Controller.Systems
                    && prefab.TryGet(out PlaceableObject placeableObject)) // The PlaceableObject prefab component on the PrefabBase is the "Source of Truth" and should contain the original values for that prefab.
                 {
                     placeableObjectData.m_ConstructionCost = placeableObject.m_ConstructionCost; // Set the copy of the prefab entity component's construction cost to the value found on the prefab base component.
-                    EntityManager.SetComponentData(entity, placeableObjectData); // This sets the component on the Entity. EntityManager.SetComponentData causes an immediate sync point which is not ideal, so this may become an Entity Command Buffer eventually as that will produce less sync points and have better performance.
+                    EntityManager.SetComponentData(entity, placeableObjectData); // This sets the component on the Entity.
                 }
             }
 
@@ -79,7 +79,7 @@ namespace Tree_Controller.Systems
                     if (vegetationData.m_Size.x == 0 && vegetationData.m_Size.z == 0)
                     {
                         vegetationData.m_Size = objectGeometryData.m_Size; // If vegetation size has not been assigned then this sets the copy of the prefab entity component's size to that of objectGeometryData size. This is done before the objectGeometryData size is changed by the mod to record the value before the mod changes it.
-                        EntityManager.SetComponentData(entity, vegetationData); // This sets the component on the Entity. EntityManager.SetComponentData causes an immediate sync point which is not ideal, so this may become an Entity Command Buffer eventually as that will produce less sync points and have better performance.
+                        EntityManager.SetComponentData(entity, vegetationData); // This sets the component on the Entity.
                     }
 
                     if (EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
@@ -87,7 +87,7 @@ namespace Tree_Controller.Systems
                     {
                         objectGeometryData.m_Size.x = objectGeometryData.m_LegSize.x; // Copy the leg size to the general object geometry size so that the conflict check zone is just the tree leg size instead of the full diameter of elderly tree. Remember this is just a copy of the object geometry component from the prefab entity. 
                         objectGeometryData.m_Size.z = objectGeometryData.m_LegSize.z; // Copy the leg size to the general object geometry size so that the conflict check zone is just the tree leg size instead of the full diameter of elderly tree. Remember this is just a copy of the object geometry component from the prefab entity. 
-                        EntityManager.SetComponentData(entity, objectGeometryData); // This sets the component on the Entity. EntityManager.SetComponentData causes an immediate sync point which is not ideal, so this may become an Entity Command Buffer eventually as that will produce less sync points and have better performance.
+                        EntityManager.SetComponentData(entity, objectGeometryData); // This sets the component on the Entity.
                     }
                 }
             }
@@ -111,7 +111,7 @@ namespace Tree_Controller.Systems
                 {
                     objectGeometryData.m_Size.x = vegetationData.m_Size.x; // Resets the value of the size on the copy of ObjectGeometryData prefab entity component to the recorded value on the vegetation custom component.
                     objectGeometryData.m_Size.z = vegetationData.m_Size.z;  // Resets the value of the size on the copy of ObjectGeometryData prefab entity component to the recorded value on the vegetation custom component.
-                    EntityManager.SetComponentData(entity, objectGeometryData); // This sets the component on the Entity. EntityManager.SetComponentData causes an immediate sync point which is not ideal, so this may become an Entity Command Buffer eventually as that will produce less sync points and have better performance.
+                    EntityManager.SetComponentData(entity, objectGeometryData); // This sets the component on the Entity.
                 }
             }
 
@@ -163,7 +163,7 @@ namespace Tree_Controller.Systems
                 {
                     m_Log.Debug($"{nameof(FindTreesAndBushesSystem)}.{nameof(OnGameLoadingComplete)} objectGeometryData.m_size = {objectGeometryData.m_Size.x}:{objectGeometryData.m_Size.z}");
                     Vegetation vegetation = new Vegetation(new Unity.Mathematics.float3(objectGeometryData.m_Size.x, 0, objectGeometryData.m_Size.z));
-                    buffer.SetComponent(prefabEntity, vegetation); // Queue up the structural change of setting a component on the prefab entity. To be played back automatically with ToolOutputBarrier. When using a barrier you should not manually playback the ECB, nor  should you dispose of the ECB. All handled by the barrier.
+                    buffer.SetComponent(prefabEntity, vegetation); // Queue up setting component on the prefab entity. To be played back automatically with ToolOutputBarrier. When using a barrier you should not manually playback the ECB, nor  should you dispose of the ECB. All handled by the barrier.
 
                     if (TreeControllerMod.Instance.Settings.LimitedTreeAnarchy
                         && EntityManager.HasComponent<TreeData>(prefabEntity)
@@ -172,7 +172,7 @@ namespace Tree_Controller.Systems
                     {
                         objectGeometryData.m_Size.x = objectGeometryData.m_LegSize.x; // Copy the leg size to the general object geometry size so that the conflict check zone is just the tree leg size instead of the full diameter of elderly tree. Remember this is just a copy of the object geometry component from the prefab entity. 
                         objectGeometryData.m_Size.z = objectGeometryData.m_LegSize.z; // Copy the leg size to the general object geometry size so that the conflict check zone is just the tree leg size instead of the full diameter of elderly tree. Remember this is just a copy of the object geometry component from the prefab entity. 
-                        buffer.SetComponent(prefabEntity, objectGeometryData); // Queue up the structural change of setting a component on the prefab entity. To be played back automatically with ToolOutputBarrier. When using a barrier you should not manually playback the ECB, nor  should you dispose of the ECB. All handled by the barrier.
+                        buffer.SetComponent(prefabEntity, objectGeometryData); // Queue up setting a component on the prefab entity. To be played back automatically with ToolOutputBarrier. When using a barrier you should not manually playback the ECB, nor  should you dispose of the ECB. All handled by the barrier.
                     }
                 }
             }

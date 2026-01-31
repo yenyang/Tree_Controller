@@ -83,7 +83,7 @@ namespace Tree_Controller.Systems
                     }
 
                     if (EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
-                        && subMeshBuffer.Length > 5)c
+                        && subMeshBuffer.Length > 5) // Checking for a submesh buffer length of > 5 verifies that we are looking at a Tree and not a Wild bush or plant. Trees have submeshes for: child, teen, adult, elderly, dead, and stump.
                     {
                         objectGeometryData.m_Size.x = objectGeometryData.m_LegSize.x; // Copy the leg size to the general object geometry size so that the conflict check zone is just the tree leg size instead of the full diameter of elderly tree. Remember this is just a copy of the object geometry component from the prefab entity. 
                         objectGeometryData.m_Size.z = objectGeometryData.m_LegSize.z; // Copy the leg size to the general object geometry size so that the conflict check zone is just the tree leg size instead of the full diameter of elderly tree. Remember this is just a copy of the object geometry component from the prefab entity. 
@@ -101,17 +101,17 @@ namespace Tree_Controller.Systems
         /// </summary>
         public void ResetObjectGeometrySize()
         {
-            NativeArray<Entity> prefabEntities = m_TreeObjectGeometryQuery.ToEntityArray(Allocator.Temp);
+            NativeArray<Entity> prefabEntities = m_TreeObjectGeometryQuery.ToEntityArray(Allocator.Temp); // Important to use Allocator.Temp. You do not need to dispose of a Temp allocator. Forgetting to dispose a TempJob allocator will produce a memory leak.
             foreach (Entity entity in prefabEntities)
             {
                 if (EntityManager.TryGetComponent(entity, out ObjectGeometryData objectGeometryData)
                     && EntityManager.TryGetComponent(entity, out Vegetation vegetationData)
                     && EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
-                    && subMeshBuffer.Length > 5)
+                    && subMeshBuffer.Length > 5) // Checking for a submesh buffer length of > 5 verifies that we are looking at a Tree and not a Wild bush or plant. Trees have submeshes for: child, teen, adult, elderly, dead, and stump.
                 {
-                    objectGeometryData.m_Size.x = vegetationData.m_Size.x;
-                    objectGeometryData.m_Size.z = vegetationData.m_Size.z;
-                    EntityManager.SetComponentData(entity, objectGeometryData);
+                    objectGeometryData.m_Size.x = vegetationData.m_Size.x; // Resets the value of the size on the copy of ObjectGeometryData prefab entity component to the recorded value on the vegetation custom component.
+                    objectGeometryData.m_Size.z = vegetationData.m_Size.z;  // Resets the value of the size on the copy of ObjectGeometryData prefab entity component to the recorded value on the vegetation custom component.
+                    EntityManager.SetComponentData(entity, objectGeometryData); // This sets the component on the Entity. EntityManager.SetComponentData causes an immediate sync point which is not ideal, so this may become an Entity Command Buffer eventually as that will produce less sync points and have better performance.
                 }
             }
 

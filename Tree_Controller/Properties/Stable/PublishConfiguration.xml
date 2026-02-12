@@ -14,7 +14,7 @@ Video Demo available on YouTube.
 Unified Icon Library
 
 ## Donations
-If you want to say thank you with a donation you can do so on Paypal.
+If you want to say thank you with a donation you can do so on Paypal or Buy me a Coffee.
 
 ## Translations
 I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the crowdin or discord link. CSL2:CODEMODS -&gt; mods-wip -&gt; Tree Controller: Translations.
@@ -109,26 +109,21 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/tree-controller.1644992/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.6.13.104" />
+  <ModVersion Value="1.6.15" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.5.*" />
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Patch v1.6.14
-* Radius for Tree Changing Tools can go down to 0.1 now.
-* Some aspects of the mod have been expanded from prefabs in the Vegetation tab to all prefabs with PlantData.
-* Improved handling of prefab entities being regenerated from scratch for compatibility with other mods including Customize Editor Component.
-* Added stump to Tree Age Changer tool when option is selected.
-* Fix constrain brush option required to use custom set with max or min elevation.
-* Compatibility fixes for use alongside Topo Toggle Mod.</ChangeLog>
+  <ChangeLog># Patch v1.6.15
+*</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />
   <ExternalLink Type="github" Url="https://github.com/yenyang/Tree_Controller" />
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=YoyMliyWJQU" />
   <ExternalLink Type="crowdin" Url="https://crowdin.com/project/csl2-mod-water-features" />
-  <ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/yenyang_mods"/>
+  <ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/yenyang_mods" />
   <!-- Supported values Public, Private, Unlisted -->
   <AccessLevel Value="Public" />
 </Publish>

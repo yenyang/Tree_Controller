@@ -80,6 +80,7 @@ namespace Tree_Controller.Systems
                     m_TreeType = SystemAPI.GetComponentTypeHandle<Game.Objects.Tree>(),
                     buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
                     m_EvergreenData = SystemAPI.GetComponentLookup<Evergreen>(isReadOnly: true),
+                    m_DecorationLookup = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(isReadOnly: true),
                 };
                 JobHandle jobHandle = JobChunkExtensions.ScheduleParallel(findTreePrefabRefJob, m_TreeQuery, Dependency);
                 m_EndFrameBarrier.AddJobHandleForProducer(jobHandle);
@@ -106,12 +107,15 @@ namespace Tree_Controller.Systems
             public ComponentTypeHandle<Game.Objects.Tree> m_TreeType;
             [ReadOnly]
             public ComponentLookup<Evergreen> m_EvergreenData;
+            [ReadOnly]
+            public ComponentLookup<Game.Objects.Decoration> m_DecorationLookup;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
             {
                 NativeArray<Entity> entityNativeArray = chunk.GetNativeArray(m_EntityType);
                 NativeArray<Game.Prefabs.PrefabRef> prefabRefNativeArray = chunk.GetNativeArray(ref m_PrefabRefType);
                 NativeArray<Game.Objects.Tree> treeNativeArray = chunk.GetNativeArray(ref m_TreeType);
+
                 for (int i = 0; i < chunk.Count; i++)
                 {
                     Entity currentEntity = entityNativeArray[i];
@@ -129,6 +133,12 @@ namespace Tree_Controller.Systems
                         else
                         {
                             currentDeciduousTreeData.m_TechnicallyDead = false;
+                        }
+
+                        if (m_DecorationLookup.HasComponent(currentEntity) &&
+                            m_DecorationLookup.IsComponentEnabled(currentEntity))
+                        {
+                            currentDeciduousTreeData.m_PermanentDecoration = true;
                         }
 
                         buffer.AddComponent(unfilteredChunkIndex, currentEntity, currentDeciduousTreeData);

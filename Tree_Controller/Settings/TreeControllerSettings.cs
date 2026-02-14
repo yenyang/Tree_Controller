@@ -124,9 +124,9 @@ namespace Tree_Controller.Settings
         public bool UseDeadModelDuringWinter { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether tree growth is disabled globally.
+        /// Gets or sets a value indicating whether Tree Growth was previously disabled. RETIRED. Still used for migration to vanilla.
         /// </summary>
-        [SettingsUISection(General, Stable)]
+        [SettingsUIHidden]
         public bool DisableTreeGrowth { get; set; }
 
         /// <summary>

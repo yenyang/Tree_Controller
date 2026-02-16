@@ -4,8 +4,6 @@
   "Options.TAB[Tree_Controller.Tree_Controller.TreeControllerMod.Wind]": "Wind",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.UseDeadModelDuringWinter]": "Deciduous trees use Dead Model during Winter",
   "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.UseDeadModelDuringWinter]": "Will temporarily make all non-lumber industry deciduous trees use the dead model and pause growth during winter.",
-  "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.DisableTreeGrowth]": "Disable Tree Growth",
-  "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.DisableTreeGrowth]": "Disable tree growth for the entire map except for lumber industry.",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.FreeVegetation]": "Free Trees and Vegetation",
   "Options.OPTION_DESCRIPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.FreeVegetation]": "Sets the cost of trees and vegetation to 0.",
   "Options.OPTION[Tree_Controller.Tree_Controller.TreeControllerMod.TreeControllerSettings.IncludeStumps]": "Include Stumps",

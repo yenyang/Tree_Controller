@@ -3,6 +3,7 @@
 // </copyright>
 
 // #define VERBOSE
+// #define DUMP_VANILLA_LOCALIZATION
 namespace Tree_Controller
 {
     using System;
@@ -22,6 +23,7 @@ namespace Tree_Controller
     using Tree_Controller.Settings;
     using Tree_Controller.Systems;
     using Tree_Controller.Tools;
+    using UnityEngine;
 
     /// <summary>
     /// Mod entry point.
@@ -97,6 +99,17 @@ namespace Tree_Controller
                 Logger.Error(ex.ToString());
             }
 #endif
+#if DUMP_VANILLA_LOCALIZATION && DEBUG
+            var strings = GameManager.instance.localizationManager.activeDictionary.entries
+                .OrderBy(kv => kv.Key)
+                .ToDictionary(kv => kv.Key, kv => kv.Value);
+
+            var json = Colossal.Json.JSON.Dump(strings);
+
+            var filePath = Path.Combine(Application.persistentDataPath, "locale-dictionary.json");
+
+            File.WriteAllText(filePath, json);
+#endif
             Logger.Info($"{nameof(TreeControllerMod)}.{nameof(OnLoad)} Injecting Harmony Patches.");
             m_Harmony = new Harmony("Mods_Yenyang_Tree_Controller");
             m_Harmony.PatchAll();
@@ -109,10 +122,10 @@ namespace Tree_Controller
             updateSystem.UpdateBefore<FindTreesAndBushesSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateBefore<DeciduousSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAt<ReloadFoliageColorDataSystem>(SystemUpdatePhase.GameSimulation);
-            updateSystem.UpdateAt<ModifyTreeGrowthSystem>(SystemUpdatePhase.GameSimulation);
-            updateSystem.UpdateBefore<SafelyRemoveSystem>(SystemUpdatePhase.GameSimulation);
+            updateSystem.UpdateAt<MigrateNoTreeGrowthSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateBefore<LumberSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAt<DetectAreaChangeSystem>(SystemUpdatePhase.ModificationEnd);
+            updateSystem.UpdateBefore<SafelyRemoveSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAt<DestroyFoliageSystem>(SystemUpdatePhase.ToolUpdate);
             updateSystem.UpdateBefore<ModifyTempVegetationSystem>(SystemUpdatePhase.Modification5);
             updateSystem.UpdateAt<ModifyVegetationPrefabsSystem>(SystemUpdatePhase.ToolUpdate);

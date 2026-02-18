@@ -14,7 +14,7 @@ Video Demo available on YouTube.
 Unified Icon Library
 
 ## Donations
-If you want to say thank you with a donation you can do so on Paypal.
+If you want to say thank you with a donation you can do so on Paypal or Buy me a Coffee.
 
 ## Translations
 I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the crowdin or discord link. CSL2:CODEMODS -&gt; mods-wip -&gt; Tree Controller: Translations.
@@ -61,7 +61,7 @@ Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. 
 Press the gear button to open the Advanced Set Control Panel that lets you set Age overrides, Probability weights, and minimum and maximum elevations for each prefab in a set. Age overrides and Probability weights work with object tool and line tools. Minimum and maximum elevations are only for brushing objects. 
 
 ## Tree Growth
-Includes the option to disable tree growth over the whole map but it excludes any trees within specialized lumber industry areas.
+You may use the Tree Controller tools to pause or unpause the aging of trees that are already placed. If used the Disable Tree Aging option from the past this will automatically be added on load to each of the trees. Trees will have a red circle around them while using the tree controller tools if their aging is paused.
 
 To set all trees to Adult and/or Elderly, Select: Landscaping -&gt; Vegetation -&gt; Change Age Tool -&gt; Whole Map -&gt; Select Age(s) -&gt; Right click on the map. 
 
@@ -109,25 +109,28 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/tree-controller.1644992/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.6.13.104" />
+  <ModVersion Value="1.7.0" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.5.*" />
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Patch v1.6.14
-* Radius for Tree Changing Tools can go down to 0.1 now.
-* Some aspects of the mod have been expanded from prefabs in the Vegetation tab to all prefabs with PlantData.
-* Improved handling of prefab entities being regenerated from scratch for compatibility with other mods including Customize Editor Component.
-* Added stump to Tree Age Changer tool when option is selected.
-* Fix constrain brush option required to use custom set with max or min elevation.
-* Compatibility fixes for use alongside Topo Toggle Mod.</ChangeLog>
+  <ChangeLog># Update v.1.7.0
+* Compatibility improvements with game version 1.5.4.
+* Vanilla's Preserve Age toggle added to Age row while plopping trees.
+* Vanilla's Preserve Age toggle added to Tree Controller Tool. 
+* "Decoration Trees" that do not age have a red circle around them while using the Tree Controller Tools.
+* Mod uses a Pause Icon for Preserge Age Toggle instead of vanilla hour glass.
+* Option to Disable Tree Growth over the whole map Retired. A transition to vanilla enabled Decoration component provided. 
+* Polish localization updated.
+* Some vanilla problems where subobject trees are stuck as saplings are fixed with the mod but not all of them. You can use the tool to manually fix any of them.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />
   <ExternalLink Type="github" Url="https://github.com/yenyang/Tree_Controller" />
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=YoyMliyWJQU" />
   <ExternalLink Type="crowdin" Url="https://crowdin.com/project/csl2-mod-water-features" />
+  <ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/yenyang_mods" />
   <!-- Supported values Public, Private, Unlisted -->
   <AccessLevel Value="Public" />
 </Publish>

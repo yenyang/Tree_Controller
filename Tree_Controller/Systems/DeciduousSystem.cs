@@ -120,6 +120,7 @@ namespace Tree_Controller.Systems
                 buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
                 m_Season = FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.name),
                 m_LumberLookup = SystemAPI.GetComponentLookup<Lumber>(),
+                m_DecorationLookup = SystemAPI.GetComponentLookup<Decoration>(),
             };
             JobHandle jobHandle = JobChunkExtensions.ScheduleParallel(treeSeasonChangeJob, m_DeciduousTreeQuery, Dependency);
             m_EndFrameBarrier.AddJobHandleForProducer(jobHandle);
@@ -174,6 +175,8 @@ namespace Tree_Controller.Systems
             public FoliageUtils.Season m_Season;
             [ReadOnly]
             public ComponentLookup<Lumber> m_LumberLookup;
+            [ReadOnly]
+            public ComponentLookup<Game.Objects.Decoration> m_DecorationLookup;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
             {
@@ -193,6 +196,12 @@ namespace Tree_Controller.Systems
                             currentTreeData.m_State = currentDeciduousTreeData.m_PreviousTreeState;
                             buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentTreeData);
                             buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
+                        }
+
+                        if (currentDeciduousTreeData.m_PermanentDecoration == true &&
+                            m_DecorationLookup.IsComponentEnabled(currentEntity) == false)
+                        {
+                            buffer.SetComponentEnabled<Game.Objects.Decoration>(unfilteredChunkIndex, currentEntity, true);
                         }
 
                         buffer.RemoveComponent<DeciduousData>(unfilteredChunkIndex, currentEntity);
@@ -216,6 +225,14 @@ namespace Tree_Controller.Systems
                             buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity, default);
                             buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentDeciduousTreeData);
                         }
+
+                        if (currentDeciduousTreeData.m_PermanentDecoration == false &&
+                            m_DecorationLookup.HasComponent(currentEntity) &&
+                            m_DecorationLookup.IsComponentEnabled(currentEntity) == false)
+                        {
+                            // Disables tree aging for diciduous trees in winter.
+                            buffer.SetComponentEnabled<Game.Objects.Decoration>(unfilteredChunkIndex, currentEntity, true);
+                        }
                     }
                     else
                     {
@@ -234,6 +251,14 @@ namespace Tree_Controller.Systems
                             }
 
                             buffer.SetComponent(unfilteredChunkIndex, currentEntity, currentDeciduousTreeData);
+                        }
+
+                        if (currentDeciduousTreeData.m_PermanentDecoration == false &&
+                            m_DecorationLookup.HasComponent(currentEntity) &&
+                            m_DecorationLookup.IsComponentEnabled(currentEntity) == true)
+                        {
+                            // Resets tree aging for decidous non-decorations in winter.
+                            buffer.SetComponentEnabled<Game.Objects.Decoration>(unfilteredChunkIndex, currentEntity, false);
                         }
                     }
                 }

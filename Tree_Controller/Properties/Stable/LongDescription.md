@@ -6,7 +6,7 @@ Video Demo available on YouTube.
 Unified Icon Library
 
 ## Donations
-If you want to say thank you with a donation you can do so on Paypal.
+If you want to say thank you with a donation you can do so on Paypal or Buy me a Coffee.
 
 ## Translations
 I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the crowdin or discord link. CSL2:CODEMODS -> mods-wip -> Tree Controller: Translations.
@@ -53,7 +53,7 @@ Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. 
 Press the gear button to open the Advanced Set Control Panel that lets you set Age overrides, Probability weights, and minimum and maximum elevations for each prefab in a set. Age overrides and Probability weights work with object tool and line tools. Minimum and maximum elevations are only for brushing objects. 
 
 ## Tree Growth
-Includes the option to disable tree growth over the whole map but it excludes any trees within specialized lumber industry areas.
+You may use the Tree Controller tools to pause or unpause the aging of trees that are already placed. If used the Disable Tree Aging option from the past this will automatically be added on load to each of the trees. Trees will have a red circle around them while using the tree controller tools if their aging is paused.
 
 To set all trees to Adult and/or Elderly, Select: Landscaping -> Vegetation -> Change Age Tool -> Whole Map -> Select Age(s) -> Right click on the map. 
 

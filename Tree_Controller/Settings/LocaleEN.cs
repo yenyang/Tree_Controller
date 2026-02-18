@@ -32,8 +32,6 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetOptionTabLocaleID(TreeControllerSettings.WindTab), "Wind" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.UseDeadModelDuringWinter)), "Deciduous trees use Dead Model during Winter" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.UseDeadModelDuringWinter)), "Will temporarily make all non-lumber industry deciduous trees use the dead model and pause growth during winter." },
-                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.DisableTreeGrowth)), "Disable Tree Growth" },
-                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.DisableTreeGrowth)), "Disable tree growth for the entire map except for lumber industry." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.FreeVegetation)), "Free Trees and Vegetation" },
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.FreeVegetation)), "Sets the cost of trees and vegetation to 0." },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.IncludeStumps)), "Include Stumps" },

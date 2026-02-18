@@ -18,7 +18,6 @@ namespace Tree_Controller.Systems
     using Tree_Controller.Utils;
     using Unity.Collections;
     using Unity.Entities;
-    using Unity.Entities.UniversalDelegates;
 
     /// <summary>
     /// Modifies Temp entities that are also trees.
@@ -33,7 +32,6 @@ namespace Tree_Controller.Systems
         private EntityQuery m_TempOwnedTreeQuery;
         private EntityQuery m_TempOwnedVegetationQuery;
         private EntityQuery m_TempTreeQuery;
-        private EntityQuery m_AppliedQuery;
         private TreeControllerUISystem m_UISystem;
         private Unity.Mathematics.Random m_Random;
         private ushort m_RandomSeed;
@@ -61,18 +59,13 @@ namespace Tree_Controller.Systems
                 .Build();
 
             m_TempOwnedTreeQuery = SystemAPI.QueryBuilder()
-                .WithAll<Updated, Temp, Owner, Game.Objects.Tree>()
+                .WithAll<Updated, Temp, Owner, Game.Objects.Tree, PseudoRandomSeed>()
                 .WithNone<Deleted, Overridden>()
                 .Build();
 
             m_TempTreeQuery = SystemAPI.QueryBuilder()
                 .WithAll<Updated, Temp, Game.Objects.Tree, PseudoRandomSeed>()
                 .WithNone<Deleted, Overridden, Owner>()
-                .Build();
-
-            m_AppliedQuery = SystemAPI.QueryBuilder()
-                .WithAll<Updated, Applied, Game.Objects.Tree, PseudoRandomSeed, Owner>()
-                .WithNone<Deleted, Overridden, Temp>()
                 .Build();
 
             Enabled = false;
@@ -159,6 +152,11 @@ namespace Tree_Controller.Systems
                              EntityManager.HasComponent<Edge>(owner2.m_Owner))
                     {
                         placingStreetTrees = true;
+                    }
+
+                    if (EntityManager.HasComponent<Game.Objects.Decoration>(entity))
+                    {
+                        EntityManager.SetComponentEnabled<Game.Objects.Decoration>(entity, m_ObjectToolSystem.decorationMode);
                     }
                 }
 

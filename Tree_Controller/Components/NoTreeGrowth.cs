@@ -8,7 +8,7 @@ namespace Tree_Controller
     using Unity.Entities;
 
     /// <summary>
-    /// A component that is used to disable tree growth globally by adding to query.
+    /// RETIRED. Only used for migration to vanilla. A component that is used to disable tree growth globally by adding to query.
     /// </summary>
     public struct NoTreeGrowth : IComponentData, IQueryTypeParameter, IEmptySerializable
     {

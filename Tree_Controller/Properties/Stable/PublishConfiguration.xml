@@ -61,7 +61,7 @@ Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. 
 Press the gear button to open the Advanced Set Control Panel that lets you set Age overrides, Probability weights, and minimum and maximum elevations for each prefab in a set. Age overrides and Probability weights work with object tool and line tools. Minimum and maximum elevations are only for brushing objects. 
 
 ## Tree Growth
-Includes the option to disable tree growth over the whole map but it excludes any trees within specialized lumber industry areas.
+You may use the Tree Controller tools to pause or unpause the aging of trees that are already placed. If used the Disable Tree Aging option from the past this will automatically be added on load to each of the trees. Trees will have a red circle around them while using the tree controller tools if their aging is paused.
 
 To set all trees to Adult and/or Elderly, Select: Landscaping -&gt; Vegetation -&gt; Change Age Tool -&gt; Whole Map -&gt; Select Age(s) -&gt; Right click on the map. 
 
@@ -115,11 +115,15 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Patch v.1.6.15
+  <ChangeLog># Update v.1.7.0
 * Compatibility improvements with game version 1.5.4.
-* Vanilla's Prevent Aging toggle added to Age row while plopping trees.
-* Vanilla's Prevent Aging toggle added to Tree Controller Tool.
-* Option to Disable Tree Growth over the whole map Retired. A transition to vanilla enabled Decoration component provided.</ChangeLog>
+* Vanilla's Preserve Age toggle added to Age row while plopping trees.
+* Vanilla's Preserve Age toggle added to Tree Controller Tool. 
+* "Decoration Trees" that do not age have a red circle around them while using the Tree Controller Tools.
+* Mod uses a Pause Icon for Preserge Age Toggle instead of vanilla hour glass.
+* Option to Disable Tree Growth over the whole map Retired. A transition to vanilla enabled Decoration component provided. 
+* Polish localization updated.
+* Some vanilla problems where subobject trees are stuck as saplings are fixed with the mod but not all of them. You can use the tool to manually fix any of them.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

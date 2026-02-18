@@ -3,7 +3,7 @@
 // </copyright>
 
 // #define VERBOSE
-#define DUMP_VANILLA_LOCALIZATION
+// #define DUMP_VANILLA_LOCALIZATION
 namespace Tree_Controller
 {
     using System;

@@ -9,6 +9,7 @@ namespace Tree_Controller.Settings
     using Game.Modding;
     using Game.Settings;
     using Game.Simulation;
+    using Game.Tools;
     using Game.UI;
     using Tree_Controller.Systems;
     using Tree_Controller.Tools;
@@ -124,10 +125,18 @@ namespace Tree_Controller.Settings
         public bool UseDeadModelDuringWinter { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether Tree Growth was previously disabled. RETIRED. Still used for migration to vanilla.
+        /// Gets or sets a value indicating whether to always PreserveAge. Hide PreserveAge Toggle.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
+        [SettingsUISetter(typeof(TreeControllerSettings), nameof(SetDisableTreeGrowth))]
+        [SettingsUIConfirmation]
+        public bool DisableTreeGrowth { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to PreserveAge. Used for preserving toggle state after closing the game.
         /// </summary>
         [SettingsUIHidden]
-        public bool DisableTreeGrowth { get; set; }
+        public bool PreserveAge { get; set; }
 
         /// <summary>
         /// Gets or sets a enum that defines the selection for Age Selection.
@@ -436,6 +445,17 @@ namespace Tree_Controller.Settings
             {
                 modifyVegeationPrefabSystem.ResetObjectGeometrySize();
             }
+        }
+
+        /// <summary>
+        /// Sets DisableTreeGrowth on UI System to handle Hiding Preserve Age Toggle.
+        /// </summary>
+        /// <param name="value">Is Disable Tree Growth enabled.</param>
+        public void SetDisableTreeGrowth(bool value)
+        {
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<TreeControllerUISystem>().SetDisableTreeGrowth(value);
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<PauseTreeGrowthSystem>().Enabled = value;
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ObjectToolSystem>().decorationMode = value;
         }
     }
 }

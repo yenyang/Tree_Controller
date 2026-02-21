@@ -142,6 +142,7 @@ namespace Tree_Controller.Tools
         private ValueBindingHelper<bool> m_IsEditor;
         private ValueBindingHelper<bool> m_ShowAdvancedForestBrushPanel;
         private ValueBindingHelper<int> m_SeaLevel;
+        private ValueBinding<bool> m_HidePreserveAgeToggle;
         private CustomSetRepository m_TemporaryCustomSetRepository;
         private bool m_UpdateSelectionSet = false;
         private bool m_RecentlySelectedPrefabSet = false;
@@ -446,6 +447,15 @@ namespace Tree_Controller.Tools
             m_UiView.ExecuteScript($"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{ImageSystem.GetThumbnail(prefab)}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.add(\"selected\"); yyTreeController.tagElements[yyTreeController.i].parentNode.parentNode.classList.add(\"selected\");  }} }} ");
         }
 
+        /// <summary>
+        /// Sets whether to Hide Preserve Age Toggle.
+        /// </summary>
+        /// <param name="value">State of Disable Tree Growth Option.</param>
+        public void SetDisableTreeGrowth(bool value)
+        {
+            m_HidePreserveAgeToggle.Update(value);
+        }
+
         /// <inheritdoc/>
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
@@ -486,6 +496,15 @@ namespace Tree_Controller.Tools
                     TryLoadCustomPrefabSet($"YYTC-custom-set-{i}");
                 }
             }
+
+            if (!TreeControllerMod.Instance.Settings.DisableTreeGrowth)
+            {
+                m_ObjectToolSystem.decorationMode = TreeControllerMod.Instance.Settings.PreserveAge;
+            }
+            else
+            {
+                m_ObjectToolSystem.decorationMode = true;
+            }
         }
 
         /// <inheritdoc/>
@@ -518,6 +537,7 @@ namespace Tree_Controller.Tools
             AddBinding(m_IsTree = new ValueBinding<bool>(ModId, "IsTree", false));
             AddBinding(m_Radius = new ValueBinding<float>(ModId, "Radius", 100f));
             AddBinding(m_SelectedPrefabSet = new ValueBinding<string>(ModId, "PrefabSet", string.Empty));
+            AddBinding(m_HidePreserveAgeToggle = new ValueBinding<bool>(ModId, "HidePreserveAgeToggle", TreeControllerMod.Instance.Settings.DisableTreeGrowth));
             m_IsEditor = CreateBinding("IsEditor", false);
             m_ShowStump = CreateBinding("ShowStump", false);
             m_AdvancedForestBrushEntries = CreateBinding("AdvancedForestBrushEntries", new AdvancedForestBrushEntry[] { });
@@ -551,6 +571,7 @@ namespace Tree_Controller.Tools
             });
             CreateTrigger<string>("ResetEntry", ResetEntry);
             CreateTrigger<string>("RemoveEntry", RemoveEntry);
+            AddBinding(new TriggerBinding<bool>(ModId, "PreserveAgeToggled", (bool value) => { TreeControllerMod.Instance.Settings.PreserveAge = value; }));
             m_VegetationQuery = GetEntityQuery(ComponentType.ReadOnly<Vegetation>());
 
             m_Log.Info($"{nameof(TreeControllerUISystem)}.{nameof(OnCreate)}");

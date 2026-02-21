@@ -14,13 +14,14 @@ namespace Tree_Controller.Settings
     using Tree_Controller.Systems;
     using Tree_Controller.Tools;
     using Unity.Entities;
+    using UnityEngine.Rendering.HighDefinition;
 
     /// <summary>
     /// The mod settings for the Tree Controller Mod.
     /// </summary>
     [FileLocation("Mods_Yenyang_Tree_Controller")]
     [SettingsUITabOrder(General, WindTab)]
-    [SettingsUIGroupOrder(Stable, DisableWinds, Override, Remove, Reset, Info)]
+    [SettingsUIGroupOrder(Stable, DisableTreeGrowthGroup, DisableWinds, Override, Remove, Reset, Info)]
     public class TreeControllerSettings : ModSetting
     {
         /// <summary>
@@ -39,6 +40,7 @@ namespace Tree_Controller.Settings
         private const string Reset = "Reset";
         private const string Remove = "Remove";
         private const string Stable = "Stable";
+        private const string DisableTreeGrowthGroup = "DisableTreeGrowth";
         private const string Info = "Version";
 
         private ReloadFoliageColorDataSystem m_ReloadFoliageColorDataSystem;
@@ -125,11 +127,40 @@ namespace Tree_Controller.Settings
         public bool UseDeadModelDuringWinter { get; set; }
 
         /// <summary>
+        /// Sets a value indicating whether to Activate Disable Tree Growth.
+        /// </summary>
+        [SettingsUISection(General, DisableTreeGrowthGroup)]
+        [SettingsUIButton]
+        [SettingsUIConfirmation]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(DisableTreeGrowth))]
+        public bool ActivateDisableTreeGrowth
+        {
+            set
+            {
+                SetDisableTreeGrowth(true);
+            }
+        }
+
+        /// <summary>
+        /// Sets a value indicating whether to Deactivate Disable Tree Growth.
+        /// </summary>
+        [SettingsUISection(General, DisableTreeGrowthGroup)]
+        [SettingsUIButton]
+        [SettingsUIConfirmation]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(DisableTreeGrowth), true)]
+        public bool DeactivateDisableTreeGrowth
+        {
+            set
+            {
+                SetDisableTreeGrowth(false);
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to always PreserveAge. Hide PreserveAge Toggle.
         /// </summary>
-        [SettingsUISection(General, Stable)]
-        [SettingsUISetter(typeof(TreeControllerSettings), nameof(SetDisableTreeGrowth))]
-        [SettingsUIConfirmation]
+        [SettingsUISection(General, DisableTreeGrowthGroup)]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(DisableDisableTreeGrowth))]
         public bool DisableTreeGrowth { get; set; }
 
         /// <summary>
@@ -453,9 +484,19 @@ namespace Tree_Controller.Settings
         /// <param name="value">Is Disable Tree Growth enabled.</param>
         public void SetDisableTreeGrowth(bool value)
         {
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<TreeControllerUISystem>().SetDisableTreeGrowth(value);
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<PauseTreeGrowthSystem>().Enabled = value;
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ObjectToolSystem>().decorationMode = value;
+            DisableTreeGrowth = value;
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<TreeControllerUISystem>().SetDisableTreeGrowth(DisableTreeGrowth);
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<PauseTreeGrowthSystem>().Enabled = DisableTreeGrowth;
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ObjectToolSystem>().decorationMode = DisableTreeGrowth;
+        }
+
+        /// <summary>
+        /// Always returns true to disable Disable Tree Growth option.
+        /// </summary>
+        /// <returns>True.</returns>
+        public bool DisableDisableTreeGrowth()
+        {
+            return true;
         }
     }
 }

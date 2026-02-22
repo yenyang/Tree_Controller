@@ -133,7 +133,7 @@ namespace Tree_Controller.Settings
         [SettingsUIButton]
         [SettingsUIConfirmation]
         [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(DisableTreeGrowth))]
-        public bool ActivateDisableTreeGrowth
+        public bool PauseTreeGrowthButton
         {
             set
             {
@@ -148,7 +148,7 @@ namespace Tree_Controller.Settings
         [SettingsUIButton]
         [SettingsUIConfirmation]
         [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(DisableTreeGrowth), true)]
-        public bool DeactivateDisableTreeGrowth
+        public bool ResumeTreeGrowthButton
         {
             set
             {

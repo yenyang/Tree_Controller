@@ -545,7 +545,8 @@ namespace Tree_Controller.Tools
                         }
 
                         if (!decorationHandled &&
-                            EntityManager.HasComponent<Game.Objects.Decoration>(e))
+                            EntityManager.HasComponent<Game.Objects.Decoration>(e) &&
+                           !EntityManager.HasComponent<Lumber>(e))
                         {
                             EntityCommandBuffer buffer = m_ToolOutputBarrier.CreateCommandBuffer();
                             buffer.SetComponentEnabled<Game.Objects.Decoration>(e, m_ObjectToolSystem.decorationMode);

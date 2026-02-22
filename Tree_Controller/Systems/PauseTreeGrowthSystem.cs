@@ -79,6 +79,7 @@ namespace Tree_Controller.Systems
             if (!TreeControllerMod.Instance.Settings.DisableTreeGrowth)
             {
                 Enabled = false;
+                return;
             }
 
             PauseTreeGrowthJob pauseTreeGrowthJob = new PauseTreeGrowthJob()

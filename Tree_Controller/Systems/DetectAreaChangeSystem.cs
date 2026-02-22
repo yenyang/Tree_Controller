@@ -42,10 +42,12 @@ namespace Tree_Controller.Systems
                     {
                         ComponentType.ReadOnly<Updated>(),
                         ComponentType.ReadOnly<Extractor>(),
+                        ComponentType.ReadOnly<WoodResource>(),
                     },
                     None = new ComponentType[]
                     {
                         ComponentType.ReadOnly<Deleted>(),
+                        ComponentType.ReadOnly<Game.Tools.Temp>(),
                     },
                 },
             });

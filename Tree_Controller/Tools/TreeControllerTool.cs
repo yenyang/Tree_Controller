@@ -535,6 +535,8 @@ namespace Tree_Controller.Tools
                                 m_TreeLookup = SystemAPI.GetComponentLookup<Tree>(isReadOnly: true),
                                 m_SubMeshLookup = SystemAPI.GetBufferLookup<SubMesh>(isReadOnly: true),
                                 m_DecorationMode = m_ObjectToolSystem.decorationMode,
+                                m_DecorationLookup = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(isReadOnly: true),
+                                m_LumberLookup = SystemAPI.GetComponentLookup<Lumber>(isReadOnly: true),
                             };
                             inputDeps = changePrefabRefJob.Schedule(inputDeps);
                             m_ToolOutputBarrier.AddJobHandleForProducer(inputDeps);
@@ -735,7 +737,7 @@ namespace Tree_Controller.Tools
                             if (!m_SelectedTreePrefabEntities.IsEmpty && !doNotApplyTreePrefab)
                             {
                                 NativeList<TreeState> selectedTreeStates = m_TreeControllerUISystem.GetSelectedAges();
-                                ChangePrefabRefJob changePrefabRefJob = new ()
+                                ChangePrefabRefJob changePrefabRefJob = new()
                                 {
                                     m_Entity = subObject,
                                     m_SelectedPrefabEntities = m_SelectedTreePrefabEntities,
@@ -746,6 +748,8 @@ namespace Tree_Controller.Tools
                                     m_TreeLookup = SystemAPI.GetComponentLookup<Tree>(isReadOnly: true),
                                     m_SubMeshLookup = SystemAPI.GetBufferLookup<SubMesh>(isReadOnly: true),
                                     m_DecorationMode = m_ObjectToolSystem.decorationMode,
+                                    m_LumberLookup = SystemAPI.GetComponentLookup<Lumber>(isReadOnly: true),
+                                    m_DecorationLookup = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(isReadOnly: true),
                                 };
                                 jobHandle = changePrefabRefJob.Schedule(jobHandle);
                                 m_ToolOutputBarrier.AddJobHandleForProducer(jobHandle);
@@ -1184,6 +1188,8 @@ namespace Tree_Controller.Tools
             public ComponentLookup<Tree> m_TreeLookup;
             public BufferLookup<SubMesh> m_SubMeshLookup;
             public bool m_DecorationMode;
+            public ComponentLookup<Game.Objects.Decoration> m_DecorationLookup;
+            public ComponentLookup<Lumber> m_LumberLookup;
 
             /// <summary>
             /// Changes prefab ref for specified entity.
@@ -1219,6 +1225,14 @@ namespace Tree_Controller.Tools
                         buffer.RemoveComponent<Game.Objects.Decoration>(m_Entity);
                         buffer.RemoveComponent<Lumber>(m_Entity);
                     }
+
+
+                    if (m_DecorationLookup.HasComponent(m_Entity) &&
+                       !m_LumberLookup.HasComponent(m_Entity))
+                    {
+                        buffer.SetComponentEnabled<Game.Objects.Decoration>(m_Entity, m_DecorationMode);
+                    }
+
 
                     buffer.RemoveComponent<DeciduousData>(m_Entity);
                     buffer.RemoveComponent<Evergreen>(m_Entity);

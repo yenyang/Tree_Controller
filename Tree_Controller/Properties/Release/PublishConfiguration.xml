@@ -14,7 +14,7 @@ Video Demo available on YouTube.
 Unified Icon Library
 
 ## Donations
-If you want to say thank you with a donation you can do so on Paypal.
+If you want to say thank you with a donation you can do so on Paypal or Buy me a Coffee.
 
 ## Translations
 I am looking for volunteers to help translate the mod into the official languages. For those interested please find the project in the crowdin or discord link. CSL2:CODEMODS -&gt; mods-wip -&gt; Tree Controller: Translations.
@@ -53,19 +53,15 @@ Adds new random seeds to tree subojects inside a building will no longer have ex
 
 Option for Faster Max Brush Strenth which replaces 100% with 300%. (Default off).
 
-Option for Limited Tree Anarchy where conflict checks approximately based on trunk instead of drip line. (Default off). Be careful with this if settings are reset. But you can bring them back with Anarchy component tool if something disappears from being overriden.
-
 ## Custom sets
 Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click the custom set button to save a custom set. Once a set has been saved, click the custom set button to select that set. Hold Ctrl while switching themes to maintain the custom set.
 
 Press the gear button to open the Advanced Set Control Panel that lets you set Age overrides, Probability weights, and minimum and maximum elevations for each prefab in a set. Age overrides and Probability weights work with object tool and line tools. Minimum and maximum elevations are only for brushing objects. 
 
 ## Tree Growth
-Includes the option to disable tree growth over the whole map but it excludes any trees within specialized lumber industry areas.
+You may use the Tree Controller tools to pause or unpause the aging of trees that are already placed. If you use the Disable Tree Aging option this will automatically be added to trees other than Lumber. Trees will have a red circle around them while using the tree controller tools if their aging is paused.
 
 To set all trees to Adult and/or Elderly, Select: Landscaping -&gt; Vegetation -&gt; Change Age Tool -&gt; Whole Map -&gt; Select Age(s) -&gt; Right click on the map. 
-
-This mod doesn't automatically set street trees or trees in buildings to a specified age, but you can change them with the tool. This feature may be included later.
 
 ## Seasonal Effects
 Includes the option to make deciduous trees use dead model during winter. The dead model is not scaled based on the actual age of the tree.
@@ -79,9 +75,6 @@ Custom color variations set has been removed and will be replaced soon in a new 
 
 ## Collaboration
 Algernon and I have collaborated to allow for sets and multiple vegetation types selection using Line Tool.
-
-# Support
-I will respond on the code modding channels on Cities: Skylines Modding Discord.
 
 # Credits 
 * yenyang - Mod Author
@@ -109,21 +102,26 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/tree-controller.1644992/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.6.13.104" />
+  <ModVersion Value="1.7.0.1" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.5.*" />
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Patch v1.6.13.104
-* Compatibility fixes for use alongside Topo Toggle Mod.</ChangeLog>
+  <ChangeLog># Patch v1.7.0.1
+* Reinstated Disable Tree Growth Setting. Changed description. Added Activate and Deactivate buttons with warnings and confirmations.
+* Disable Tree Growth setting now when toggled pauses all tree aging by enabling vanilla Decoration component on all trees other than Lumber.
+* When Disable Tree Growth is disabled or settings are reset, existing trees are not effected and will continue to have paused tree aging. Use Tree Controller Tool to resume aging for trees.
+* Tree Controller tools can now enable/disable vanilla Decoration component depending on Preserve Age toggle without changing a trees age or prefab.
+* Tree Controller Tool no longer enable/disable vanilla Decoration component for Lumber.
+* Fixed Lumber system to detect trees with enabled Decoration component.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />
   <ExternalLink Type="github" Url="https://github.com/yenyang/Tree_Controller" />
   <ExternalLink Type="youtube" Url="https://www.youtube.com/watch?v=YoyMliyWJQU" />
   <ExternalLink Type="crowdin" Url="https://crowdin.com/project/csl2-mod-water-features" />
-  <ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/yenyang_mods"/>
+  <ExternalLink Type="buymeacoffee" Url="https://buymeacoffee.com/yenyang_mods" />
   <!-- Supported values Public, Private, Unlisted -->
   <AccessLevel Value="Unlisted" />
 </Publish>

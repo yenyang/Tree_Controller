@@ -504,6 +504,7 @@ namespace Tree_Controller.Tools
                                 m_SubMeshLookup = SystemAPI.GetBufferLookup<SubMesh>(isReadOnly: false),
                                 m_DecorationMode = m_ObjectToolSystem.decorationMode,
                                 m_DecorationLookup = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(isReadOnly: true),
+                                m_LumberLookup = SystemAPI.GetComponentLookup<Lumber>(isReadOnly: true),
                             };
                             inputDeps = changeTreeStateJob.Schedule(inputDeps);
                             m_ToolOutputBarrier.AddJobHandleForProducer(inputDeps);
@@ -579,6 +580,7 @@ namespace Tree_Controller.Tools
                     m_SubMeshLookup = SystemAPI.GetBufferLookup<SubMesh>(isReadOnly: true),
                     m_DecorationMode = m_ObjectToolSystem.decorationMode,
                     m_DecorationLookup = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(isReadOnly: true),
+                    m_LumberLookup = SystemAPI.GetComponentLookup<Lumber>(isReadOnly: true),
                 };
                 inputDeps = JobChunkExtensions.Schedule(changeTreeAgeWithinRadiusJob, m_VegetationQuery, inputDeps);
                 m_ToolOutputBarrier.AddJobHandleForProducer(inputDeps);
@@ -715,6 +717,7 @@ namespace Tree_Controller.Tools
                                     m_SubMeshLookup = SystemAPI.GetBufferLookup<SubMesh>(isReadOnly: true),
                                     m_DecorationLookup = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(isReadOnly: true),
                                     m_DecorationMode = m_ObjectToolSystem.decorationMode,
+                                    m_LumberLookup = SystemAPI.GetComponentLookup<Lumber>(isReadOnly: true),
                                 };
                                 jobHandle = changeTreeStateJob.Schedule(jobHandle);
                                 m_ToolOutputBarrier.AddJobHandleForProducer(jobHandle);
@@ -814,6 +817,7 @@ namespace Tree_Controller.Tools
             public BufferLookup<Game.Prefabs.SubMesh> m_SubMeshLookup;
             public ComponentLookup<Game.Objects.Decoration> m_DecorationLookup;
             public bool m_DecorationMode;
+            public ComponentLookup<Lumber> m_LumberLookup;
 
             /// <summary>
             /// Executes job which will change state or prefab for trees within a radius.
@@ -849,7 +853,8 @@ namespace Tree_Controller.Tools
                                 buffer.AddComponent<BatchesUpdated>(currentEntity);
                             }
 
-                            if (m_DecorationLookup.HasComponent(currentEntity))
+                            if (m_DecorationLookup.HasComponent(currentEntity) &&
+                                !m_LumberLookup.HasComponent(currentEntity))
                             {
                                 buffer.SetComponentEnabled<Game.Objects.Decoration>(currentEntity, m_DecorationMode);
                             }
@@ -876,7 +881,8 @@ namespace Tree_Controller.Tools
                                 continue;
                             }
 
-                            if (m_DecorationLookup.HasComponent(currentEntity))
+                            if (m_DecorationLookup.HasComponent(currentEntity) &&
+                                !m_LumberLookup.HasComponent(currentEntity))
                             {
                                 buffer.SetComponentEnabled<Game.Objects.Decoration>(currentEntity, m_DecorationMode);
                             }
@@ -922,7 +928,8 @@ namespace Tree_Controller.Tools
                             buffer.AddComponent<Updated>(currentEntity);
                             buffer.AddComponent<BatchesUpdated>(currentEntity);
                         }
-                        else if (m_DecorationLookup.HasComponent(currentEntity))
+                        else if (m_DecorationLookup.HasComponent(currentEntity) &&
+                            !m_LumberLookup.HasComponent(currentEntity))
                         {
                             buffer.SetComponentEnabled<Game.Objects.Decoration>(currentEntity, m_DecorationMode);
                         }
@@ -1010,7 +1017,7 @@ namespace Tree_Controller.Tools
                             buffer.AddComponent<BatchesUpdated>(currentEntity);
                         }
 
-                        if (m_DecorationLookup.HasComponent(currentEntity))
+                        if (m_DecorationLookup.HasComponent(currentEntity) && !m_LumberLookup.HasComponent(currentEntity))
                         {
                             buffer.SetComponentEnabled<Game.Objects.Decoration>(currentEntity, m_DecorationMode);
                         }
@@ -1081,7 +1088,7 @@ namespace Tree_Controller.Tools
                         buffer.AddComponent<Updated>(currentEntity);
                         buffer.AddComponent<BatchesUpdated>(currentEntity);
                     }
-                    else if (m_DecorationLookup.HasComponent(currentEntity))
+                    else if (m_DecorationLookup.HasComponent(currentEntity) && !m_LumberLookup.HasComponent(currentEntity))
                     {
                         buffer.SetComponentEnabled<Game.Objects.Decoration>(currentEntity, m_DecorationMode);
                     }
@@ -1272,6 +1279,7 @@ namespace Tree_Controller.Tools
             public BufferLookup<SubMesh> m_SubMeshLookup;
             public bool m_DecorationMode;
             public ComponentLookup<Game.Objects.Decoration> m_DecorationLookup;
+            public ComponentLookup<Lumber> m_LumberLookup;
 
             /// <summary>
             /// Changes TreeState for specfied tree entity.
@@ -1289,7 +1297,8 @@ namespace Tree_Controller.Tools
                 buffer.SetComponent(m_Entity, m_Tree);
                 buffer.AddComponent<BatchesUpdated>(m_Entity);
 
-                if (m_DecorationLookup.HasComponent(m_Entity))
+                if (m_DecorationLookup.HasComponent(m_Entity) &&
+                    !m_LumberLookup.HasComponent(m_Entity))
                 {
                     buffer.SetComponentEnabled<Game.Objects.Decoration>(m_Entity, m_DecorationMode);
                 }

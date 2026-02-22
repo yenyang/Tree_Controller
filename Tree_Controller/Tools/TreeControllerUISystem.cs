@@ -687,11 +687,6 @@ namespace Tree_Controller.Tools
 
             if (m_ToolOrPrefabSwitchedRecently)
             {
-                if (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve)
-                {
-                    HandleDistanceScale();
-                }
-
                 if (m_ShowAdvancedForestBrushPanel.Value
                     && m_SelectedPrefabSet.value == string.Empty
                     && m_TreeControllerTool.GetSelectedPrefabs().Count > 1
@@ -870,23 +865,6 @@ namespace Tree_Controller.Tools
             m_ToolSystem.selected = Entity.Null;
             m_ObjectToolSystem.mode = ObjectToolSystem.Mode.Brush;
             m_ToolSystem.activeTool = m_ObjectToolSystem;
-        }
-
-        private void HandleDistanceScale()
-        {
-            if (!m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.GetPrefab(), out Entity prefabEntity))
-            {
-                return;
-            }
-
-            if (!EntityManager.TryGetComponent(prefabEntity, out Vegetation vegetation)
-                || !EntityManager.TryGetComponent(prefabEntity, out ObjectGeometryData objectGeometryData))
-            {
-                return;
-            }
-
-            float x = ((objectGeometryData.m_Flags & GeometryFlags.Circular) != 0) ? vegetation.m_Size.x : math.length(vegetation.m_Size.xz);
-            m_ObjectToolSystem.SetMemberValue("distanceScale", math.pow(2f, math.clamp(math.round(math.log2(x)), 0f, 5f)));
         }
 
         /// <summary>
@@ -1170,18 +1148,6 @@ namespace Tree_Controller.Tools
             if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create && m_ToolMode.value != (int)ToolMode.Plop)
             {
                 m_ToolMode.Update((int)ToolMode.Plop);
-            }
-
-            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line && m_ToolMode.value != (int)ToolMode.Line)
-            {
-                m_ToolMode.Update((int)ToolMode.Line);
-                HandleDistanceScale();
-            }
-
-            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve && m_ToolMode.value != (int)ToolMode.Curve)
-            {
-                m_ToolMode.Update((int)ToolMode.Curve);
-                HandleDistanceScale();
             }
 
             if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Upgrade && m_ToolMode.value != (int)ToolMode.Upgrade)

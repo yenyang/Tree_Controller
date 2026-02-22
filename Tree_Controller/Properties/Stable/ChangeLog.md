@@ -7,3 +7,4 @@
 * Option to Disable Tree Growth over the whole map Retired. A transition to vanilla enabled Decoration component provided. 
 * Polish localization updated.
 * Some vanilla problems where subobject trees are stuck as saplings are fixed with the mod but not all of them. You can use the tool to manually fix any of them.
+* Limited Tree Anarchy retired. Vanilla makes it essentially redundant, and vanilla is reliable.

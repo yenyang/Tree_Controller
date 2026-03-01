@@ -1,10 +1,9 @@
-﻿# Update v.1.7.0
-* Compatibility improvements with game version 1.5.4.
-* Vanilla's Preserve Age toggle added to Age row while plopping trees.
-* Vanilla's Preserve Age toggle added to Tree Controller Tool. 
-* "Decoration Trees" that do not age have a red circle around them while using the Tree Controller Tools.
-* Mod uses a Pause Icon for Preserge Age Toggle instead of vanilla hour glass.
-* Option to Disable Tree Growth over the whole map Retired. A transition to vanilla enabled Decoration component provided. 
-* Polish localization updated.
-* Some vanilla problems where subobject trees are stuck as saplings are fixed with the mod but not all of them. You can use the tool to manually fix any of them.
+﻿# Patch v.1.7.1
+* Reinstated Disable Tree Growth Setting. Now called Tree Growth Paused. Changed description. Added Pause and Resume buttons with warnings and confirmations.
+* Tree Growth Paused setting now when toggled pauses all tree aging by enabling vanilla Decoration component on all trees other than Lumber.
+* When Tree Growth is resumed or settings are reset, existing trees are not effected and will continue to have paused tree aging. Use Tree Controller Tool to resume aging for trees.
+* Tree Controller tools can now enable/disable vanilla Decoration component depending on Preserve Age toggle without changing a trees age or prefab.
+* Tree Controller Tool no longer enable/disable vanilla Decoration component for Lumber.
+* Fixed Lumber system to detect trees with enabled Decoration component.
 * Limited Tree Anarchy retired. Vanilla makes it essentially redundant, and vanilla is reliable.
+* Updated Localization.

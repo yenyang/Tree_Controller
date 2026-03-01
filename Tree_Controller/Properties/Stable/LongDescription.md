@@ -45,8 +45,6 @@ Adds new random seeds to tree subojects inside a building will no longer have ex
 
 Option for Faster Max Brush Strenth which replaces 100% with 300%. (Default off).
 
-Option for Limited Tree Anarchy where conflict checks approximately based on trunk instead of drip line. (Default off). Be careful with this if settings are reset. But you can bring them back with Anarchy component tool if something disappears from being overriden.
-
 ## Custom sets
 Hold Ctrl to select or unselect multiple types of trees using the toolbar menu. Then hold Ctrl and click the custom set button to save a custom set. Once a set has been saved, click the custom set button to select that set. Hold Ctrl while switching themes to maintain the custom set.
 
@@ -55,9 +53,9 @@ Press the gear button to open the Advanced Set Control Panel that lets you set A
 ## Tree Growth
 You may use the Tree Controller tools to pause or unpause the aging of trees that are already placed. If used the Disable Tree Aging option from the past this will automatically be added on load to each of the trees. Trees will have a red circle around them while using the tree controller tools if their aging is paused.
 
-To set all trees to Adult and/or Elderly, Select: Landscaping -> Vegetation -> Change Age Tool -> Whole Map -> Select Age(s) -> Right click on the map. 
+Disable Tree Aging has been renamed to Tree Growth Paused. Same global functionality as before, but with vanilla support effects are now persistant even if you Resume Tree Growth, settings are reset or if you remove/disable the mod.
 
-This mod doesn't automatically set street trees or trees in buildings to a specified age, but you can change them with the tool. This feature may be included later.
+To set all trees to Adult and/or Elderly, Select: Landscaping -> Vegetation -> Change Age Tool -> Whole Map -> Select Age(s) -> Right click on the map.
 
 ## Seasonal Effects
 Includes the option to make deciduous trees use dead model during winter. The dead model is not scaled based on the actual age of the tree.
@@ -85,5 +83,5 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing
 * T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Nullpinter - Localization support
-* Localization: Hendrix, Fuchs23, and FearMyFeedEU (German), Nyoko and Citadino (Spanish), Mazi and Furios (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak, Morgan (French), syuuga101 (Japanese), TwotoolusFLY_LSh.st and Hinanchovo (Korean), _hayrynenart, SivenesisI,and krugl1y (Russian), allegretic (Chinese Traditional), Ti4goc (European Portuguese), 
+* Localization: Hendrix, Fuchs23, and FearMyFeedEU (German), Nyoko and Citadino (Spanish), Mazi and Furios (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak, Morgan (French), syuuga101 and nd381 (Japanese), TwotoolusFLY_LSh.st and Hinanchovo (Korean), _hayrynenart, SivenesisI,and krugl1y (Russian), allegretic (Chinese Traditional), Ti4goc (European Portuguese), 
 * Tigon Ologdring, code:witch - Testing, Feedback

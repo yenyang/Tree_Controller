@@ -69,11 +69,14 @@ namespace Tree_Controller.Systems
             RequireForUpdate(m_WoodResourceAreaQuery);
 
             m_Log.Info($"{nameof(LumberSystem)} created!");
+
+            Enabled = false;
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
+            
             if (!m_LumberQuery.IsEmptyIgnoreFilter)
             {
                 RemoveLumberJob removeLumberJob = new()
@@ -405,6 +408,7 @@ namespace Tree_Controller.Systems
 
                 Transform transform = m_TransformData[entity];
                 if (MathUtils.Intersect(m_Triangle, transform.m_Position.xz) &&
+                    entity != Entity.Null &&
                     m_DecorationData.HasComponent(entity))
                 {
                     // Disable Decoration Component
@@ -428,8 +432,12 @@ namespace Tree_Controller.Systems
                 NativeArray<Entity> entityNativeArray = chunk.GetNativeArray(m_EntityType);
                 for (int i = 0; i < chunk.Count; i++)
                 {
-                    Entity currentEntity = entityNativeArray[i];
-                    buffer.RemoveComponent<Lumber>(unfilteredChunkIndex, currentEntity);
+                    if (entityNativeArray[i] == Entity.Null)
+                    {
+                        continue;
+                    }
+
+                    buffer.RemoveComponent<Lumber>(unfilteredChunkIndex, entityNativeArray[i]);
                 }
             }
         }

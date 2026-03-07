@@ -8,6 +8,7 @@ namespace Tree_Controller.Systems
     using Colossal.Logging;
     using Colossal.Serialization.Entities;
     using Game;
+    using System.Windows.Forms;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
     using Unity.Collections;
@@ -113,6 +114,11 @@ namespace Tree_Controller.Systems
                 NativeArray<Entity> entityNativeArray = chunk.GetNativeArray(m_EntityType);
                 for (int i = 0; i < chunk.Count; i++)
                 {
+                    if (entityNativeArray[i] == Entity.Null)
+                    {
+                        continue;
+                    }
+
                     Entity currentEntity = entityNativeArray[i];
 
                     if (m_TreeGrowthDisabled &&
@@ -151,8 +157,12 @@ namespace Tree_Controller.Systems
                 NativeArray<Entity> entityNativeArray = chunk.GetNativeArray(m_EntityType);
                 for (int i = 0; i < chunk.Count; i++)
                 {
-                    Entity currentEntity = entityNativeArray[i];
+                    if (entityNativeArray[i] == Entity.Null)
+                    {
+                        continue;
+                    }
 
+                    Entity currentEntity = entityNativeArray[i];
                     if (m_DecorationLookup.HasComponent(currentEntity))
                     {
                         buffer.SetComponentEnabled<Game.Objects.Decoration>(unfilteredChunkIndex, currentEntity, true);

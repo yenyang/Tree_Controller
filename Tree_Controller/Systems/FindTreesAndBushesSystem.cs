@@ -118,6 +118,11 @@ namespace Tree_Controller.Systems
 
                 for (int i = 0; i < chunk.Count; i++)
                 {
+                    if (entityNativeArray[i] == Entity.Null)
+                    {
+                        continue;
+                    }
+
                     Entity currentEntity = entityNativeArray[i];
                     Game.Prefabs.PrefabRef currentPrefabRef = prefabRefNativeArray[i];
                     Entity prefabEntity = currentPrefabRef.m_Prefab;

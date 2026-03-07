@@ -185,6 +185,11 @@ namespace Tree_Controller.Systems
                 NativeArray<DeciduousData> deciduousTreeNativeArray = chunk.GetNativeArray(ref m_DeciduousTreeDataType);
                 for (int i = 0; i < chunk.Count; i++)
                 {
+                    if (entityNativeArray[i] == Entity.Null)
+                    {
+                        continue;
+                    }
+
                     Entity currentEntity = entityNativeArray[i];
                     Game.Objects.Tree currentTreeData = treeNativeArray[i];
                     DeciduousData currentDeciduousTreeData = deciduousTreeNativeArray[i];
@@ -199,6 +204,7 @@ namespace Tree_Controller.Systems
                         }
 
                         if (currentDeciduousTreeData.m_PermanentDecoration == true &&
+                            m_DecorationLookup.HasComponent(currentEntity) &&
                             m_DecorationLookup.IsComponentEnabled(currentEntity) == false)
                         {
                             buffer.SetComponentEnabled<Game.Objects.Decoration>(unfilteredChunkIndex, currentEntity, true);

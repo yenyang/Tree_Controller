@@ -203,13 +203,6 @@ namespace Tree_Controller.Systems
                             buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
                         }
 
-                        if (currentDeciduousTreeData.m_PermanentDecoration == true &&
-                            m_DecorationLookup.HasComponent(currentEntity) &&
-                            m_DecorationLookup.IsComponentEnabled(currentEntity) == false)
-                        {
-                            buffer.SetComponentEnabled<Game.Objects.Decoration>(unfilteredChunkIndex, currentEntity, true);
-                        }
-
                         buffer.RemoveComponent<DeciduousData>(unfilteredChunkIndex, currentEntity);
                         continue;
                     }

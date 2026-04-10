@@ -8,7 +8,6 @@ namespace Tree_Controller.Systems
     using Colossal.Logging;
     using Colossal.Serialization.Entities;
     using Game;
-    using System.Windows.Forms;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
     using Unity.Collections;
@@ -50,7 +49,7 @@ namespace Tree_Controller.Systems
                 .WithNone<Game.Common.Deleted, Game.Tools.Temp, Game.Common.Overridden, Lumber>()
                 .Build();
 
-            RequireAnyForUpdate(m_PauseTreeGrowthQuery);
+            RequireForUpdate(m_PauseTreeGrowthQuery);
         }
 
         /// <inheritdoc/>

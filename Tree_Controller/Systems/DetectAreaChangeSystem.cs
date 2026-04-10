@@ -58,6 +58,7 @@ namespace Tree_Controller.Systems
         protected override void OnUpdate()
         {
             m_LumberSystem.Enabled = true;
+            m_LumberSystem.ResetFrameCount();
         }
     }
 }

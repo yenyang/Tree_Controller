@@ -37,6 +37,18 @@ namespace Tree_Controller.Systems
         private Game.Objects.SearchSystem m_ObjectSearchSystem;
         private NaturalResourceSystem m_NaturalResourceSystem;
         private EntityQuery m_WoodResourceAreaQuery;
+        private int m_FrameCount;
+
+        /// <summary>
+        /// Sets frame count to 30.
+        /// </summary>
+        public void ResetFrameCount()
+        {
+            if (Enabled)
+            {
+                m_FrameCount = 30;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LumberSystem"/> class.
@@ -76,7 +88,6 @@ namespace Tree_Controller.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            
             if (!m_LumberQuery.IsEmptyIgnoreFilter)
             {
                 RemoveLumberJob removeLumberJob = new()
@@ -87,10 +98,18 @@ namespace Tree_Controller.Systems
                 JobHandle lumberJobHandle = JobChunkExtensions.ScheduleParallel(removeLumberJob, m_LumberQuery, Dependency);
                 m_Barrier.AddJobHandleForProducer(lumberJobHandle);
                 Dependency = lumberJobHandle;
+                ResetFrameCount();
+            }
+
+            if (m_FrameCount > 0)
+            {
+                m_FrameCount--;
+                return;
             }
 
             if (m_WoodResourceAreaQuery.IsEmptyIgnoreFilter)
             {
+                Enabled = false;
                 return;
             }
 

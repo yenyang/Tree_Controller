@@ -29,6 +29,11 @@ namespace Tree_Controller
         public bool m_PermanentDecoration;
 
         /// <summary>
+        /// This records if the decidous tree is lumber.
+        /// </summary>
+        public bool m_Lumber;
+
+        /// <summary>
         /// Saves the custom component onto the save file. First item written is the version number.
         /// </summary>
         /// <typeparam name="TWriter">Used by game.</typeparam>
@@ -36,10 +41,11 @@ namespace Tree_Controller
         public void Serialize<TWriter>(TWriter writer)
             where TWriter : IWriter
         {
-            writer.Write(2); // Version Number for Component.
+            writer.Write(3); // Version Number for Component.
             writer.Write((byte)m_PreviousTreeState);
             writer.Write(m_TechnicallyDead);
             writer.Write(m_PermanentDecoration);
+            writer.Write(m_Lumber);
         }
 
         /// <summary>
@@ -54,13 +60,22 @@ namespace Tree_Controller
             reader.Read(out byte treeState);
             m_PreviousTreeState = (TreeState)treeState;
             reader.Read(out m_TechnicallyDead);
-            if (version == 1)
+            if (version <= 1)
             {
                 m_PermanentDecoration = false;
             }
             else
             {
                 reader.Read(out m_PermanentDecoration);
+            }
+
+            if (version <= 2)
+            {
+                m_Lumber = false;
+            }
+            else
+            {
+                reader.Read(out m_Lumber);
             }
         }
     }

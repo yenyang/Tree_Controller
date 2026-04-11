@@ -29,7 +29,6 @@ namespace Tree_Controller.Systems
     /// </summary>
     public partial class LumberSystem : GameSystemBase
     {
-        private EntityQuery m_LumberQuery;
         private ILog m_Log;
         private ModificationEndBarrier m_Barrier;
         private Game.Objects.UpdateCollectSystem m_ObjectUpdateCollectSystem;
@@ -38,6 +37,7 @@ namespace Tree_Controller.Systems
         private NaturalResourceSystem m_NaturalResourceSystem;
         private EntityQuery m_WoodResourceAreaQuery;
         private int m_FrameCount;
+        private EntityQuery m_PauseTreeGrowthQuery;
 
         /// <summary>
         /// Sets frame count to 30.
@@ -73,10 +73,11 @@ namespace Tree_Controller.Systems
                 .WithNone<Deleted, Temp>()
                 .Build();
 
-            m_LumberQuery = SystemAPI.QueryBuilder()
-                .WithAllRW<Lumber>()
-                .WithNone<Deleted, Temp>()
-                .Build();
+            m_PauseTreeGrowthQuery = SystemAPI.QueryBuilder()
+               .WithAll<Game.Objects.Tree>()
+               .WithDisabledRW<Game.Objects.Decoration>()
+               .WithNone<Game.Common.Deleted, Game.Tools.Temp, Game.Common.Overridden>()
+               .Build();
 
             RequireForUpdate(m_WoodResourceAreaQuery);
 
@@ -88,24 +89,18 @@ namespace Tree_Controller.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (!m_LumberQuery.IsEmptyIgnoreFilter)
+            if (!TreeControllerMod.Instance.Settings.DisableTreeGrowth)
             {
-                RemoveLumberJob removeLumberJob = new()
-                {
-                    buffer = m_Barrier.CreateCommandBuffer().AsParallelWriter(),
-                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                };
-                JobHandle lumberJobHandle = JobChunkExtensions.ScheduleParallel(removeLumberJob, m_LumberQuery, Dependency);
-                m_Barrier.AddJobHandleForProducer(lumberJobHandle);
-                Dependency = lumberJobHandle;
-                ResetFrameCount();
-            }
-
-            if (m_FrameCount > 0)
-            {
-                m_FrameCount--;
+                Enabled = false;
                 return;
             }
+
+            PauseTreeGrowthJob pauseTreeGrowthJob = new PauseTreeGrowthJob()
+            {
+                m_DecorationLookup = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(),
+                m_EntityType = SystemAPI.GetEntityTypeHandle(),
+            };
+            Dependency = pauseTreeGrowthJob.Schedule(m_PauseTreeGrowthQuery, Dependency);
 
             if (m_WoodResourceAreaQuery.IsEmptyIgnoreFilter)
             {
@@ -151,7 +146,7 @@ namespace Tree_Controller.Systems
                 m_ObjectTree = m_ObjectSearchSystem.GetStaticSearchTree(readOnly: true, out var dependencies4),
 
                 m_TreeData = SystemAPI.GetComponentLookup<Game.Objects.Tree>(isReadOnly: true),
-                m_DecorationData = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(isReadOnly: true),
+                m_DecorationData = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(),
                 m_TransformData = SystemAPI.GetComponentLookup<Game.Objects.Transform>(isReadOnly: true),
 
                 m_PrefabRefData = SystemAPI.GetComponentLookup<Game.Prefabs.PrefabRef>(isReadOnly: true),
@@ -161,7 +156,6 @@ namespace Tree_Controller.Systems
                 m_Triangles = SystemAPI.GetBufferLookup<Game.Areas.Triangle>(isReadOnly: true),
                 m_ExtractorData = SystemAPI.GetComponentLookup<Game.Areas.Extractor>(isReadOnly: true),
                 m_WoodResources = SystemAPI.GetBufferLookup<Game.Areas.WoodResource>(isReadOnly: true),
-                buffer = m_Barrier.CreateCommandBuffer(),
             };
             JobHandle jobHandle3 = IJobExtensions.Schedule(collectUpdatedAreasJob, JobHandle.CombineDependencies(Dependency, outJobHandle2));
             JobHandle jobHandle4 = updateAreaResourcesJob.Schedule(nativeList, 1, JobHandle.CombineDependencies(jobHandle3, dependencies4));
@@ -323,7 +317,6 @@ namespace Tree_Controller.Systems
             [ReadOnly]
             public ComponentLookup<Tree> m_TreeData;
 
-            [ReadOnly]
             public ComponentLookup<Decoration> m_DecorationData;
 
             [ReadOnly]
@@ -350,8 +343,6 @@ namespace Tree_Controller.Systems
             [ReadOnly]
             public BufferLookup<WoodResource> m_WoodResources;
 
-            public EntityCommandBuffer buffer;
-
             public void Execute(int index)
             {
                 Entity entity = m_UpdateList[index];
@@ -377,7 +368,6 @@ namespace Tree_Controller.Systems
                     m_PrefabRefData = m_PrefabRefData,
                     m_PrefabTreeData = m_PrefabTreeData,
                     m_DecorationData = m_DecorationData,
-                    buffer = buffer,
                 };
                 for (int i = 0; i < triangles.Length; i++)
                 {
@@ -402,8 +392,6 @@ namespace Tree_Controller.Systems
             public ComponentLookup<TreeData> m_PrefabTreeData;
 
             public ComponentLookup<Decoration> m_DecorationData;
-
-            public EntityCommandBuffer buffer;
 
             public bool Intersect(QuadTreeBoundsXZ bounds)
             {
@@ -431,8 +419,7 @@ namespace Tree_Controller.Systems
                     m_DecorationData.HasComponent(entity))
                 {
                     // Disable Decoration Component
-                    buffer.SetComponentEnabled<Decoration>(entity, false);
-                    buffer.AddComponent<Lumber>(entity);
+                    m_DecorationData.SetComponentEnabled(entity, false);
                 }
             }
         }
@@ -440,11 +427,11 @@ namespace Tree_Controller.Systems
 #if BURST
         [BurstCompile]
 #endif
-        private struct RemoveLumberJob : IJobChunk
+        private struct PauseTreeGrowthJob : IJobChunk
         {
-            public EntityCommandBuffer.ParallelWriter buffer;
             [ReadOnly]
             public EntityTypeHandle m_EntityType;
+            public ComponentLookup<Game.Objects.Decoration> m_DecorationLookup;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
             {
@@ -456,10 +443,13 @@ namespace Tree_Controller.Systems
                         continue;
                     }
 
-                    buffer.RemoveComponent<Lumber>(unfilteredChunkIndex, entityNativeArray[i]);
+                    Entity currentEntity = entityNativeArray[i];
+                    if (m_DecorationLookup.HasComponent(currentEntity))
+                    {
+                        m_DecorationLookup.SetComponentEnabled(currentEntity, true);
+                    }
                 }
             }
         }
-
     }
 }

@@ -1,4 +1,4 @@
-﻿// <copyright file="MigrateNoTreeGrowthSystem.cs" company="Yenyangs Mods. MIT License">
+﻿// <copyright file="RemoveNoTreeGrowthSystem.cs" company="Yenyangs Mods. MIT License">
 // Copyright (c) Yenyangs Mods. MIT License. All rights reserved.
 // </copyright>
 
@@ -15,19 +15,18 @@ namespace Tree_Controller.Systems
     using Unity.Jobs;
 
     /// <summary>
-    /// System migrates NoTreeGrowth component to vanilla Game.Objects.Decoration. Also Handles DisableTreeGrowth Setting.
+    /// System migrates NoTreeGrowth component to vanilla Game.Objects.Decoration.
     /// </summary>
-    public partial class PauseTreeGrowthSystem : GameSystemBase
+    public partial class RemoveNoTreeGrowthSystem : GameSystemBase
     {
         private ILog m_Log;
         private EntityQuery m_NoTreeGrowthQuery;
         private EndFrameBarrier m_EndFrameBarrier;
-        private EntityQuery m_PauseTreeGrowthQuery;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PauseTreeGrowthSystem"/> class.
+        /// Initializes a new instance of the <see cref="RemoveNoTreeGrowthSystem"/> class.
         /// </summary>
-        public PauseTreeGrowthSystem()
+        public RemoveNoTreeGrowthSystem()
         {
         }
 
@@ -37,19 +36,13 @@ namespace Tree_Controller.Systems
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
-            m_Log.Info($"[{nameof(PauseTreeGrowthSystem)}] {nameof(OnCreate)}");
+            m_Log.Info($"[{nameof(RemoveNoTreeGrowthSystem)}] {nameof(OnCreate)}");
 
             m_NoTreeGrowthQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<NoTreeGrowth>()
                 .Build();
 
-            m_PauseTreeGrowthQuery = SystemAPI.QueryBuilder()
-                .WithAll<Game.Objects.Tree>()
-                .WithDisabledRW<Game.Objects.Decoration>()
-                .WithNone<Game.Common.Deleted, Game.Tools.Temp, Game.Common.Overridden, Lumber>()
-                .Build();
-
-            RequireForUpdate(m_PauseTreeGrowthQuery);
+            Enabled = false;
         }
 
         /// <inheritdoc/>
@@ -73,24 +66,9 @@ namespace Tree_Controller.Systems
             m_EndFrameBarrier.AddJobHandleForProducer(Dependency);
         }
 
-        /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (!TreeControllerMod.Instance.Settings.DisableTreeGrowth)
-            {
-                Enabled = false;
-                return;
-            }
-
-            PauseTreeGrowthJob pauseTreeGrowthJob = new PauseTreeGrowthJob()
-            {
-                m_DecorationLookup = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(isReadOnly: true),
-                m_EntityType = SystemAPI.GetEntityTypeHandle(),
-                buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
-                m_DeciduousLookup = SystemAPI.GetComponentLookup<DeciduousData>(isReadOnly: true),
-            };
-            Dependency = pauseTreeGrowthJob.ScheduleParallel(m_PauseTreeGrowthQuery, Dependency);
-            m_EndFrameBarrier.AddJobHandleForProducer(Dependency);
+            throw new System.NotImplementedException();
         }
 
 #if BURST
@@ -133,45 +111,6 @@ namespace Tree_Controller.Systems
                     }
 
                     buffer.RemoveComponent<NoTreeGrowth>(unfilteredChunkIndex, currentEntity);
-                }
-            }
-        }
-
-
-#if BURST
-        [BurstCompile]
-#endif
-        private struct PauseTreeGrowthJob : IJobChunk
-        {
-            [ReadOnly]
-            public EntityTypeHandle m_EntityType;
-            public EntityCommandBuffer.ParallelWriter buffer;
-            [ReadOnly]
-            public ComponentLookup<Game.Objects.Decoration> m_DecorationLookup;
-            [ReadOnly]
-            public ComponentLookup<DeciduousData> m_DeciduousLookup;
-
-            public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
-            {
-                NativeArray<Entity> entityNativeArray = chunk.GetNativeArray(m_EntityType);
-                for (int i = 0; i < chunk.Count; i++)
-                {
-                    if (entityNativeArray[i] == Entity.Null)
-                    {
-                        continue;
-                    }
-
-                    Entity currentEntity = entityNativeArray[i];
-                    if (m_DecorationLookup.HasComponent(currentEntity))
-                    {
-                        buffer.SetComponentEnabled<Game.Objects.Decoration>(unfilteredChunkIndex, currentEntity, true);
-
-                        if (m_DeciduousLookup.TryGetComponent(currentEntity, out DeciduousData decidous))
-                        {
-                            decidous.m_PermanentDecoration = true;
-                            buffer.SetComponent(unfilteredChunkIndex, currentEntity, decidous);
-                        }
-                    }
                 }
             }
         }

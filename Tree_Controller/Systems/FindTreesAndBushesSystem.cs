@@ -58,7 +58,7 @@ namespace Tree_Controller.Systems
             m_SafelyRemoveSystem = World.GetOrCreateSystemManaged<SafelyRemoveSystem>();
             m_TreeQuery = SystemAPI.QueryBuilder()
                 .WithAll<UpdateFrame, Game.Prefabs.PrefabRef, Game.Objects.Tree>()
-                .WithNone<Deleted, Temp, Evergreen, DeciduousData, Overridden, Lumber>()
+                .WithNone<Deleted, Temp, Evergreen, DeciduousData, Overridden>()
                 .Build();
 
             RequireForUpdate(m_TreeQuery);

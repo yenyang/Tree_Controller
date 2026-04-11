@@ -119,7 +119,6 @@ namespace Tree_Controller.Systems
                 m_DeciduousTreeDataType = SystemAPI.GetComponentTypeHandle<DeciduousData>(),
                 buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
                 m_Season = FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.name),
-                m_LumberLookup = SystemAPI.GetComponentLookup<Lumber>(),
                 m_DecorationLookup = SystemAPI.GetComponentLookup<Decoration>(),
             };
             JobHandle jobHandle = JobChunkExtensions.ScheduleParallel(treeSeasonChangeJob, m_DeciduousTreeQuery, Dependency);
@@ -174,8 +173,6 @@ namespace Tree_Controller.Systems
             public EntityCommandBuffer.ParallelWriter buffer;
             public FoliageUtils.Season m_Season;
             [ReadOnly]
-            public ComponentLookup<Lumber> m_LumberLookup;
-            [ReadOnly]
             public ComponentLookup<Game.Objects.Decoration> m_DecorationLookup;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
@@ -193,7 +190,7 @@ namespace Tree_Controller.Systems
                     Entity currentEntity = entityNativeArray[i];
                     Game.Objects.Tree currentTreeData = treeNativeArray[i];
                     DeciduousData currentDeciduousTreeData = deciduousTreeNativeArray[i];
-
+                    /*
                     if (m_LumberLookup.HasComponent(currentEntity))
                     {
                         if (currentDeciduousTreeData.m_PreviousTreeState != TreeState.Dead && currentTreeData.m_State == TreeState.Dead)
@@ -205,7 +202,7 @@ namespace Tree_Controller.Systems
 
                         buffer.RemoveComponent<DeciduousData>(unfilteredChunkIndex, currentEntity);
                         continue;
-                    }
+                    }*/
 
                     if (currentDeciduousTreeData.m_TechnicallyDead == true && currentTreeData.m_State != TreeState.Dead)
                     {

@@ -78,5 +78,5 @@ Algernon and I have collaborated to allow for sets and multiple vegetation types
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing
 * T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Nullpinter - Localization support
-* Localization: Hendrix, Fuchs23, and FearMyFeedEU (German), Nyoko and Citadino (Spanish), Mazi and Furios (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak, Morgan (French), syuuga101 and nd381 (Japanese), TwotoolusFLY_LSh.st and Hinanchovo (Korean), _hayrynenart, SivenesisI,and krugl1y (Russian), allegretic (Chinese Traditional), Ti4goc (European Portuguese), 
+* Localization: Hendrix, Fuchs23, FearMyFeedEU, and redlabracer (German), Nyoko and Citadino (Spanish), Mazi and Furios (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak, Morgan (French), syuuga101 and nd381 (Japanese), TwotoolusFLY_LSh.st and Hinanchovo (Korean), _hayrynenart, SivenesisI,and krugl1y (Russian), allegretic (Chinese Traditional), Ti4goc (European Portuguese), GeraspteGatenKaas (Dutch)
 * Tigon Ologdring, code:witch - Testing, Feedback

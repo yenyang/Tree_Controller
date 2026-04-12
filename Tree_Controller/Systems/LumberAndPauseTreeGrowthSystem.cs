@@ -18,6 +18,7 @@ namespace Tree_Controller.Systems
     using Game.Tools;
     using System.Collections.Generic;
     using System.Runtime.InteropServices;
+    using Tree_Controller.Components;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
     using Unity.Collections;
@@ -86,6 +87,7 @@ namespace Tree_Controller.Systems
                 {
                     m_DecorationLookup = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(),
                     m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                    m_LumberResourceLookup = SystemAPI.GetComponentLookup<LumberResource>(),
                 };
                 Dependency = pauseTreeGrowthJob.Schedule(m_PauseTreeGrowthQuery, Dependency);
             }
@@ -144,6 +146,7 @@ namespace Tree_Controller.Systems
                 m_Triangles = SystemAPI.GetBufferLookup<Game.Areas.Triangle>(isReadOnly: true),
                 m_ExtractorData = SystemAPI.GetComponentLookup<Game.Areas.Extractor>(isReadOnly: true),
                 m_WoodResources = SystemAPI.GetBufferLookup<Game.Areas.WoodResource>(isReadOnly: true),
+                m_LumberResourceData = SystemAPI.GetComponentLookup<LumberResource>(),
             };
             JobHandle jobHandle3 = IJobExtensions.Schedule(collectUpdatedAreasJob, JobHandle.CombineDependencies(Dependency, outJobHandle2));
             JobHandle jobHandle4 = updateAreaResourcesJob.Schedule(nativeList, 1, JobHandle.CombineDependencies(jobHandle3, dependencies4));
@@ -329,6 +332,8 @@ namespace Tree_Controller.Systems
             [ReadOnly]
             public BufferLookup<WoodResource> m_WoodResources;
 
+            public ComponentLookup<LumberResource> m_LumberResourceData;
+
             public void Execute(int index)
             {
                 Entity entity = m_UpdateList[index];
@@ -354,6 +359,7 @@ namespace Tree_Controller.Systems
                     m_PrefabRefData = m_PrefabRefData,
                     m_PrefabTreeData = m_PrefabTreeData,
                     m_DecorationData = m_DecorationData,
+                    m_LumberResourceData = m_LumberResourceData,
                 };
                 for (int i = 0; i < triangles.Length; i++)
                 {
@@ -378,6 +384,8 @@ namespace Tree_Controller.Systems
             public ComponentLookup<TreeData> m_PrefabTreeData;
 
             public ComponentLookup<Decoration> m_DecorationData;
+
+            public ComponentLookup<LumberResource> m_LumberResourceData;
 
             public bool Intersect(QuadTreeBoundsXZ bounds)
             {
@@ -406,6 +414,11 @@ namespace Tree_Controller.Systems
                 {
                     // Disable Decoration Component
                     m_DecorationData.SetComponentEnabled(entity, false);
+
+                    if (m_LumberResourceData.HasComponent(entity))
+                    {
+                        m_LumberResourceData.SetComponentEnabled(entity, true);
+                    }
                 }
             }
         }
@@ -418,6 +431,7 @@ namespace Tree_Controller.Systems
             [ReadOnly]
             public EntityTypeHandle m_EntityType;
             public ComponentLookup<Game.Objects.Decoration> m_DecorationLookup;
+            public ComponentLookup<LumberResource> m_LumberResourceLookup;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
             {
@@ -433,6 +447,11 @@ namespace Tree_Controller.Systems
                     if (m_DecorationLookup.HasComponent(currentEntity))
                     {
                         m_DecorationLookup.SetComponentEnabled(currentEntity, true);
+                    }
+
+                    if (m_LumberResourceLookup.HasComponent(currentEntity))
+                    {
+                        m_LumberResourceLookup.SetComponentEnabled(currentEntity, false);
                     }
                 }
             }

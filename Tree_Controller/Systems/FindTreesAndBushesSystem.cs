@@ -6,12 +6,14 @@
 namespace Tree_Controller.Systems
 {
     using Colossal.Logging;
+    using Colossal.Serialization.Entities;
     using Game;
     using Game.Common;
     using Game.Objects;
     using Game.Prefabs;
     using Game.Simulation;
     using Game.Tools;
+    using Tree_Controller.Components;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
     using Unity.Collections;
@@ -30,6 +32,7 @@ namespace Tree_Controller.Systems
         private SimulationSystem m_SimulationSystem;
         private TimeSystem m_TimeSystem;
         private EntityQuery m_TreeQuery;
+        private EntityQuery m_LumberResourceNeededQuery;
         private SafelyRemoveSystem m_SafelyRemoveSystem;
         private ILog m_Log;
         private EndFrameBarrier m_EndFrameBarrier;
@@ -58,11 +61,37 @@ namespace Tree_Controller.Systems
             m_SafelyRemoveSystem = World.GetOrCreateSystemManaged<SafelyRemoveSystem>();
             m_TreeQuery = SystemAPI.QueryBuilder()
                 .WithAll<UpdateFrame, Game.Prefabs.PrefabRef, Game.Objects.Tree>()
-                .WithNone<Deleted, Temp, Evergreen, DeciduousData, Overridden>()
+                .WithNone<Deleted, Temp, Evergreen, DeciduousData, Overridden, LumberResource>()
+                .Build();
+
+            m_LumberResourceNeededQuery = SystemAPI.QueryBuilder()
+                .WithAll<UpdateFrame, Game.Prefabs.PrefabRef, Game.Objects.Tree>()
+                .WithAny<Evergreen, DeciduousData>()
+                .WithNone<Deleted, Temp, Overridden, LumberResource>()
                 .Build();
 
             RequireForUpdate(m_TreeQuery);
             m_Log.Info($"{nameof(FindTreesAndBushesSystem)} created!");
+        }
+
+        /// <inheritdoc/>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
+
+            if (!m_LumberResourceNeededQuery.IsEmptyIgnoreFilter)
+            {
+                EntityCommandBuffer buffer = m_EndFrameBarrier.CreateCommandBuffer();
+                NativeArray<Entity> entities = m_LumberResourceNeededQuery.ToEntityArray(Allocator.Temp);
+                buffer.AddComponent<LumberResource>(entities);
+                for (int i = 0; i < entities.Length; i++)
+                {
+                    if (entities[i] != Entity.Null)
+                    {
+                        buffer.SetComponentEnabled<LumberResource>(entities[i], false);
+                    }
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -152,6 +181,9 @@ namespace Tree_Controller.Systems
                     {
                         buffer.AddComponent(unfilteredChunkIndex, currentEntity, default(Evergreen));
                     }
+
+                    buffer.AddComponent(unfilteredChunkIndex, currentEntity, default(LumberResource));
+                    buffer.SetComponentEnabled<LumberResource>(unfilteredChunkIndex, currentEntity, false);
                 }
             }
         }

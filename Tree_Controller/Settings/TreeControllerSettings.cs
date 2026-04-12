@@ -460,7 +460,7 @@ namespace Tree_Controller.Settings
         {
             DisableTreeGrowth = value;
             World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<TreeControllerUISystem>().SetDisableTreeGrowth(DisableTreeGrowth);
-            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<RemoveNoTreeGrowthSystem>().Enabled = DisableTreeGrowth;
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<LumberAndPauseTreeGrowthSystem>().Enabled = DisableTreeGrowth;
             World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ObjectToolSystem>().decorationMode = DisableTreeGrowth;
         }
 

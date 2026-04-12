@@ -37,6 +37,8 @@ namespace Tree_Controller.Systems
         private NaturalResourceSystem m_NaturalResourceSystem;
         private EntityQuery m_WoodResourceAreaQuery;
         private EntityQuery m_PauseTreeGrowthQuery;
+        private EntityQuery m_NoTreeGrowthQuery;
+        private EndFrameBarrier m_EndFrameBarrier;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LumberAndPauseTreeGrowthSystem"/> class.
@@ -54,6 +56,11 @@ namespace Tree_Controller.Systems
             m_AreaSearchSystem = World.GetOrCreateSystemManaged<Game.Areas.SearchSystem>();
             m_ObjectSearchSystem = World.GetOrCreateSystemManaged<Game.Objects.SearchSystem>();
             m_NaturalResourceSystem = World.GetOrCreateSystemManaged<NaturalResourceSystem>();
+            m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
+
+            m_NoTreeGrowthQuery = SystemAPI.QueryBuilder()
+                .WithAllRW<NoTreeGrowth>()
+                .Build();
 
             m_WoodResourceAreaQuery = SystemAPI.QueryBuilder()
                 .WithAll<Extractor, Game.Areas.WoodResource>()
@@ -76,6 +83,21 @@ namespace Tree_Controller.Systems
         {
             base.OnGameLoadingComplete(purpose, mode);
             Enabled = TreeControllerMod.Instance.Settings.DisableTreeGrowth;
+            if (m_NoTreeGrowthQuery.IsEmptyIgnoreFilter)
+            {
+                return;
+            }
+
+            RemoveNoTreeGrowthJob removeNoTreeGrowthJob = new RemoveNoTreeGrowthJob()
+            {
+                m_DecorationLookup = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(isReadOnly: true),
+                m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
+                m_TreeGrowthDisabled = TreeControllerMod.Instance.Settings.DisableTreeGrowth,
+                m_DeciduousLookup = SystemAPI.GetComponentLookup<DeciduousData>(isReadOnly: true),
+            };
+            Dependency = removeNoTreeGrowthJob.ScheduleParallel(m_NoTreeGrowthQuery, Dependency);
+            m_EndFrameBarrier.AddJobHandleForProducer(Dependency);
         }
 
         /// <inheritdoc/>
@@ -453,6 +475,50 @@ namespace Tree_Controller.Systems
                     {
                         m_LumberResourceLookup.SetComponentEnabled(currentEntity, false);
                     }
+                }
+            }
+        }
+
+#if BURST
+        [BurstCompile]
+#endif
+        private struct RemoveNoTreeGrowthJob : IJobChunk
+        {
+            [ReadOnly]
+            public EntityTypeHandle m_EntityType;
+            public EntityCommandBuffer.ParallelWriter buffer;
+            [ReadOnly]
+            public ComponentLookup<Game.Objects.Decoration> m_DecorationLookup;
+            [ReadOnly]
+            public bool m_TreeGrowthDisabled;
+            [ReadOnly]
+            public ComponentLookup<DeciduousData> m_DeciduousLookup;
+
+            public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
+            {
+                NativeArray<Entity> entityNativeArray = chunk.GetNativeArray(m_EntityType);
+                for (int i = 0; i < chunk.Count; i++)
+                {
+                    if (entityNativeArray[i] == Entity.Null)
+                    {
+                        continue;
+                    }
+
+                    Entity currentEntity = entityNativeArray[i];
+
+                    if (m_TreeGrowthDisabled &&
+                        m_DecorationLookup.HasComponent(currentEntity))
+                    {
+                        buffer.SetComponentEnabled<Game.Objects.Decoration>(unfilteredChunkIndex, currentEntity, true);
+
+                        if (m_DeciduousLookup.TryGetComponent(currentEntity, out DeciduousData decidous))
+                        {
+                            decidous.m_PermanentDecoration = true;
+                            buffer.SetComponent(unfilteredChunkIndex, currentEntity, decidous);
+                        }
+                    }
+
+                    buffer.RemoveComponent<NoTreeGrowth>(unfilteredChunkIndex, currentEntity);
                 }
             }
         }

@@ -14,6 +14,7 @@ namespace Tree_Controller.Systems
     using Game.Prefabs.Climate;
     using Game.Simulation;
     using Game.Tools;
+    using Tree_Controller.Components;
     using Tree_Controller.Utils;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
@@ -119,8 +120,9 @@ namespace Tree_Controller.Systems
                 m_DeciduousTreeDataType = SystemAPI.GetComponentTypeHandle<DeciduousData>(),
                 buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
                 m_Season = FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.name),
-                m_DecorationLookup = SystemAPI.GetComponentLookup<Decoration>(),
+                m_DecorationLookup = SystemAPI.GetComponentLookup<Decoration>(isReadOnly: true),
                 m_TreeGrowthPaused = TreeControllerMod.Instance.Settings.DisableTreeGrowth,
+                m_LumberResourceLookup = SystemAPI.GetComponentLookup<LumberResource>(isReadOnly: true),
             };
             JobHandle jobHandle = JobChunkExtensions.ScheduleParallel(treeSeasonChangeJob, m_DeciduousTreeQuery, Dependency);
             m_EndFrameBarrier.AddJobHandleForProducer(jobHandle);
@@ -176,6 +178,8 @@ namespace Tree_Controller.Systems
             [ReadOnly]
             public ComponentLookup<Game.Objects.Decoration> m_DecorationLookup;
             public bool m_TreeGrowthPaused;
+            [ReadOnly]
+            public ComponentLookup<LumberResource> m_LumberResourceLookup;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
             {
@@ -192,8 +196,9 @@ namespace Tree_Controller.Systems
                     Entity currentEntity = entityNativeArray[i];
                     Game.Objects.Tree currentTreeData = treeNativeArray[i];
                     DeciduousData currentDeciduousTreeData = deciduousTreeNativeArray[i];
-                    /*
-                    if (m_LumberLookup.HasComponent(currentEntity))
+
+                    if (m_LumberResourceLookup.HasComponent(currentEntity) &&
+                        m_LumberResourceLookup.IsComponentEnabled(currentEntity))
                     {
                         if (currentDeciduousTreeData.m_PreviousTreeState != TreeState.Dead && currentTreeData.m_State == TreeState.Dead)
                         {
@@ -202,9 +207,8 @@ namespace Tree_Controller.Systems
                             buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
                         }
 
-                        buffer.RemoveComponent<DeciduousData>(unfilteredChunkIndex, currentEntity);
                         continue;
-                    }*/
+                    }
 
                     if (currentDeciduousTreeData.m_TechnicallyDead == true && currentTreeData.m_State != TreeState.Dead)
                     {

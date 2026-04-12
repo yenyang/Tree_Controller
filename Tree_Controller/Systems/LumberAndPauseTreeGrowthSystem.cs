@@ -1,4 +1,4 @@
-﻿// <copyright file="LumberSystem.cs" company="Yenyangs Mods. MIT License">
+﻿// <copyright file="LumberAndPauseTreeGrowthSystem.cs" company="Yenyangs Mods. MIT License">
 // Copyright (c) Yenyangs Mods. MIT License. All rights reserved.
 // </copyright>
 
@@ -8,9 +8,9 @@ namespace Tree_Controller.Systems
     using Colossal.Collections;
     using Colossal.Logging;
     using Colossal.Mathematics;
+    using Colossal.Serialization.Entities;
     using Game;
     using Game.Areas;
-    using Game.City;
     using Game.Common;
     using Game.Objects;
     using Game.Prefabs;
@@ -25,35 +25,22 @@ namespace Tree_Controller.Systems
     using Unity.Jobs;
 
     /// <summary>
-    /// Adds/Removes lumber to/from WoodResource trees. And manages Decoration component.
+    /// Handles Pausing Tree Growth globally, and handles disabling decoration component for Lumber.
     /// </summary>
-    public partial class LumberSystem : GameSystemBase
+    public partial class LumberAndPauseTreeGrowthSystem : GameSystemBase
     {
         private ILog m_Log;
-        private ModificationEndBarrier m_Barrier;
         private Game.Objects.UpdateCollectSystem m_ObjectUpdateCollectSystem;
         private Game.Areas.SearchSystem m_AreaSearchSystem;
         private Game.Objects.SearchSystem m_ObjectSearchSystem;
         private NaturalResourceSystem m_NaturalResourceSystem;
         private EntityQuery m_WoodResourceAreaQuery;
-        private int m_FrameCount;
         private EntityQuery m_PauseTreeGrowthQuery;
 
         /// <summary>
-        /// Sets frame count to 30.
+        /// Initializes a new instance of the <see cref="LumberAndPauseTreeGrowthSystem"/> class.
         /// </summary>
-        public void ResetFrameCount()
-        {
-            if (Enabled)
-            {
-                m_FrameCount = 30;
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LumberSystem"/> class.
-        /// </summary>
-        public LumberSystem()
+        public LumberAndPauseTreeGrowthSystem()
         {
         }
 
@@ -62,7 +49,6 @@ namespace Tree_Controller.Systems
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_Barrier = World.GetOrCreateSystemManaged<ModificationEndBarrier>();
             m_ObjectUpdateCollectSystem = World.GetOrCreateSystemManaged<Game.Objects.UpdateCollectSystem>();
             m_AreaSearchSystem = World.GetOrCreateSystemManaged<Game.Areas.SearchSystem>();
             m_ObjectSearchSystem = World.GetOrCreateSystemManaged<Game.Objects.SearchSystem>();
@@ -79,28 +65,30 @@ namespace Tree_Controller.Systems
                .WithNone<Game.Common.Deleted, Game.Tools.Temp, Game.Common.Overridden>()
                .Build();
 
-            RequireForUpdate(m_WoodResourceAreaQuery);
+            RequireAnyForUpdate(m_WoodResourceAreaQuery, m_PauseTreeGrowthQuery);
 
-            m_Log.Info($"{nameof(LumberSystem)} created!");
+            m_Log.Info($"{nameof(LumberAndPauseTreeGrowthSystem)} created!");
+        }
 
-            Enabled = false;
+        /// <inheritdoc/>
+        protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
+        {
+            base.OnGameLoadingComplete(purpose, mode);
+            Enabled = TreeControllerMod.Instance.Settings.DisableTreeGrowth;
         }
 
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
-            if (!TreeControllerMod.Instance.Settings.DisableTreeGrowth)
+            if (TreeControllerMod.Instance.Settings.DisableTreeGrowth)
             {
-                Enabled = false;
-                return;
+                PauseTreeGrowthJob pauseTreeGrowthJob = new PauseTreeGrowthJob()
+                {
+                    m_DecorationLookup = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(),
+                    m_EntityType = SystemAPI.GetEntityTypeHandle(),
+                };
+                Dependency = pauseTreeGrowthJob.Schedule(m_PauseTreeGrowthQuery, Dependency);
             }
-
-            PauseTreeGrowthJob pauseTreeGrowthJob = new PauseTreeGrowthJob()
-            {
-                m_DecorationLookup = SystemAPI.GetComponentLookup<Game.Objects.Decoration>(),
-                m_EntityType = SystemAPI.GetEntityTypeHandle(),
-            };
-            Dependency = pauseTreeGrowthJob.Schedule(m_PauseTreeGrowthQuery, Dependency);
 
             if (m_WoodResourceAreaQuery.IsEmptyIgnoreFilter)
             {
@@ -159,7 +147,6 @@ namespace Tree_Controller.Systems
             };
             JobHandle jobHandle3 = IJobExtensions.Schedule(collectUpdatedAreasJob, JobHandle.CombineDependencies(Dependency, outJobHandle2));
             JobHandle jobHandle4 = updateAreaResourcesJob.Schedule(nativeList, 1, JobHandle.CombineDependencies(jobHandle3, dependencies4));
-            m_Barrier.AddJobHandleForProducer(jobHandle4);
             updateBuffer.Dispose(jobHandle3);
             nativeList.Dispose(jobHandle4);
             updatedAreaChunks.Dispose(jobHandle3);
@@ -201,7 +188,6 @@ namespace Tree_Controller.Systems
                     }
                 }
             }
-
 
             [ReadOnly]
             public NativeArray<Bounds2> m_Bounds;

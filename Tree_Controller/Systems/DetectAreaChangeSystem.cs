@@ -16,7 +16,7 @@ namespace Tree_Controller.Systems
     public partial class DetectAreaChangeSystem : GameSystemBase
     {
         private EntityQuery m_UpdatedAreaQuery;
-        private LumberSystem m_LumberSystem;
+        private LumberAndPauseTreeGrowthSystem m_LumberSystem;
         private ILog m_Log;
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Tree_Controller.Systems
         {
             base.OnCreate();
             m_Log = TreeControllerMod.Instance.Logger;
-            m_LumberSystem = World.GetOrCreateSystemManaged<LumberSystem>();
+            m_LumberSystem = World.GetOrCreateSystemManaged<LumberAndPauseTreeGrowthSystem>();
             m_Log.Info($"{nameof(DetectAreaChangeSystem)} created!");
 
             m_UpdatedAreaQuery = GetEntityQuery(new EntityQueryDesc[]
@@ -58,7 +58,6 @@ namespace Tree_Controller.Systems
         protected override void OnUpdate()
         {
             m_LumberSystem.Enabled = true;
-            m_LumberSystem.ResetFrameCount();
         }
     }
 }

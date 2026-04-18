@@ -23,6 +23,7 @@ Fully or Partially Supported Languages: German, Spanish, Italian, Brazilian Port
 ## Supplemental Mods
 European Portuguese Localization and I18n Everywhere (Only needed for European Portuguese Translations)
 
+
 # Detailed Description:
 Includes a tree controller tool that lets you change the age or types of existing trees and/or bushes on the following selections:
 * Single Tree
@@ -86,7 +87,7 @@ Algernon and I have collaborated to allow for sets and multiple vegetation types
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing
 * T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Nullpinter - Localization support
-* Localization: Hendrix, Fuchs23, and FearMyFeedEU (German), Nyoko and Citadino (Spanish), Mazi and Furios (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak, Morgan (French), syuuga101 and nd381 (Japanese), TwotoolusFLY_LSh.st and Hinanchovo (Korean), _hayrynenart, SivenesisI,and krugl1y (Russian), allegretic (Chinese Traditional), Ti4goc (European Portuguese), 
+* Localization: Hendrix, Fuchs23, FearMyFeedEU, and redlabracer (German), Nyoko and Citadino (Spanish), Mazi and Furios (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak, Morgan (French), syuuga101 and nd381 (Japanese), TwotoolusFLY_LSh.st and Hinanchovo (Korean), _hayrynenart, SivenesisI,and krugl1y (Russian), allegretic (Chinese Traditional), Ti4goc (European Portuguese), GeraspteGatenKaas (Dutch)
 * Tigon Ologdring, code:witch - Testing, Feedback</LongDescription>
   <!--Thumbnail-->
   <Thumbnail Value="Properties/Release/Thumbnail.png" />
@@ -102,20 +103,16 @@ Algernon and I have collaborated to allow for sets and multiple vegetation types
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/tree-controller.1644992/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.7.1.0" />
+  <ModVersion Value="1.7.0.2" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.5.*" />
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Patch v1.7.0.1
-* Reinstated Disable Tree Growth Setting. Now called Tree Growth Paused. Changed description. Added Pause and Resume buttons with warnings and confirmations.
-* Tree Growth Paused setting now when toggled pauses all tree aging by enabling vanilla Decoration component on all trees other than Lumber.
-* When Tree Growth is resumed or settings are reset, existing trees are not effected and will continue to have paused tree aging. Use Tree Controller Tool to resume aging for trees.
-* Tree Controller tools can now enable/disable vanilla Decoration component depending on Preserve Age toggle without changing a trees age or prefab.
-* Tree Controller Tool no longer enable/disable vanilla Decoration component for Lumber.
-* Fixed Lumber system to detect trees with enabled Decoration component.
-* Limited Tree Anarchy retired. Vanilla makes it essentially redundant, and vanilla is reliable.</ChangeLog>
+  <ChangeLog># Patch v1.7.0.2
+* Reworked lumber detection to fix stability problems while changing lumber industrial areas.
+* Fixed Advanced Forest Brush Sets not saving some data if set before saving the set.
+* Fixed Temporary Advanced Forest Brush Set resetting data when adding or removing a prefab from the set.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

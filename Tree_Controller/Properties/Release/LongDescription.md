@@ -15,6 +15,7 @@ Fully or Partially Supported Languages: German, Spanish, Italian, Brazilian Port
 ## Supplemental Mods
 European Portuguese Localization and I18n Everywhere (Only needed for European Portuguese Translations)
 
+
 # Detailed Description:
 Includes a tree controller tool that lets you change the age or types of existing trees and/or bushes on the following selections:
 * Single Tree

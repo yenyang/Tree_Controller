@@ -53,6 +53,16 @@ namespace Tree_Controller.Domain
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="CustomSetRepository"/> class.
+        /// </summary>
+        /// <param name="entries">AdvancedForestBrushEntry array.</param>
+        public CustomSetRepository(AdvancedForestBrushEntry[] entries)
+        {
+            m_AdvancedForestBrushEntries = entries;
+            m_Version = 2;
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating the names of the prefabs in the set.
         /// </summary>
         public string[] PrefabNames
@@ -219,6 +229,30 @@ namespace Tree_Controller.Domain
             {
                 m_AdvancedForestBrushEntries = advancedForestBrushEntries;
             }
+        }
+
+        /// <summary>
+        /// Finds an advanced forest brush entry already included or returns a default version with that prefab name.
+        /// </summary>
+        /// <param name="name">Name of prefab to try and find.</param>
+        /// <returns>Existing AdvancedForestBrushEntry for that prefab name or default AdvancedForestBrushEntry for that prefab name.</returns>
+        public AdvancedForestBrushEntry FindEntryOrDefault(string name)
+        {
+            if (m_AdvancedForestBrushEntries is null ||
+                m_AdvancedForestBrushEntries.Length == 0)
+            {
+                return GetDefaultAdvancedForestBrushEntry(name);
+            }
+
+            for (int i = 0; i < m_AdvancedForestBrushEntries.Length; i++)
+            {
+                if (m_AdvancedForestBrushEntries[i].Name == name)
+                {
+                    return m_AdvancedForestBrushEntries[i];
+                }
+            }
+
+            return GetDefaultAdvancedForestBrushEntry(name);
         }
 
         /// <summary>
@@ -440,17 +474,5 @@ namespace Tree_Controller.Domain
             return new AdvancedForestBrushEntry(prefabID, age, DefaultProbabilityWeight, Mathf.FloorToInt(terrainSystem.heightScaleOffset.y), Mathf.CeilToInt(terrainSystem.heightScaleOffset.x));
         }
 
-        private AdvancedForestBrushEntry FindEntryOrDefault(string name)
-        {
-            for (int i = 0; i < m_AdvancedForestBrushEntries.Length; i++)
-            {
-                if (m_AdvancedForestBrushEntries[i].Name == name)
-                {
-                    return m_AdvancedForestBrushEntries[i];
-                }
-            }
-
-            return GetDefaultAdvancedForestBrushEntry(name);
-        }
     }
 }

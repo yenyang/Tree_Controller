@@ -8,3 +8,5 @@
 * Limited Tree Anarchy retired. Vanilla makes it essentially redundant, and vanilla is reliable.
 * Preserve Age Toggle state saved as hidden setting so it will have same toggle state on reload.
 * Updated Localization.
+* Fixed Advanced Forest Brush Sets not saving some data if set before saving the set.
+* Fixed Temporary Advanced Forest Brush Set resetting data when adding or removing a prefab from the set.

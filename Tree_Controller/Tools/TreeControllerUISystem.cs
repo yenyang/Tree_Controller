@@ -227,6 +227,7 @@ namespace Tree_Controller.Tools
             }
 
             m_SelectedPrefabSet.Update(string.Empty);
+            m_TemporaryCustomSetRepository = new CustomSetRepository(m_AdvancedForestBrushEntries.Value);
             m_AdvancedForestBrushEntries.Value = new AdvancedForestBrushEntry[0];
             m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ResetPrefabSets)} Resetting prefab sets.");
         }
@@ -692,7 +693,21 @@ namespace Tree_Controller.Tools
                     && m_TreeControllerTool.GetSelectedPrefabs().Count > 1
                     && m_AdvancedForestBrushEntries.Value.Length == 0)
                 {
-                    m_TemporaryCustomSetRepository = new CustomSetRepository(m_TreeControllerTool.GetSelectedPrefabs());
+                    if (m_TemporaryCustomSetRepository is null ||
+                        m_TemporaryCustomSetRepository.Count == 0)
+                    {
+                        m_TemporaryCustomSetRepository = new CustomSetRepository(m_TreeControllerTool.GetSelectedPrefabs());
+                    }
+                    else
+                    {
+                        CustomSetRepository customSetRepository = m_TemporaryCustomSetRepository;
+                        m_TemporaryCustomSetRepository = new CustomSetRepository(m_TreeControllerTool.GetSelectedPrefabs());
+                        for (int i = 0; i < m_TemporaryCustomSetRepository.Count; i++)
+                        {
+                            m_TemporaryCustomSetRepository.AdvancedForestBrushEntries[i] = customSetRepository.FindEntryOrDefault(m_TemporaryCustomSetRepository.AdvancedForestBrushEntries[i].Name);
+                        }
+                    }
+
                     m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
                     HandleShowStumpsForAdvancedSetAndTriggerUpdate();
                 }
@@ -901,7 +916,7 @@ namespace Tree_Controller.Tools
             if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && ctrlKeyPressed)
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} trying to add prefab ids to set lookup.");
-                m_PrefabSetsLookup[prefabSetID].SaveCustomSet(selectedPrefabs);
+                m_PrefabSetsLookup[prefabSetID].AdvancedForestBrushEntries = m_AdvancedForestBrushEntries.Value;
                 TrySaveCustomPrefabSet(prefabSetID);
             }
 

@@ -17,6 +17,7 @@ namespace Tree_Controller.Systems
     using Game.Simulation;
     using Game.Tools;
     using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
     using Tree_Controller.Components;
     using Unity.Burst;
@@ -39,6 +40,7 @@ namespace Tree_Controller.Systems
         private EntityQuery m_PauseTreeGrowthQuery;
         private EntityQuery m_NoTreeGrowthQuery;
         private EndFrameBarrier m_EndFrameBarrier;
+        private ToolSystem m_ToolSystem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LumberAndPauseTreeGrowthSystem"/> class.
@@ -57,6 +59,8 @@ namespace Tree_Controller.Systems
             m_ObjectSearchSystem = World.GetOrCreateSystemManaged<Game.Objects.SearchSystem>();
             m_NaturalResourceSystem = World.GetOrCreateSystemManaged<NaturalResourceSystem>();
             m_EndFrameBarrier = World.GetOrCreateSystemManaged<EndFrameBarrier>();
+            m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
+            m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = true;
 
             m_NoTreeGrowthQuery = SystemAPI.QueryBuilder()
                 .WithAllRW<NoTreeGrowth>()
@@ -103,6 +107,12 @@ namespace Tree_Controller.Systems
         /// <inheritdoc/>
         protected override void OnUpdate()
         {
+            if (m_ToolSystem.actionMode != GameMode.Game)
+            {
+                Enabled = false;
+                return;
+            }
+
             if (TreeControllerMod.Instance.Settings.DisableTreeGrowth)
             {
                 PauseTreeGrowthJob pauseTreeGrowthJob = new PauseTreeGrowthJob()

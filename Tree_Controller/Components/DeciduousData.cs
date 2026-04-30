@@ -54,7 +54,7 @@ namespace Tree_Controller
             reader.Read(out byte treeState);
             m_PreviousTreeState = (TreeState)treeState;
             reader.Read(out m_TechnicallyDead);
-            if (version == 1)
+            if (version <= 1)
             {
                 m_PermanentDecoration = false;
             }

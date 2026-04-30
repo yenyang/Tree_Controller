@@ -9,7 +9,7 @@
 		
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored--><PublishConfigurationPath>Properties\$(Configuration)\PublishConfiguration.xml</PublishConfigurationPath>
 		
-		<AssemblyVersion>1.7.0</AssemblyVersion>
+		<AssemblyVersion>1.7.1</AssemblyVersion>
 		<FileVersion>$(AssemblyVersion)</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 	</PropertyGroup>
@@ -30,6 +30,10 @@
 		</Reference>
 		<Reference Include="Colossal.AssetPipeline">
 		  <HintPath>$(ManagedPath)\Colossal.AssetPipeline.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
+		<Reference Include="Colossal.Collections">
+		  <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Cities Skylines II\Cities2_Data\Managed\Colossal.Collections.dll</HintPath>
 		  <Private>False</Private>
 		</Reference>
 		<Reference Include="Colossal.Core">
@@ -241,6 +245,9 @@
 
 	<ItemGroup>
 	  <None Update="LICENSE.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="lang\nl-NL.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>

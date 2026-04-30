@@ -1,4 +1,4 @@
-﻿// <copyright file="FreeVegetationSystem.cs" company="Yenyangs Mods. MIT License">
+﻿// <copyright file="ModifyVegetationPrefabsSystem.cs" company="Yenyangs Mods. MIT License">
 // Copyright (c) Yenyangs Mods. MIT License. All rights reserved.
 // </copyright>
 
@@ -13,7 +13,6 @@ namespace Tree_Controller.Systems
     using Game.Tools;
     using Unity.Collections;
     using Unity.Entities;
-    using static Colossal.Animations.Animation;
 
     /// <summary>
     /// Modifies the prices of vegetation prefabs, and handles Vegetation prefab component.
@@ -21,7 +20,6 @@ namespace Tree_Controller.Systems
     public partial class ModifyVegetationPrefabsSystem : GameSystemBase
     {
         private EntityQuery m_FreeVegetationQuery;
-        private EntityQuery m_TreeObjectGeometryQuery;
         private ILog m_Log;
         private PrefabSystem m_PrefabSystem;
         private EntityQuery m_PlantDataWithOutVegetationQuery;
@@ -65,59 +63,6 @@ namespace Tree_Controller.Systems
             m_Log.Info($"{nameof(ModifyVegetationPrefabsSystem)}.{nameof(ResetVegetationCosts)} Complete.");
         }
 
-        /// <summary>
-        /// Sets the object geometry size of tree prefabs to trunk size.
-        /// </summary>
-        public void DecreaseObjectGeometrySize()
-        {
-            NativeArray<Entity> prefabEntities = m_TreeObjectGeometryQuery.ToEntityArray(Allocator.Temp); // Important to use Allocator.Temp. You do not need to dispose of a Temp allocator. Forgetting to dispose a TempJob allocator will produce a memory leak.
-            foreach (Entity entity in prefabEntities)
-            {
-                if (EntityManager.TryGetComponent(entity, out ObjectGeometryData objectGeometryData)
-                    && EntityManager.TryGetComponent(entity, out Vegetation vegetationData)) // Vegetation is a custom component that Tree Controller assigns and uses. It probably should have been VegetationData to conform to vanilla naming standards for Prefab Entity components.
-                {
-                    if (vegetationData.m_Size.x == 0 && vegetationData.m_Size.z == 0)
-                    {
-                        vegetationData.m_Size = objectGeometryData.m_Size; // If vegetation size has not been assigned then this sets the copy of the prefab entity component's size to that of objectGeometryData size. This is done before the objectGeometryData size is changed by the mod to record the value before the mod changes it.
-                        EntityManager.SetComponentData(entity, vegetationData); // This sets the component on the Entity.
-                    }
-
-                    if (EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
-                        && subMeshBuffer.Length > 5) // Checking for a submesh buffer length of > 5 verifies that we are looking at a Tree and not a Wild bush or plant. Trees have submeshes for: child, teen, adult, elderly, dead, and stump.
-                    {
-                        objectGeometryData.m_Size.x = objectGeometryData.m_LegSize.x; // Copy the leg size to the general object geometry size so that the conflict check zone is just the tree leg size instead of the full diameter of elderly tree. Remember this is just a copy of the object geometry component from the prefab entity. 
-                        objectGeometryData.m_Size.z = objectGeometryData.m_LegSize.z; // Copy the leg size to the general object geometry size so that the conflict check zone is just the tree leg size instead of the full diameter of elderly tree. Remember this is just a copy of the object geometry component from the prefab entity. 
-                        EntityManager.SetComponentData(entity, objectGeometryData); // This sets the component on the Entity.
-                    }
-                }
-            }
-
-            m_Log.Info($"{nameof(ModifyVegetationPrefabsSystem)}.{nameof(DecreaseObjectGeometrySize)} Complete.");
-        }
-
-
-        /// <summary>
-        /// Resets the object geometry size of tree prefabs back to dripline.
-        /// </summary>
-        public void ResetObjectGeometrySize()
-        {
-            NativeArray<Entity> prefabEntities = m_TreeObjectGeometryQuery.ToEntityArray(Allocator.Temp); // Important to use Allocator.Temp. You do not need to dispose of a Temp allocator. Forgetting to dispose a TempJob allocator will produce a memory leak.
-            foreach (Entity entity in prefabEntities)
-            {
-                if (EntityManager.TryGetComponent(entity, out ObjectGeometryData objectGeometryData)
-                    && EntityManager.TryGetComponent(entity, out Vegetation vegetationData)
-                    && EntityManager.TryGetBuffer(entity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
-                    && subMeshBuffer.Length > 5) // Checking for a submesh buffer length of > 5 verifies that we are looking at a Tree and not a Wild bush or plant. Trees have submeshes for: child, teen, adult, elderly, dead, and stump.
-                {
-                    objectGeometryData.m_Size.x = vegetationData.m_Size.x; // Resets the value of the size on the copy of ObjectGeometryData prefab entity component to the recorded value on the vegetation custom component.
-                    objectGeometryData.m_Size.z = vegetationData.m_Size.z;  // Resets the value of the size on the copy of ObjectGeometryData prefab entity component to the recorded value on the vegetation custom component.
-                    EntityManager.SetComponentData(entity, objectGeometryData); // This sets the component on the Entity.
-                }
-            }
-
-            m_Log.Info($"{nameof(ModifyVegetationPrefabsSystem)}.{nameof(ResetObjectGeometrySize)} Complete.");
-        }
-
         /// <inheritdoc/>
         protected override void OnCreate()
         {
@@ -135,14 +80,7 @@ namespace Tree_Controller.Systems
                .WithNone<Deleted, Overridden>()
                .Build();
 
-            m_TreeObjectGeometryQuery = SystemAPI.QueryBuilder()
-               .WithAllRW<ObjectGeometryData>()
-               .WithAll<TreeData, Vegetation>()
-               .WithNone<Deleted, Overridden>()
-               .Build();
-
             m_PlantDataWithOutVegetationQuery = SystemAPI.QueryBuilder()
-                .WithAllRW<ObjectGeometryData>()
                 .WithAll<PlantData>()
                 .WithNone<Deleted, Vegetation>()
                 .Build();
@@ -159,22 +97,6 @@ namespace Tree_Controller.Systems
             foreach (Entity prefabEntity in prefabEntities)
             {
                 buffer.AddComponent<Vegetation>(prefabEntity);  // Queue up the structural change of adding a component to the prefab entity. To be played back automatically with ToolOutputBarrier. When using a barrier you should not manually playback the ECB, nor  should you dispose of the ECB. All handled by the barrier.
-                if (EntityManager.TryGetComponent(prefabEntity, out ObjectGeometryData objectGeometryData))
-                {
-                    m_Log.Debug($"{nameof(FindTreesAndBushesSystem)}.{nameof(OnGameLoadingComplete)} objectGeometryData.m_size = {objectGeometryData.m_Size.x}:{objectGeometryData.m_Size.z}");
-                    Vegetation vegetation = new Vegetation(new Unity.Mathematics.float3(objectGeometryData.m_Size.x, 0, objectGeometryData.m_Size.z));
-                    buffer.SetComponent(prefabEntity, vegetation); // Queue up setting component on the prefab entity. To be played back automatically with ToolOutputBarrier. When using a barrier you should not manually playback the ECB, nor  should you dispose of the ECB. All handled by the barrier.
-
-                    if (TreeControllerMod.Instance.Settings.LimitedTreeAnarchy
-                        && EntityManager.HasComponent<TreeData>(prefabEntity)
-                        && EntityManager.TryGetBuffer(prefabEntity, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
-                        && subMeshBuffer.Length > 5)  // Checking for a submesh buffer length of > 5 verifies that we are looking at a Tree and not a Wild bush or plant. Trees have submeshes for: child, teen, adult, elderly, dead, and stump.
-                    {
-                        objectGeometryData.m_Size.x = objectGeometryData.m_LegSize.x; // Copy the leg size to the general object geometry size so that the conflict check zone is just the tree leg size instead of the full diameter of elderly tree. Remember this is just a copy of the object geometry component from the prefab entity. 
-                        objectGeometryData.m_Size.z = objectGeometryData.m_LegSize.z; // Copy the leg size to the general object geometry size so that the conflict check zone is just the tree leg size instead of the full diameter of elderly tree. Remember this is just a copy of the object geometry component from the prefab entity. 
-                        buffer.SetComponent(prefabEntity, objectGeometryData); // Queue up setting a component on the prefab entity. To be played back automatically with ToolOutputBarrier. When using a barrier you should not manually playback the ECB, nor  should you dispose of the ECB. All handled by the barrier.
-                    }
-                }
             }
         }
 

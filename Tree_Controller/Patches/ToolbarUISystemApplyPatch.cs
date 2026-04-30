@@ -4,14 +4,12 @@
 
 namespace Tree_Controller.Patches
 {
-    using Colossal.UI.Binding;
     using Game.Prefabs;
     using Game.Tools;
     using Game.UI.InGame;
     using HarmonyLib;
     using System.Collections.Generic;
     using Tree_Controller.Tools;
-    using Tree_Controller.Utils;
     using Unity.Entities;
 
     /// <summary>

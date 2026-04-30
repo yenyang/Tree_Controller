@@ -17,6 +17,7 @@ namespace Tree_Controller
     using Colossal.Logging;
     using Game;
     using Game.Modding;
+    using Game.Rendering;
     using Game.SceneFlow;
     using HarmonyLib;
     using Newtonsoft.Json;
@@ -122,8 +123,7 @@ namespace Tree_Controller
             updateSystem.UpdateBefore<FindTreesAndBushesSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateBefore<DeciduousSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAt<ReloadFoliageColorDataSystem>(SystemUpdatePhase.GameSimulation);
-            updateSystem.UpdateAt<MigrateNoTreeGrowthSystem>(SystemUpdatePhase.GameSimulation);
-            updateSystem.UpdateBefore<LumberSystem>(SystemUpdatePhase.GameSimulation);
+            updateSystem.UpdateBefore<LumberAndPauseTreeGrowthSystem, ObjectColorSystem>(SystemUpdatePhase.Rendering);
             updateSystem.UpdateAt<DetectAreaChangeSystem>(SystemUpdatePhase.ModificationEnd);
             updateSystem.UpdateBefore<SafelyRemoveSystem>(SystemUpdatePhase.GameSimulation);
             updateSystem.UpdateAt<DestroyFoliageSystem>(SystemUpdatePhase.ToolUpdate);

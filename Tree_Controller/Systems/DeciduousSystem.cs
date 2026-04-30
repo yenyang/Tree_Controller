@@ -14,6 +14,7 @@ namespace Tree_Controller.Systems
     using Game.Prefabs.Climate;
     using Game.Simulation;
     using Game.Tools;
+    using Tree_Controller.Components;
     using Tree_Controller.Utils;
     using Unity.Burst;
     using Unity.Burst.Intrinsics;
@@ -119,8 +120,9 @@ namespace Tree_Controller.Systems
                 m_DeciduousTreeDataType = SystemAPI.GetComponentTypeHandle<DeciduousData>(),
                 buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
                 m_Season = FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.name),
-                m_LumberLookup = SystemAPI.GetComponentLookup<Lumber>(),
-                m_DecorationLookup = SystemAPI.GetComponentLookup<Decoration>(),
+                m_DecorationLookup = SystemAPI.GetComponentLookup<Decoration>(isReadOnly: true),
+                m_TreeGrowthPaused = TreeControllerMod.Instance.Settings.DisableTreeGrowth,
+                m_LumberResourceLookup = SystemAPI.GetComponentLookup<LumberResource>(isReadOnly: true),
             };
             JobHandle jobHandle = JobChunkExtensions.ScheduleParallel(treeSeasonChangeJob, m_DeciduousTreeQuery, Dependency);
             m_EndFrameBarrier.AddJobHandleForProducer(jobHandle);
@@ -141,7 +143,7 @@ namespace Tree_Controller.Systems
                    .Build();
 
             // This is for removing deciduous data from any trees that had it accidently added such as palm trees.
-            RemoveDecidousDataJob removeDecidousDataJob = new ()
+            RemoveDeciduousDataJob removeDeciduousDataJob = new ()
             {
                 m_DeciduousTreeDataType = SystemAPI.GetComponentTypeHandle<DeciduousData>(),
                 m_EntityType = SystemAPI.GetEntityTypeHandle(),
@@ -151,7 +153,7 @@ namespace Tree_Controller.Systems
                 buffer = m_EndFrameBarrier.CreateCommandBuffer().AsParallelWriter(),
             };
 
-            JobHandle jobHandle = removeDecidousDataJob.ScheduleParallel(deciduousTreeQuery, Dependency);
+            JobHandle jobHandle = removeDeciduousDataJob.ScheduleParallel(deciduousTreeQuery, Dependency);
             m_EndFrameBarrier.AddJobHandleForProducer(jobHandle);
             Dependency = jobHandle;
         }
@@ -174,9 +176,10 @@ namespace Tree_Controller.Systems
             public EntityCommandBuffer.ParallelWriter buffer;
             public FoliageUtils.Season m_Season;
             [ReadOnly]
-            public ComponentLookup<Lumber> m_LumberLookup;
-            [ReadOnly]
             public ComponentLookup<Game.Objects.Decoration> m_DecorationLookup;
+            public bool m_TreeGrowthPaused;
+            [ReadOnly]
+            public ComponentLookup<LumberResource> m_LumberResourceLookup;
 
             public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
             {
@@ -185,11 +188,17 @@ namespace Tree_Controller.Systems
                 NativeArray<DeciduousData> deciduousTreeNativeArray = chunk.GetNativeArray(ref m_DeciduousTreeDataType);
                 for (int i = 0; i < chunk.Count; i++)
                 {
+                    if (entityNativeArray[i] == Entity.Null)
+                    {
+                        continue;
+                    }
+
                     Entity currentEntity = entityNativeArray[i];
                     Game.Objects.Tree currentTreeData = treeNativeArray[i];
                     DeciduousData currentDeciduousTreeData = deciduousTreeNativeArray[i];
 
-                    if (m_LumberLookup.HasComponent(currentEntity))
+                    if (m_LumberResourceLookup.HasComponent(currentEntity) &&
+                        m_LumberResourceLookup.IsComponentEnabled(currentEntity))
                     {
                         if (currentDeciduousTreeData.m_PreviousTreeState != TreeState.Dead && currentTreeData.m_State == TreeState.Dead)
                         {
@@ -198,13 +207,6 @@ namespace Tree_Controller.Systems
                             buffer.AddComponent<BatchesUpdated>(unfilteredChunkIndex, currentEntity);
                         }
 
-                        if (currentDeciduousTreeData.m_PermanentDecoration == true &&
-                            m_DecorationLookup.IsComponentEnabled(currentEntity) == false)
-                        {
-                            buffer.SetComponentEnabled<Game.Objects.Decoration>(unfilteredChunkIndex, currentEntity, true);
-                        }
-
-                        buffer.RemoveComponent<DeciduousData>(unfilteredChunkIndex, currentEntity);
                         continue;
                     }
 
@@ -255,7 +257,8 @@ namespace Tree_Controller.Systems
 
                         if (currentDeciduousTreeData.m_PermanentDecoration == false &&
                             m_DecorationLookup.HasComponent(currentEntity) &&
-                            m_DecorationLookup.IsComponentEnabled(currentEntity) == true)
+                            m_DecorationLookup.IsComponentEnabled(currentEntity) == true
+                            && !m_TreeGrowthPaused)
                         {
                             // Resets tree aging for decidous non-decorations in winter.
                             buffer.SetComponentEnabled<Game.Objects.Decoration>(unfilteredChunkIndex, currentEntity, false);
@@ -268,7 +271,7 @@ namespace Tree_Controller.Systems
 #if BURST
         [BurstCompile]
 #endif
-        private struct RemoveDecidousDataJob : IJobChunk
+        private struct RemoveDeciduousDataJob : IJobChunk
         {
             [ReadOnly]
             public EntityTypeHandle m_EntityType;

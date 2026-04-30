@@ -142,6 +142,7 @@ namespace Tree_Controller.Tools
         private ValueBindingHelper<bool> m_IsEditor;
         private ValueBindingHelper<bool> m_ShowAdvancedForestBrushPanel;
         private ValueBindingHelper<int> m_SeaLevel;
+        private ValueBinding<bool> m_HidePreserveAgeToggle;
         private CustomSetRepository m_TemporaryCustomSetRepository;
         private bool m_UpdateSelectionSet = false;
         private bool m_RecentlySelectedPrefabSet = false;
@@ -226,6 +227,7 @@ namespace Tree_Controller.Tools
             }
 
             m_SelectedPrefabSet.Update(string.Empty);
+            m_TemporaryCustomSetRepository = new CustomSetRepository(m_AdvancedForestBrushEntries.Value);
             m_AdvancedForestBrushEntries.Value = new AdvancedForestBrushEntry[0];
             m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ResetPrefabSets)} Resetting prefab sets.");
         }
@@ -446,6 +448,15 @@ namespace Tree_Controller.Tools
             m_UiView.ExecuteScript($"yyTreeController.tagElements = document.getElementsByTagName(\"img\"); for (yyTreeController.i = 0; yyTreeController.i < yyTreeController.tagElements.length; yyTreeController.i++) {{ if (yyTreeController.tagElements[yyTreeController.i].src.includes(\"{ImageSystem.GetThumbnail(prefab)}\")) {{ yyTreeController.tagElements[yyTreeController.i].parentNode.classList.add(\"selected\"); yyTreeController.tagElements[yyTreeController.i].parentNode.parentNode.classList.add(\"selected\");  }} }} ");
         }
 
+        /// <summary>
+        /// Sets whether to Hide Preserve Age Toggle.
+        /// </summary>
+        /// <param name="value">State of Disable Tree Growth Option.</param>
+        public void SetDisableTreeGrowth(bool value)
+        {
+            m_HidePreserveAgeToggle.Update(value);
+        }
+
         /// <inheritdoc/>
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
@@ -486,6 +497,15 @@ namespace Tree_Controller.Tools
                     TryLoadCustomPrefabSet($"YYTC-custom-set-{i}");
                 }
             }
+
+            if (!TreeControllerMod.Instance.Settings.DisableTreeGrowth)
+            {
+                m_ObjectToolSystem.decorationMode = TreeControllerMod.Instance.Settings.PreserveAge;
+            }
+            else
+            {
+                m_ObjectToolSystem.decorationMode = true;
+            }
         }
 
         /// <inheritdoc/>
@@ -518,6 +538,7 @@ namespace Tree_Controller.Tools
             AddBinding(m_IsTree = new ValueBinding<bool>(ModId, "IsTree", false));
             AddBinding(m_Radius = new ValueBinding<float>(ModId, "Radius", 100f));
             AddBinding(m_SelectedPrefabSet = new ValueBinding<string>(ModId, "PrefabSet", string.Empty));
+            AddBinding(m_HidePreserveAgeToggle = new ValueBinding<bool>(ModId, "HidePreserveAgeToggle", TreeControllerMod.Instance.Settings.DisableTreeGrowth));
             m_IsEditor = CreateBinding("IsEditor", false);
             m_ShowStump = CreateBinding("ShowStump", false);
             m_AdvancedForestBrushEntries = CreateBinding("AdvancedForestBrushEntries", new AdvancedForestBrushEntry[] { });
@@ -551,6 +572,7 @@ namespace Tree_Controller.Tools
             });
             CreateTrigger<string>("ResetEntry", ResetEntry);
             CreateTrigger<string>("RemoveEntry", RemoveEntry);
+            AddBinding(new TriggerBinding<bool>(ModId, "PreserveAgeToggled", (bool value) => { TreeControllerMod.Instance.Settings.PreserveAge = value; }));
             m_VegetationQuery = GetEntityQuery(ComponentType.ReadOnly<Vegetation>());
 
             m_Log.Info($"{nameof(TreeControllerUISystem)}.{nameof(OnCreate)}");
@@ -666,17 +688,26 @@ namespace Tree_Controller.Tools
 
             if (m_ToolOrPrefabSwitchedRecently)
             {
-                if (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve)
-                {
-                    HandleDistanceScale();
-                }
-
                 if (m_ShowAdvancedForestBrushPanel.Value
                     && m_SelectedPrefabSet.value == string.Empty
                     && m_TreeControllerTool.GetSelectedPrefabs().Count > 1
                     && m_AdvancedForestBrushEntries.Value.Length == 0)
                 {
-                    m_TemporaryCustomSetRepository = new CustomSetRepository(m_TreeControllerTool.GetSelectedPrefabs());
+                    if (m_TemporaryCustomSetRepository is null ||
+                        m_TemporaryCustomSetRepository.Count == 0)
+                    {
+                        m_TemporaryCustomSetRepository = new CustomSetRepository(m_TreeControllerTool.GetSelectedPrefabs());
+                    }
+                    else
+                    {
+                        CustomSetRepository customSetRepository = m_TemporaryCustomSetRepository;
+                        m_TemporaryCustomSetRepository = new CustomSetRepository(m_TreeControllerTool.GetSelectedPrefabs());
+                        for (int i = 0; i < m_TemporaryCustomSetRepository.Count; i++)
+                        {
+                            m_TemporaryCustomSetRepository.AdvancedForestBrushEntries[i] = customSetRepository.FindEntryOrDefault(m_TemporaryCustomSetRepository.AdvancedForestBrushEntries[i].Name);
+                        }
+                    }
+
                     m_AdvancedForestBrushEntries.Value = m_TemporaryCustomSetRepository.AdvancedForestBrushEntries;
                     HandleShowStumpsForAdvancedSetAndTriggerUpdate();
                 }
@@ -851,23 +882,6 @@ namespace Tree_Controller.Tools
             m_ToolSystem.activeTool = m_ObjectToolSystem;
         }
 
-        private void HandleDistanceScale()
-        {
-            if (!m_PrefabSystem.TryGetEntity(m_ObjectToolSystem.GetPrefab(), out Entity prefabEntity))
-            {
-                return;
-            }
-
-            if (!EntityManager.TryGetComponent(prefabEntity, out Vegetation vegetation)
-                || !EntityManager.TryGetComponent(prefabEntity, out ObjectGeometryData objectGeometryData))
-            {
-                return;
-            }
-
-            float x = ((objectGeometryData.m_Flags & GeometryFlags.Circular) != 0) ? vegetation.m_Size.x : math.length(vegetation.m_Size.xz);
-            m_ObjectToolSystem.SetMemberValue("distanceScale", math.pow(2f, math.clamp(math.round(math.log2(x)), 0f, 5f)));
-        }
-
         /// <summary>
         /// Lots a string from JS.
         /// </summary>
@@ -902,7 +916,7 @@ namespace Tree_Controller.Tools
             if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && ctrlKeyPressed)
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} trying to add prefab ids to set lookup.");
-                m_PrefabSetsLookup[prefabSetID].SaveCustomSet(selectedPrefabs);
+                m_PrefabSetsLookup[prefabSetID].AdvancedForestBrushEntries = m_AdvancedForestBrushEntries.Value;
                 TrySaveCustomPrefabSet(prefabSetID);
             }
 
@@ -1149,18 +1163,6 @@ namespace Tree_Controller.Tools
             if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create && m_ToolMode.value != (int)ToolMode.Plop)
             {
                 m_ToolMode.Update((int)ToolMode.Plop);
-            }
-
-            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line && m_ToolMode.value != (int)ToolMode.Line)
-            {
-                m_ToolMode.Update((int)ToolMode.Line);
-                HandleDistanceScale();
-            }
-
-            if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve && m_ToolMode.value != (int)ToolMode.Curve)
-            {
-                m_ToolMode.Update((int)ToolMode.Curve);
-                HandleDistanceScale();
             }
 
             if (m_ToolSystem.activeTool == m_ObjectToolSystem && m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Upgrade && m_ToolMode.value != (int)ToolMode.Upgrade)

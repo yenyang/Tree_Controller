@@ -85,6 +85,7 @@ const PrefabSet$ =           bindValue<string>(mod.id, 'PrefabSet');
 const IsEditor$ =           bindValue<boolean>(mod.id, "IsEditor");
 const ShowStump$ =           bindValue<boolean>(mod.id, 'ShowStump');
 const ShowPanel$ =          bindValue<boolean>(mod.id, 'ShowForestBrushPanel');
+const HidePreserveAgeToggle$ = bindValue<boolean>(mod.id, 'HidePreserveAgeToggle');
 
 // These are strings that will be used for event triggers.
 const radiusDownID =             "radius-down-arrow";
@@ -153,6 +154,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
         const ShowStumps = useValue(ShowStump$);
         const ShowPanel = useValue(ShowPanel$);
         const DecorationMode = useValue(toolbar.decorationMode$);
+        const HidePreserveAgeToggle = useValue(HidePreserveAgeToggle$);
 
         // These set up state variables for custom sets switching from number to save disk icon.
         const [isCustomSet1Hovered, setCustomSet1Hovered] = useState(false);
@@ -298,7 +300,9 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                     { (((IsTree && treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeAge) || ((objectToolActive || netToolActive || lineToolActive) && IsTree))) && (
                         <VanillaComponentResolver.instance.Section title={translate("YY_TREE_CONTROLLER[Age]",locale["YY_TREE_CONTROLLER[Age]"])}>
                             <>
-                                <VanillaComponentResolver.instance.ToolButton  selected={DecorationMode}                                tooltip={descriptionTooltip(translate("ToolOptions.DECORATION_MODE_TITLE", "Preserve Age"), translate("ToolOptions.DECORATION_MODE_TOOLTIP", "Disable growth and harvesting"))}       onSelect={() => {toolbar.setDecorationMode(!DecorationMode)}}   src={PreserveAgeSrc}     focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}      className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                                { !HidePreserveAgeToggle && (
+                                    <VanillaComponentResolver.instance.ToolButton  selected={DecorationMode}                                tooltip={descriptionTooltip(translate("ToolOptions.DECORATION_MODE_TITLE", "Preserve Age"), translate("ToolOptions.DECORATION_MODE_TOOLTIP", "Disable growth and harvesting"))}       onSelect={() => {toolbar.setDecorationMode(!DecorationMode); trigger(mod.id, "PreserveAgeToggled", !DecorationMode);}}   src={PreserveAgeSrc}     focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}      className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
+                                )}
                                 <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.All) == Ages.All}         tooltip={descriptionTooltip(clearAgeTooltipTitle, clearAgeTooltipDescription)}      onSelect={() => changeSelectedAge(Ages.All)}        src={clearAgesSrc}       focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                                 <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.Child) == Ages.Child}     tooltip={childTooltipTitle}            onSelect={() => changeSelectedAge(Ages.Child)}      src={childSrc}           focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>
                                 <VanillaComponentResolver.instance.ToolButton  selected={(SelectedAges & Ages.Teen) == Ages.Teen}       tooltip={teenTooltipTitle}              onSelect={() => changeSelectedAge(Ages.Teen)}       src={teenSrc}            focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED}     className={VanillaComponentResolver.instance.toolButtonTheme.button}></VanillaComponentResolver.instance.ToolButton>

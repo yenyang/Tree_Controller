@@ -9,17 +9,19 @@ namespace Tree_Controller.Settings
     using Game.Modding;
     using Game.Settings;
     using Game.Simulation;
+    using Game.Tools;
     using Game.UI;
     using Tree_Controller.Systems;
     using Tree_Controller.Tools;
     using Unity.Entities;
+    using UnityEngine.Rendering.HighDefinition;
 
     /// <summary>
     /// The mod settings for the Tree Controller Mod.
     /// </summary>
     [FileLocation("Mods_Yenyang_Tree_Controller")]
     [SettingsUITabOrder(General, WindTab)]
-    [SettingsUIGroupOrder(Stable, DisableWinds, Override, Remove, Reset, Info)]
+    [SettingsUIGroupOrder(Stable, DisableTreeGrowthGroup, DisableWinds, Override, Remove, Reset, Info)]
     public class TreeControllerSettings : ModSetting
     {
         /// <summary>
@@ -38,6 +40,7 @@ namespace Tree_Controller.Settings
         private const string Reset = "Reset";
         private const string Remove = "Remove";
         private const string Stable = "Stable";
+        private const string DisableTreeGrowthGroup = "DisableTreeGrowth";
         private const string Info = "Version";
 
         private ReloadFoliageColorDataSystem m_ReloadFoliageColorDataSystem;
@@ -124,10 +127,47 @@ namespace Tree_Controller.Settings
         public bool UseDeadModelDuringWinter { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether Tree Growth was previously disabled. RETIRED. Still used for migration to vanilla.
+        /// Sets a value indicating whether to Activate Disable Tree Growth.
+        /// </summary>
+        [SettingsUISection(General, DisableTreeGrowthGroup)]
+        [SettingsUIButton]
+        [SettingsUIConfirmation]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(DisableTreeGrowth))]
+        public bool PauseTreeGrowthButton
+        {
+            set
+            {
+                SetDisableTreeGrowth(true);
+            }
+        }
+
+        /// <summary>
+        /// Sets a value indicating whether to Deactivate Disable Tree Growth.
+        /// </summary>
+        [SettingsUISection(General, DisableTreeGrowthGroup)]
+        [SettingsUIButton]
+        [SettingsUIConfirmation]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(DisableTreeGrowth), true)]
+        public bool ResumeTreeGrowthButton
+        {
+            set
+            {
+                SetDisableTreeGrowth(false);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to always PreserveAge. Hide PreserveAge Toggle.
+        /// </summary>
+        [SettingsUISection(General, DisableTreeGrowthGroup)]
+        [SettingsUIDisableByCondition(typeof(TreeControllerSettings), nameof(DisableDisableTreeGrowth))]
+        public bool DisableTreeGrowth { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to PreserveAge. Used for preserving toggle state after closing the game.
         /// </summary>
         [SettingsUIHidden]
-        public bool DisableTreeGrowth { get; set; }
+        public bool PreserveAge { get; set; }
 
         /// <summary>
         /// Gets or sets a enum that defines the selection for Age Selection.
@@ -146,13 +186,6 @@ namespace Tree_Controller.Settings
         /// </summary>
         [SettingsUISection(General, Stable)]
         public bool FasterFullBrushStrength { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to limit tree overlapping checks to trunks.
-        /// </summary>
-        [SettingsUISection(General, Stable)]
-        [SettingsUISetter(typeof(TreeControllerSettings), nameof(ToggleLimitedTreeAnarchy))]
-        public bool LimitedTreeAnarchy { get; set; }
 
         /// <summary>
         /// Gets or sets a enum that defines the type of Seasonal foliage color set preference.
@@ -211,7 +244,6 @@ namespace Tree_Controller.Settings
                 ConstrainBrush = true;
                 IncludeStumps = false;
                 FasterFullBrushStrength = false;
-                LimitedTreeAnarchy = false;
                 ApplyAndSave();
             }
         }
@@ -369,7 +401,6 @@ namespace Tree_Controller.Settings
             IncludeStumps = false;
             ConstrainBrush = true;
             FasterFullBrushStrength = false;
-            LimitedTreeAnarchy = false;
             PreviousAgeSelection = Ages.Adult;
         }
 
@@ -422,20 +453,24 @@ namespace Tree_Controller.Settings
         }
 
         /// <summary>
-        /// Toggles the limited tree anarchy on or off.
+        /// Sets DisableTreeGrowth on UI System to handle Hiding Preserve Age Toggle.
         /// </summary>
-        /// <param name="toggleState">should object geometry sizes be decreased or reset.</param>
-        public void ToggleLimitedTreeAnarchy(bool toggleState)
+        /// <param name="value">Is Disable Tree Growth enabled.</param>
+        public void SetDisableTreeGrowth(bool value)
         {
-            ModifyVegetationPrefabsSystem modifyVegeationPrefabSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ModifyVegetationPrefabsSystem>();
-            if (toggleState)
-            {
-                modifyVegeationPrefabSystem.DecreaseObjectGeometrySize();
-            }
-            else
-            {
-                modifyVegeationPrefabSystem.ResetObjectGeometrySize();
-            }
+            DisableTreeGrowth = value;
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<TreeControllerUISystem>().SetDisableTreeGrowth(DisableTreeGrowth);
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<LumberAndPauseTreeGrowthSystem>().Enabled = DisableTreeGrowth;
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<ObjectToolSystem>().decorationMode = DisableTreeGrowth;
+        }
+
+        /// <summary>
+        /// Always returns true to disable Disable Tree Growth option.
+        /// </summary>
+        /// <returns>True.</returns>
+        public bool DisableDisableTreeGrowth()
+        {
+            return true;
         }
     }
 }

@@ -313,13 +313,6 @@ namespace Tree_Controller.Systems
             ClimatePrefab climatePrefab = m_PrefabSystem.GetPrefab<ClimatePrefab>(m_ClimateSystem.currentClimate);
 
             FoliageUtils.Season lastSeason = m_Season;
-#if VERBOSE
-            m_Log.Verbose($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Last Season {lastSeason}");
-#endif
-            m_Season = FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.name);
-#if VERBOSE
-            m_Log.Verbose($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Current Season {m_Season}");
-#endif
             if (lastSeason != m_Season)
             {
                 m_Run = true;
@@ -330,14 +323,18 @@ namespace Tree_Controller.Systems
 
             if (!m_Run && TreeControllerMod.Instance.Settings.ColorVariationSet == m_ColorVariationSet)
             {
-#if VERBOSE
-                m_Log.Verbose($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} TreeControllerMod.Instance.Settings.ColorVariationSet: {TreeControllerMod.Instance.Settings.ColorVariationSet} ==  m_ColorVariationSet: {m_ColorVariationSet} therefore Abort!");
-#endif
                 return;
             }
 
 #if VERBOSE
-            m_Log.Verbose($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} TreeControllerMod.Instance.Settings.ColorVariationSet: {TreeControllerMod.Instance.Settings.ColorVariationSet} ==  m_ColorVariationSet: {m_ColorVariationSet}.!");
+            m_Log.Verbose($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} TreeControllerMod.Instance.Settings.ColorVariationSet: {TreeControllerMod.Instance.Settings.ColorVariationSet} m_ColorVariationSet: {m_ColorVariationSet} ");
+#endif
+#if VERBOSE
+            m_Log.Verbose($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Last Season {lastSeason}");
+#endif
+            m_Season = FoliageUtils.GetSeasonFromSeasonID(climatePrefab.FindSeasonByTime(m_ClimateSystem.currentDate).Item1.name);
+#if VERBOSE
+            m_Log.Verbose($"{nameof(ReloadFoliageColorDataSystem)}.{nameof(OnUpdate)} Current Season {m_Season}");
 #endif
             EntityCommandBuffer buffer = m_EndFrameBarrier.CreateCommandBuffer();
             JobHandle plantPrefabJobHandle;

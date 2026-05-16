@@ -103,15 +103,15 @@ Algernon and I have collaborated to allow for sets and multiple vegetation types
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/tree-controller.1644992/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.7.1.2" />
+  <ModVersion Value="1.7.1.3" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.5.*" />
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" Version="1.0.13" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Patch v1.7.1.2
-* Attempt to fix not being able to match ColorGroupIDs with Seasons when modded ColorGroups have been added.
-* Verbose logging removed when ReloadFoliageColorDataSystem doesn't run because it should not.</ChangeLog>
+  <ChangeLog># Patch v1.7.1.3
+* Removed Verbose logging.
+* Changed default location and name of settings file. Existing settings file stay put and keep working, but new settings file will be created at .../ModsSettings/yenyang/Tree_Controller.coc</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

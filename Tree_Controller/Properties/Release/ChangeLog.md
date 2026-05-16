@@ -1,3 +1,3 @@
-﻿# Patch v1.7.1.2
-* Attempt to fix not being able to match ColorGroupIDs with Seasons when modded ColorGroups have been added.
-* Verbose logging removed when ReloadFoliageColorDataSystem doesn't run because it should not.
+﻿# Patch v1.7.1.3
+* Removed Verbose logging.
+* Changed default location and name of settings file. Existing settings file stays put and keeps working, but new settings file will be created at .../ModsSettings/yenyang/Tree_Controller.coc  

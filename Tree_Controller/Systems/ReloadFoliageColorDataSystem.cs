@@ -2,7 +2,7 @@
 // Copyright (c) Yenyangs Mods. MIT License. All rights reserved.
 // </copyright>
 
-#define VERBOSE
+// #define VERBOSE
 namespace Tree_Controller.Systems
 {
     using System;

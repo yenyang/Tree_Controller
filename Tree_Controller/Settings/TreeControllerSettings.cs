@@ -5,21 +5,18 @@
 namespace Tree_Controller.Settings
 {
     using Colossal.IO.AssetDatabase;
-    using Game.Input;
     using Game.Modding;
     using Game.Settings;
-    using Game.Simulation;
     using Game.Tools;
     using Game.UI;
     using Tree_Controller.Systems;
     using Tree_Controller.Tools;
     using Unity.Entities;
-    using UnityEngine.Rendering.HighDefinition;
 
     /// <summary>
     /// The mod settings for the Tree Controller Mod.
     /// </summary>
-    [FileLocation("Mods_Yenyang_Tree_Controller")]
+    [FileLocation("ModsSettings/yenyang/Tree_Controller")]
     [SettingsUITabOrder(General, WindTab)]
     [SettingsUIGroupOrder(Stable, DisableTreeGrowthGroup, DisableWinds, Override, Remove, Reset, Info)]
     public class TreeControllerSettings : ModSetting

@@ -2,12 +2,13 @@
 // Copyright (c) Yenyangs Mods. MIT License. All rights reserved.
 // </copyright>
 
-
+// #define VERBOSE
 namespace Tree_Controller.Utils
 {
     using Game.Rendering;
     using System.Collections.Generic;
     using Tree_Controller;
+    using Unity.Entities;
 
     /// <summary>
     /// Utility methods for Foliage Time Periods and Seasons.
@@ -23,6 +24,17 @@ namespace Tree_Controller.Utils
                 { "SeasonSummer", Season.Summer },
                 { "SeasonAutumn", Season.Autumn },
                 { "SeasonWinter", Season.Winter },
+        };
+
+        /// <summary>
+        ///  A way to lookup seasons.
+        /// </summary>
+        private static readonly Dictionary<string, Season> ColorGroupIDs = new()
+        {
+                { "Spring", Season.Spring },
+                { "Summer", Season.Summer },
+                { "Autumn", Season.Autumn },
+                { "Winter", Season.Winter },
         };
 
         /// <summary>
@@ -99,12 +111,43 @@ namespace Tree_Controller.Utils
         public static bool TryGetSeasonFromColorGroupID(ColorGroupID colorGroupID, out Season season)
         {
             season = Season.Spring;
-            for (int i = (int)Season.Spring; i <= (int)Season.Winter; i++)
+            MeshColorSystem meshColorSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<MeshColorSystem>();
+            object groupIDs = meshColorSystem.GetMemberValue("m_GroupIDs");
+            if (groupIDs is not null &&
+                groupIDs is Dictionary<string, int>)
             {
-                if (colorGroupID == new ColorGroupID(i))
+#if VERBOSE
+                TreeControllerMod.Instance.Logger.Verbose($"{nameof(FoliageUtils)}.{nameof(TryGetSeasonFromColorGroupID)} Found MeshColorSystem.m_GroupIDs.");
+#endif
+                Dictionary<string, int> groupIDDictionary = groupIDs as Dictionary<string, int>;
+                foreach (KeyValuePair<string, int> keyValuePair in groupIDDictionary)
                 {
-                    season = (Season)i;
-                    return true;
+#if VERBOSE
+                    TreeControllerMod.Instance.Logger.Verbose($"{nameof(FoliageUtils)}.{nameof(TryGetSeasonFromColorGroupID)} {keyValuePair.Key} is index {keyValuePair.Value}.");
+#endif
+                    if (ColorGroupIDs.ContainsKey(keyValuePair.Key) &&
+                        meshColorSystem.GetColorGroupID(keyValuePair.Key) == colorGroupID)
+                    {
+                        season = ColorGroupIDs[keyValuePair.Key];
+#if VERBOSE
+                        TreeControllerMod.Instance.Logger.Verbose($"{nameof(FoliageUtils)}.{nameof(TryGetSeasonFromColorGroupID)} Season {season} matches the ColorGroupID.");
+#endif
+                        return true;
+                    }
+                }
+            }
+            else
+            {
+#if VERBOSE
+                TreeControllerMod.Instance.Logger.Verbose($"{nameof(FoliageUtils)}.{nameof(TryGetSeasonFromColorGroupID)} Couldn't read MeshColorSystem.m_GroupIDs. Running limited check.");
+#endif
+                for (int i = (int)Season.Spring; i <= (int)Season.Winter; i++)
+                {
+                    if (colorGroupID == new ColorGroupID(i))
+                    {
+                        season = (Season)i;
+                        return true;
+                    }
                 }
             }
 

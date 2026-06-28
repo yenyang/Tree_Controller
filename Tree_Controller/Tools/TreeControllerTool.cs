@@ -59,6 +59,29 @@ namespace Tree_Controller.Tools
         public PrefabBase OriginallySelectedPrefab { get => m_OriginallySelectedPrefab; set => m_OriginallySelectedPrefab = value; }
 
         /// <summary>
+        /// Gets a value indicating whether multiple vegetation prefabs are selected.
+        /// </summary>
+        public bool IsActive
+        {
+            get
+            {
+                Entity prefabEntity;
+                if (m_ToolSystem.activePrefab is null ||
+                    !m_PrefabSystem.TryGetEntity(m_ToolSystem.activePrefab, out prefabEntity) ||
+                    !EntityManager.HasComponent<Vegetation>(prefabEntity))
+                {
+                    return false;
+                }
+
+                return m_SelectedTreePrefabEntities.Length > 1 &&
+                      (m_ToolSystem.activeTool == this ||
+                      (m_ToolSystem.activeTool == m_ObjectToolSystem &&
+                      (m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Brush || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Line || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Create || m_ObjectToolSystem.actualMode == ObjectToolSystem.Mode.Curve)) ||
+                      (m_ToolSystem.activeTool.toolID is not null && m_ToolSystem.activeTool.toolID == "Line Tool"));
+            }
+        }
+
+        /// <summary>
         /// Adds the selected Prefab to the list by finding prefab entity.
         /// </summary>
         /// <param name="prefab">PrefabBase from object tool.</param>

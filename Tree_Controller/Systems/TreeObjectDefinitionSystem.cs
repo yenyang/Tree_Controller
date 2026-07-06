@@ -11,6 +11,7 @@ namespace Tree_Controller.Systems
     using Game.Common;
     using Game.Objects;
     using Game.Prefabs;
+    using Game.Simulation;
     using Game.Tools;
     using Tree_Controller.Tools;
     using Unity.Collections;
@@ -41,6 +42,7 @@ namespace Tree_Controller.Systems
         private TreeControllerTool m_TreeControllerTool;
         private ILog m_Log;
         private ToolRaycastSystem m_ToolRaycastSystem;
+        private TerrainSystem m_TerrainSystem;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TreeObjectDefinitionSystem"/> class.
@@ -60,6 +62,7 @@ namespace Tree_Controller.Systems
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_TreeControllerTool = World.GetOrCreateSystemManaged<TreeControllerTool>();
             m_ToolRaycastSystem = World.GetOrCreateSystemManaged<ToolRaycastSystem>();
+            m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
             m_Log.Info($"[{nameof(TreeObjectDefinitionSystem)}] {nameof(OnCreate)}");
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_ObjectToolSystem || (tool.toolID != null && tool.toolID == "Line Tool");
             m_ObjectDefinitionQuery = SystemAPI.QueryBuilder()
@@ -184,6 +187,12 @@ namespace Tree_Controller.Systems
                         continue;
                     }
 
+                    if (m_TreeControllerUISystem.SlopeFilterEnabled &&
+                        !PlacementPassesSlopeFilter(currentObjectDefinition.m_Position)) 
+                    {
+                        destroyEntity = true;
+                    }
+
                     if (m_TreeControllerUISystem.AdvancedForestBrushEntries.Length > 0)
                     {
                         for (int i = 0; i < m_TreeControllerUISystem.AdvancedForestBrushEntries.Length; i++)
@@ -207,6 +216,37 @@ namespace Tree_Controller.Systems
             }
 
             entities.Dispose();
+        }
+
+        /// <summary>
+        /// Checks whether an object definition is within the configured terrain slope range.
+        /// </summary>
+        /// <param name="position">Candidate placement position.</param>
+        /// <returns>True when the placement should be kept.</returns>
+        private bool PlacementPassesSlopeFilter(float3 position) {
+            float slope = GetTerrainSlope(position);
+            return slope >= m_TreeControllerUISystem.MinSlope && slope <= m_TreeControllerUISystem.MaxSlope;
+        }
+
+        /// <summary>
+        /// Samples nearby terrain heights and converts the resulting grade to degrees.
+        /// </summary>
+        /// <param name="position">World position.</param>
+        /// <returns>Terrain slope in degrees.</returns>
+        private float GetTerrainSlope(float3 position) {
+            const float sampleDistance = 4f;
+            TerrainHeightData heightData = m_TerrainSystem.GetHeightData(false);
+
+            float left = TerrainUtils.SampleHeight(ref heightData, position + new float3(-sampleDistance, 0f, 0f));
+            float right = TerrainUtils.SampleHeight(ref heightData, position + new float3(sampleDistance, 0f, 0f));
+            float down = TerrainUtils.SampleHeight(ref heightData, position + new float3(0f, 0f, -sampleDistance));
+            float up = TerrainUtils.SampleHeight(ref heightData, position + new float3(0f, 0f, sampleDistance));
+
+            float xGrade = (right - left) / (sampleDistance * 2f);
+            float zGrade = (up - down) / (sampleDistance * 2f);
+            float grade = Mathf.Sqrt((xGrade * xGrade) + (zGrade * zGrade));
+
+            return Mathf.Atan(grade) * Mathf.Rad2Deg;
         }
 
     }

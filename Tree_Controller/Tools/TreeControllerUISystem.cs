@@ -913,10 +913,21 @@ namespace Tree_Controller.Tools
             }
 
             bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
-            if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && ctrlKeyPressed)
+            if (prefabSetID.Contains("custom") &&
+                selectedPrefabs.Count > 1 &&
+                ctrlKeyPressed)
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} trying to add prefab ids to set lookup.");
-                m_PrefabSetsLookup[prefabSetID].AdvancedForestBrushEntries = m_AdvancedForestBrushEntries.Value;
+                if (m_AdvancedForestBrushEntries.Value.Length > 2)
+                {
+                    m_PrefabSetsLookup[prefabSetID].AdvancedForestBrushEntries = m_AdvancedForestBrushEntries.Value;
+                }
+                else
+                {
+                    CustomSetRepository temporaryCustomSet = new CustomSetRepository(selectedPrefabs);
+                    m_PrefabSetsLookup[prefabSetID].AdvancedForestBrushEntries = temporaryCustomSet.AdvancedForestBrushEntries;
+                }
+
                 TrySaveCustomPrefabSet(prefabSetID);
             }
 

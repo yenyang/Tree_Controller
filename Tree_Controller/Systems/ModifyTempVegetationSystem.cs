@@ -12,12 +12,15 @@ namespace Tree_Controller.Systems
     using Game.Net;
     using Game.Objects;
     using Game.Prefabs;
+    using Game.Simulation;
     using Game.Tools;
     using System;
     using Tree_Controller.Tools;
     using Tree_Controller.Utils;
     using Unity.Collections;
     using Unity.Entities;
+    using Unity.Mathematics;
+    using UnityEngine;
 
     /// <summary>
     /// Modifies Temp entities that are also trees.
@@ -33,6 +36,7 @@ namespace Tree_Controller.Systems
         private EntityQuery m_TempOwnedVegetationQuery;
         private EntityQuery m_TempTreeQuery;
         private TreeControllerUISystem m_UISystem;
+        private TerrainSystem m_TerrainSystem;
         private Unity.Mathematics.Random m_Random;
         private ushort m_RandomSeed;
         private ProxyAction m_ApplyAction;
@@ -48,6 +52,7 @@ namespace Tree_Controller.Systems
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
             m_ToolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
             m_UISystem = World.GetOrCreateSystemManaged<TreeControllerUISystem>();
+            m_TerrainSystem = World.GetOrCreateSystemManaged<TerrainSystem>();
             m_ToolSystem.EventToolChanged += (ToolBaseSystem tool) => Enabled = tool == m_ObjectToolSystem || (tool.toolID != null && tool.toolID == "Line Tool") || tool == m_NetToolSystem;
             m_Random = new Unity.Mathematics.Random((ushort)DateTime.Now.Millisecond);
             m_RandomSeed = (ushort)m_Random.NextInt(0, ushort.MaxValue);
@@ -80,6 +85,14 @@ namespace Tree_Controller.Systems
                 ushort i = 1;
                 foreach (Entity entity in entities)
                 {
+
+                    // Slope Filter check
+                    if (!PlacementPassesSlopeFilter(entity)) 
+                    {
+                        EntityManager.AddComponent<Deleted>(entity);
+                        continue;
+                    }
+
                     if (EntityManager.TryGetComponent(entity, out PseudoRandomSeed pseudoRandomSeed))
                     {
                         if (m_RandomSeed + i < ushort.MaxValue)
@@ -102,6 +115,13 @@ namespace Tree_Controller.Systems
                 NativeArray<Entity> entities = m_TempTreeQuery.ToEntityArray(Allocator.Temp);
                 foreach (Entity entity in entities)
                 {
+                    // Slope Filter Check
+                    if (!PlacementPassesSlopeFilter(entity)) 
+                        {
+                        EntityManager.AddComponent<Deleted>(entity);
+                        continue;
+                    }
+
                     if (!EntityManager.TryGetComponent(entity, out Game.Objects.Tree tree)
                         || !EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)
                         || !EntityManager.TryGetBuffer(prefabRef.m_Prefab, isReadOnly: true, out DynamicBuffer<SubMesh> subMeshBuffer)
@@ -125,6 +145,13 @@ namespace Tree_Controller.Systems
                 bool placingStreetTrees = false;
                 foreach (Entity entity in entities)
                 {
+                    // Slope Filter Check
+                    if (!PlacementPassesSlopeFilter(entity)) 
+                    {
+                        EntityManager.AddComponent<Deleted>(entity);
+                        continue;
+                    }
+
                     if (!EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)
                         || !EntityManager.TryGetComponent(entity, out Game.Objects.Tree tree)
                         || !EntityManager.TryGetComponent(entity, out PseudoRandomSeed pseudoRandomSeed))
@@ -179,6 +206,59 @@ namespace Tree_Controller.Systems
                     m_RandomSeed = (ushort)m_Random.NextInt(0, ushort.MaxValue);
                 }
             }
+        }
+
+        /// <summary>
+        /// Checks whether a temporary vegetation placement is within the configured terrain slope range.
+        /// </summary>
+        /// <param name="entity">Temporary vegetation entity.</param>
+        /// <returns>True when the placement should be kept.</returns>
+        private bool PlacementPassesSlopeFilter(Entity entity) {
+            if (!m_UISystem.SlopeFilterEnabled) {
+                return true;
+            }
+
+            if (IsStreetTree(entity)) {
+                return true;
+            }
+
+            if (!EntityManager.TryGetComponent(entity, out Game.Objects.Transform transform)) {
+                return true;
+            }
+
+            float slope = GetTerrainSlope(transform.m_Position);
+            return slope >= m_UISystem.MinSlope && slope <= m_UISystem.MaxSlope;
+        }
+
+        /// <summary>
+        /// Checks for network-owned vegetation so road trees are not accidentally filtered by terrain slope.
+        /// </summary>
+        /// <param name="entity">Temporary vegetation entity.</param>
+        /// <returns>True if the vegetation is owned by a network edge.</returns>
+        private bool IsStreetTree(Entity entity) {
+            return EntityManager.TryGetComponent(entity, out Owner owner) &&
+                   EntityManager.HasComponent<Edge>(owner.m_Owner);
+        }
+
+        /// <summary>
+        /// Samples nearby terrain heights and converts the resulting grade to degrees.
+        /// </summary>
+        /// <param name="position">World position.</param>
+        /// <returns>Terrain slope in degrees.</returns>
+        private float GetTerrainSlope(float3 position) {
+            const float sampleDistance = 4f;
+            TerrainHeightData heightData = m_TerrainSystem.GetHeightData(false);
+
+            float left = TerrainUtils.SampleHeight(ref heightData, position + new float3(-sampleDistance, 0f, 0f));
+            float right = TerrainUtils.SampleHeight(ref heightData, position + new float3(sampleDistance, 0f, 0f));
+            float down = TerrainUtils.SampleHeight(ref heightData, position + new float3(0f, 0f, -sampleDistance));
+            float up = TerrainUtils.SampleHeight(ref heightData, position + new float3(0f, 0f, sampleDistance));
+
+            float xGrade = (right - left) / (sampleDistance * 2f);
+            float zGrade = (up - down) / (sampleDistance * 2f);
+            float grade = Mathf.Sqrt((xGrade * xGrade) + (zGrade * zGrade));
+
+            return Mathf.Atan(grade) * Mathf.Rad2Deg;
         }
     }
 }

@@ -134,6 +134,8 @@ namespace Tree_Controller.Tools
         private ValueBinding<int> m_SelectionMode;
         private ValueBinding<int> m_SelectedAges;
         private ValueBinding<float> m_Radius;
+        private ValueBindingHelper<float> m_MinSlope;
+        private ValueBindingHelper<float> m_MaxSlope;
         private ValueBinding<bool> m_IsVegetation;
         private ValueBinding<bool> m_IsTree;
         private ValueBindingHelper<int> m_MaxElevation;
@@ -195,6 +197,21 @@ namespace Tree_Controller.Tools
         /// Gets the radius for tree controller tool with radius tool mode.
         /// </summary>
         public float Radius { get => m_Radius.value; }
+
+        /// <summary>
+        /// Gets the minimum terrain slope, in degrees, allowed for vegetation placement.
+        /// </summary>
+        public float MinSlope { get => m_MinSlope.Value; }
+
+        /// <summary>
+        /// Gets the maximum terrain slope, in degrees, allowed for vegetation placement.
+        /// </summary>
+        public float MaxSlope { get => m_MaxSlope.Value; }
+
+        /// <summary>
+        /// Gets a value indicating whether the slope filter is active.
+        /// </summary>
+        public bool SlopeFilterEnabled { get => m_MinSlope.Value > 0f || m_MaxSlope.Value < 90f; }
 
         /// <summary>
         /// Gets a value indicating whether gets a bool for whether there are any ages selected.
@@ -545,6 +562,8 @@ namespace Tree_Controller.Tools
             m_ShowAdvancedForestBrushPanel = CreateBinding("ShowForestBrushPanel", false);
             m_MaxElevation = CreateBinding("MaxElevation", 4096);
             m_SeaLevel = CreateBinding("SeaLevel", 0);
+            m_MinSlope = CreateBinding("MinSlope", "SetMinSlope", 0f, SetMinSlope);
+            m_MaxSlope = CreateBinding("MaxSlope", "SetMaxSlope", 90f, SetMaxSlope);
 
             // This section handles trigger bindings which listen for triggers from UI and then start an event.
             AddBinding(new TriggerBinding<int>(ModId, "ChangeToolMode", ChangeToolMode));
@@ -1024,6 +1043,34 @@ namespace Tree_Controller.Tools
             }
 
             m_Radius.Update(radius);
+        }
+
+        /// <summary>
+        /// Sets the minimum terrain slope for vegetation placement.
+        /// </summary>
+        /// <param name="value">Minimum slope in degrees.</param>
+        private void SetMinSlope(float value) 
+        {
+            float minSlope = Mathf.Clamp(value, 0f, 90f);
+            m_MinSlope.Value = minSlope;
+
+            if (m_MaxSlope.Value < minSlope) {
+                m_MaxSlope.Value = minSlope;
+            }
+        }
+
+        /// <summary>
+        /// Sets the maximum terrain slope for vegetation placement.
+        /// </summary>
+        /// <param name="value">Maximum slope in degrees.</param>
+        private void SetMaxSlope(float value) 
+        {
+            float maxSlope = Mathf.Clamp(value, 0f, 90f);
+            m_MaxSlope.Value = maxSlope;
+
+            if (m_MinSlope.Value > maxSlope) {
+                m_MinSlope.Value = maxSlope;
+            }
         }
 
         /// <summary>

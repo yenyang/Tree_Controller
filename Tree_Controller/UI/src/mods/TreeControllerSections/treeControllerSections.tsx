@@ -5,7 +5,7 @@ import mod from "../../../mod.json";
 import { VanillaComponentResolver } from "../VanillaComponentResolver/VanillaComponentResolver";
 import { useLocalization } from "cs2/l10n";
 import styles from "./treeController.module.scss";
-import { useState } from "react";
+import { ChangeEvent, useState, useEffect } from "react";
 import { Icon } from "cs2/ui";
 import locale from "../lang/en-US.json";
 import PreserveAgeSrc from "../../images/PreserveAge.svg"
@@ -81,6 +81,8 @@ const SelectionMode$ =       bindValue<number> (mod.id, 'SelectionMode');
 const IsVegetation$ =        bindValue<boolean>(mod.id, 'IsVegetation');
 const IsTree$ =              bindValue<boolean>(mod.id, 'IsTree');
 const Radius$ =              bindValue<number>(mod.id, 'Radius');
+const MinSlope$ =            bindValue<number>(mod.id, 'MinSlope');
+const MaxSlope$ =            bindValue<number>(mod.id, 'MaxSlope');
 const PrefabSet$ =           bindValue<string>(mod.id, 'PrefabSet');
 const IsEditor$ =           bindValue<boolean>(mod.id, "IsEditor");
 const ShowStump$ =           bindValue<boolean>(mod.id, 'ShowStump');
@@ -116,6 +118,31 @@ function changeSelectionMode(selectionMode: Selection) {
     trigger(mod.id, "ChangeSelectionMode", selectionMode);
 }
 
+// This function triggers an event to set the minimum slope angle for tree controller to paint trees on
+function setMinSlope(value: number) {
+    trigger(mod.id, "SetMinSlope", value);
+}
+
+// This function triggers an event to set the maximum slope angle for tree controller to paint trees on
+function setMaxSlope(value: number) {
+    trigger(mod.id, "SetMaxSlope", value);
+}
+
+// This function keeps the min/max slope values to possible values: 0-90 degrees
+function clampSlope(value: number): number {
+    return Math.min(90, Math.max(0, value));
+}
+
+// This function makes the increase slope buttons step in increments of 5 degrees
+function nextSlopeStep(value: number): number {
+    return clampSlope(Math.floor(value / 5) * 5 + 5);
+}
+
+// This function makes the decrease slope buttons step in increments of 5 degrees
+function previousSlopeStep(value: number): number {
+    return clampSlope(Math.ceil(value / 5) * 5 - 5);
+}
+
 // This function triggers an event to change the prefab set.
 export function changePrefabSet(prefabSet: string) {
     trigger(mod.id, "ChangePrefabSet", prefabSet);
@@ -147,6 +174,8 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
         const CurrentToolMode = useValue(ToolMode$);
         const SelectedAges = useValue(SelectedAges$) as Ages;
         const Radius = useValue(Radius$);
+        const MinSlope = useValue(MinSlope$);
+        const MaxSlope = useValue(MaxSlope$);
         const IsVegetation = useValue(IsVegetation$);
         const IsTree = useValue(IsTree$);
         const PrefabSet = useValue(PrefabSet$);
@@ -264,13 +293,94 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
         const wholeMapTooltipTitle = translate("YY_TREE_CONTROLLER[whole-map]",locale["YY_TREE_CONTROLLER[whole-map]"]);
         const wholeMapTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[whole-map]",locale["YY_TREE_CONTROLLER_DESCRIPTION[whole-map]"]);
         const radiusUpTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[radius-up-arrow]",locale["YY_TREE_CONTROLLER_DESCRIPTION[radius-up-arrow]"]);
-        const radiusDownTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[radius-up-arrow]",locale["YY_TREE_CONTROLLER_DESCRIPTION[radius-up-arrow]"]);
-        const changeAgeTooltipTitle = translate("YY_TREE_CONTROLLER[change-age-tool]",locale["YY_TREE_CONTROLLER[change-age-tool]"]);
+        const radiusDownTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[radius-up-arrow]", locale["YY_TREE_CONTROLLER_DESCRIPTION[radius-up-arrow]"]);
+        const minSlopeTitle = translate("YY_TREE_CONTROLLER[min-slope]", locale["YY_TREE_CONTROLLER[min-slope]"]);
+        const maxSlopeTitle = translate("YY_TREE_CONTROLLER[max-slope]", locale["YY_TREE_CONTROLLER[max-slope]"]);
+        const slopeDownTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[slope-down-arrow]", locale["YY_TREE_CONTROLLER_DESCRIPTION[slope-down-arrow]"]);
+        const slopeUpTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[slope-up-arrow]", locale["YY_TREE_CONTROLLER_DESCRIPTION[slope-up-arrow]"]);
+        const changeAgeTooltipTitle = translate("YY_TREE_CONTROLLER[change-age-tool]", locale["YY_TREE_CONTROLLER[change-age-tool]"]);
         const changeAgeTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[change-age-tool]",locale["YY_TREE_CONTROLLER_DESCRIPTION[change-age-tool]"]);
         const changePrefabTooltipTitle = translate("YY_TREE_CONTROLLER[change-prefab-tool]",locale["YY_TREE_CONTROLLER[change-prefab-tool]"]);
         const changePrefabTooltipDescription = translate("YY_TREE_CONTROLLER_DESCRIPTION[change-prefab-tool]",locale["YY_TREE_CONTROLLER_DESCRIPTION[change-prefab-tool]"]);
         const showPanelTooltipTitle = translate("Tree_Controller.TOOLTIP_TITLE[AdvancedSetControlPanel]" ,locale["Tree_Controller.TOOLTIP_TITLE[AdvancedSetControlPanel]"]);
         const showPanelTooltipDescription = translate("Tree_Controller.TOOLTIP_DESCRIPTION[AdvancedSetControlPanel]", locale["Tree_Controller.TOOLTIP_DESCRIPTION[AdvancedSetControlPanel]"]);
+
+        /** 
+         * This function renders the min and max slope UI elements 
+         * It's split out to it's own function because min and max are linked. 
+         * Min cannot be > max, and vice versa
+         *
+         * This keeps a local 'draft' value while the player is typing a value so a partial input does not immediately commit
+         * to the UI and update the opposite value early.
+         * 
+         * The actual min/max relationship is handled on the C# side in TreeControllerUISystem - this just keeps the visible input
+         * correct when that system clamps or adjusts either value
+         * 
+        */
+        function SlopeNumberControl(props: {
+            value: number,
+            onChange: (value: number) => void,
+            downTooltip: string | null,
+            upTooltip: string | null
+        }): JSX.Element {
+            const { value, onChange, downTooltip, upTooltip } = props;
+
+            const [draftValue, setDraftValue] = useState(clampSlope(value).toFixed(0));
+
+            useEffect(() => {
+                setDraftValue(clampSlope(value).toFixed(0));
+            }, [value]);
+
+            const commitDraftValue = () => {
+                const nextValue = Number(draftValue);
+
+                if (Number.isNaN(nextValue)) {
+                    setDraftValue(clampSlope(value).toFixed(0));
+                    return;
+                }
+
+                const clampedValue = clampSlope(nextValue);
+                setDraftValue(clampedValue.toFixed(0));
+                onChange(clampedValue);
+            };
+
+            const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+                setDraftValue(event.target.value);
+            };
+
+            const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+                if (event.key === "Enter") {
+                    commitDraftValue();
+                }
+
+                if (event.key === "Escape") {
+                    setDraftValue(clampSlope(value).toFixed(0));
+                }
+            };
+
+            const mouseToolOptionsTheme = VanillaComponentResolver.instance.mouseToolOptionsTheme;
+
+            return (
+                <>
+                    <VanillaComponentResolver.instance.ToolButton tooltip={slopeDownTooltipDescription} onSelect={() => onChange(previousSlopeStep(value))} src={arrowDownSrc} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} className={mouseToolOptionsTheme.startButton}></VanillaComponentResolver.instance.ToolButton>
+                    <div className={mouseToolOptionsTheme.numberField}>
+                        <input
+                            className={mouseToolOptionsTheme.numberInputField}
+                            type="text"
+                            inputMode="numeric"
+                            value={draftValue}
+                            onChange={handleInputChange}
+                            onBlur={commitDraftValue}
+                            onKeyDown={handleKeyDown}
+                            vk-title="Current Slope Value"
+                            vk-description="Current Slope Value"
+                            vk-type="text"
+                        ></input>
+                    </div>
+                    <VanillaComponentResolver.instance.ToolButton tooltip={slopeUpTooltipDescription} onSelect={() => onChange(nextSlopeStep(value))} src={arrowUpSrc} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} className={mouseToolOptionsTheme.endButton}></VanillaComponentResolver.instance.ToolButton>
+                </>
+            );
+        }
 
         var result = Component();
         
@@ -282,6 +392,8 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                 Conditionally adds new sections after other tool options sections with translated title based of localization key from binding. Localization key defined in C#.
                 All buttons have translated tooltips, some have titles. OnSelect triggers C# events. Src paths are local imports.
                 Radius section has up, and down buttons and text field.
+
+                New slope sections have up and down buttons plus text field. The two are linked together and will update each other to prevent min/max value mismatches.
                 */
                 <>
                     { (((objectToolActive) || (treeControllerToolActive && CurrentToolMode == ToolMode.ChangeType) || lineToolActive) && IsVegetation) && (
@@ -328,6 +440,26 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                             <VanillaComponentResolver.instance.ToolButton tooltip={radiusDownTooltipDescription} onSelect={() => handleClick(radiusDownID)} src={arrowDownSrc} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} className={VanillaComponentResolver.instance.mouseToolOptionsTheme.startButton}></VanillaComponentResolver.instance.ToolButton>
                             <div className={VanillaComponentResolver.instance.mouseToolOptionsTheme.numberField}>{ Radius >= 1 ? Radius.toFixed(0) : Radius.toFixed(1) + " m"}</div>
                             <VanillaComponentResolver.instance.ToolButton tooltip={radiusUpTooltipDescription} onSelect={() => handleClick(radiusUpID)} src={arrowUpSrc} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} className={VanillaComponentResolver.instance.mouseToolOptionsTheme.endButton} ></VanillaComponentResolver.instance.ToolButton>
+                        </VanillaComponentResolver.instance.Section>
+                    )}
+                    {(treeControllerToolActive || (objectToolActive && IsVegetation) || lineToolActive) && (
+                        <VanillaComponentResolver.instance.Section title={minSlopeTitle}>
+                            <SlopeNumberControl
+                                value={MinSlope}
+                                onChange={setMinSlope}
+                                downTooltip={slopeDownTooltipDescription}
+                                upTooltip={slopeUpTooltipDescription}
+                            ></SlopeNumberControl>
+                        </VanillaComponentResolver.instance.Section>
+                    )}
+                    {(treeControllerToolActive || (objectToolActive && IsVegetation) || lineToolActive) && (
+                        <VanillaComponentResolver.instance.Section title={maxSlopeTitle}>
+                            <SlopeNumberControl
+                                value={MaxSlope}
+                                onChange={setMaxSlope}
+                                downTooltip={slopeDownTooltipDescription}
+                                upTooltip={slopeUpTooltipDescription}
+                            ></SlopeNumberControl>
                         </VanillaComponentResolver.instance.Section>
                     )}
                     { (treeControllerToolActive || (objectToolActive && IsVegetation)) && (

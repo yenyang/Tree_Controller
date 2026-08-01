@@ -1,3 +1,4 @@
-﻿# Patch v1.7.1.3
-* Removed Verbose logging.
-* Changed default location and name of settings file. Existing settings file stays put and keeps working, but new settings file will be created at .../ModsSettings/yenyang/Tree_Controller.coc  
+﻿# Patch v1.7.2.1
+* Added Min and Max Slope Limits developed by Winter.
+* Fix for not being able to save custom sets without the Advanced Forest Brush menu open.
+* Added a compatibility method for future collaboration with Find It.

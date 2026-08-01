@@ -81,7 +81,7 @@ Algernon and I have collaborated to allow for sets and multiple vegetation types
 * yenyang - Mod Author
 * Chameleon TBN - Testing, Feedback, Icons, and Logo
 * BruceyBoy - Co-Authored Tree Wind Controller
-* phillycheese - Code Contribution
+* phillycheese, Winter - Code Contributions
 * donutmonger - Original author of Tree Wind Controller on Thunderstore.
 * Algernon - Help with UI, Cooperative Development and Code Sharing, Collaboration regarding line tool.
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing
@@ -103,15 +103,16 @@ Algernon and I have collaborated to allow for sets and multiple vegetation types
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/tree-controller.1644992/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.7.1.3" />
+  <ModVersion Value="1.7.2.1" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.5.*" />
   <!--Dependency for the mod, can be set multiple times-->
-  <Dependency Id="74417" DisplayName="Unified Icon Library"/>
+  <Dependency Id="74417" DisplayName="Unified Icon Library" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Patch v1.7.1.3
-* Removed Verbose logging.
-* Changed default location and name of settings file. Existing settings file stays put and keeps working, but new settings file will be created at .../ModsSettings/yenyang/Tree_Controller.coc</ChangeLog>
+  <ChangeLog># Patch v1.7.2.1
+* Added Min and Max Slope Limits developed by Winter.
+* Fix for not being able to save custom sets without the Advanced Forest Brush menu open.
+* Added a compatibility method for future collaboration with Find It.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

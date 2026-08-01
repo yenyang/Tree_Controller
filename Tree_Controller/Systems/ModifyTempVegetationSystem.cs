@@ -116,8 +116,8 @@ namespace Tree_Controller.Systems
                 foreach (Entity entity in entities)
                 {
                     // Slope Filter Check
-                    if (!PlacementPassesSlopeFilter(entity)) 
-                        {
+                    if (!PlacementPassesSlopeFilter(entity))
+                    {
                         EntityManager.AddComponent<Deleted>(entity);
                         continue;
                     }
@@ -146,7 +146,7 @@ namespace Tree_Controller.Systems
                 foreach (Entity entity in entities)
                 {
                     // Slope Filter Check
-                    if (!PlacementPassesSlopeFilter(entity)) 
+                    if (!PlacementPassesSlopeFilter(entity))
                     {
                         EntityManager.AddComponent<Deleted>(entity);
                         continue;

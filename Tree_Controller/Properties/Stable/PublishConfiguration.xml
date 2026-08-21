@@ -107,15 +107,17 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
   <!--Link to the forum post where the mod can be discussed-->
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/tree-controller.1644992/" />
   <!--Version of the mod-->
-  <ModVersion Value="1.7.2" />
+  <ModVersion Value="1.7.3" />
   <!--Recommended version of the base game to use the mod-->
   <GameVersion Value="1.6.*" />
   <!--Dependency for the mod, can be set multiple times-->
   <Dependency Id="74417" DisplayName="Unified Icon Library" />
   <!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-  <ChangeLog># Patch v.1.7.2
-* Fixed Color Variation options when mod could not find ColorGroupID for Seasons when the list of ColorGroupsIDs has a different order.
-* Changed default location and name of settings file. Existing settings file stays put and keeps working, but new settings file will be created at .../ModsSettings/yenyang/Tree_Controller.coc</ChangeLog>
+  <ChangeLog># Patch v.1.7.3
+* Added Min and Max Slope Limits developed by Winter.
+* Fix for not being able to save custom sets without the Advanced Forest Brush menu open.
+* Added a compatibility method for future collaboration with Find It. 
+* Fix not disposing of a persistant native list.</ChangeLog>
   <!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
   <ExternalLink Type="discord" Url="https://discord.gg/HTav7ARPs2" />
   <ExternalLink Type="paypal" Url="https://www.paypal.com/paypalme/YenyangsMods" />

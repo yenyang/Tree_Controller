@@ -683,6 +683,12 @@ namespace Tree_Controller.Tools
             return inputDeps;
         }
 
+        /// <inheritdoc/>
+        protected override void OnDestroy()
+        {
+            m_SelectedTreePrefabEntities.Dispose();
+        }
+
         /// <summary>
         /// Will loop through subobjects of the entity and change tree state. In future will change prefab.
         /// </summary>

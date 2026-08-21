@@ -77,7 +77,7 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
 * yenyang - Mod Author
 * Chameleon TBN - Testing, Feedback, Icons, and Logo
 * BruceyBoy - Co-Authored Tree Wind Controller
-* phillycheese - Code Contribution
+* phillycheese, Winter - Code Contribution
 * donutmonger - Original author of Tree Wind Controller on Thunderstore.
 * Algernon - Help with UI, Cooperative Development and Code Sharing, Collaboration regarding line tool.
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing

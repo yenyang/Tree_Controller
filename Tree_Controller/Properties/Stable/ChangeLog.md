@@ -3,3 +3,4 @@
 * Fix for not being able to save custom sets without the Advanced Forest Brush menu open.
 * Added a compatibility method for future collaboration with Find It. 
 * Fix not disposing of a persistant native list.
+* Updated Localization

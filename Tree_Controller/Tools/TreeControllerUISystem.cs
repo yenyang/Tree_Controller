@@ -16,6 +16,7 @@ namespace Tree_Controller.Tools
     using Colossal.Serialization.Entities;
     using Colossal.UI.Binding;
     using Game;
+    using Game.Modding;
     using Game.Objects;
     using Game.Prefabs;
     using Game.SceneFlow;
@@ -144,6 +145,7 @@ namespace Tree_Controller.Tools
         private ValueBindingHelper<bool> m_IsEditor;
         private ValueBindingHelper<bool> m_ShowAdvancedForestBrushPanel;
         private ValueBindingHelper<int> m_SeaLevel;
+        private ValueBinding<bool> m_HideSlopeLimits;
         private ValueBinding<bool> m_HidePreserveAgeToggle;
         private CustomSetRepository m_TemporaryCustomSetRepository;
         private bool m_UpdateSelectionSet = false;
@@ -211,7 +213,7 @@ namespace Tree_Controller.Tools
         /// <summary>
         /// Gets a value indicating whether the slope filter is active.
         /// </summary>
-        public bool SlopeFilterEnabled { get => m_MinSlope.Value > 0f || m_MaxSlope.Value < 90f; }
+        public bool SlopeFilterEnabled { get => (m_MinSlope.Value > 0f || m_MaxSlope.Value < 90f) && !TreeControllerMod.Instance.Settings.HideSlopeLimits; }
 
         /// <summary>
         /// Gets a value indicating whether gets a bool for whether there are any ages selected.
@@ -232,6 +234,11 @@ namespace Tree_Controller.Tools
         /// Gets the selected prefab set.
         /// </summary>
         public string PrefabSet { get => m_SelectedPrefabSet.value; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to hide slope limits.
+        /// </summary>
+        public bool HideSlopeLimits { get => m_HideSlopeLimits.value; set => m_HideSlopeLimits.Update(value); }
 
         /// <summary>
         /// Resets the selected prefab set.
@@ -556,6 +563,7 @@ namespace Tree_Controller.Tools
             AddBinding(m_Radius = new ValueBinding<float>(ModId, "Radius", 100f));
             AddBinding(m_SelectedPrefabSet = new ValueBinding<string>(ModId, "PrefabSet", string.Empty));
             AddBinding(m_HidePreserveAgeToggle = new ValueBinding<bool>(ModId, "HidePreserveAgeToggle", TreeControllerMod.Instance.Settings.DisableTreeGrowth));
+            AddBinding(m_HideSlopeLimits = new ValueBinding<bool>(ModId, "HideSlopeLimits", TreeControllerMod.Instance.Settings.HideSlopeLimits));
             m_IsEditor = CreateBinding("IsEditor", false);
             m_ShowStump = CreateBinding("ShowStump", false);
             m_AdvancedForestBrushEntries = CreateBinding("AdvancedForestBrushEntries", new AdvancedForestBrushEntry[] { });
@@ -563,7 +571,7 @@ namespace Tree_Controller.Tools
             m_MaxElevation = CreateBinding("MaxElevation", 4096);
             m_SeaLevel = CreateBinding("SeaLevel", 0);
             m_MinSlope = CreateBinding("MinSlope", "SetMinSlope", 0f, SetMinSlope);
-            m_MaxSlope = CreateBinding("MaxSlope", "SetMaxSlope", 90f, SetMaxSlope);
+            m_MaxSlope = CreateBinding("MaxSlope", "SetMaxSlope", TreeControllerMod.Instance.Settings.MaxTreeSlope, SetMaxSlope);
 
             // This section handles trigger bindings which listen for triggers from UI and then start an event.
             AddBinding(new TriggerBinding<int>(ModId, "ChangeToolMode", ChangeToolMode));
@@ -932,10 +940,21 @@ namespace Tree_Controller.Tools
             }
 
             bool ctrlKeyPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
-            if (prefabSetID.Contains("custom") && selectedPrefabs.Count > 1 && ctrlKeyPressed)
+            if (prefabSetID.Contains("custom") &&
+                selectedPrefabs.Count > 1 &&
+                ctrlKeyPressed)
             {
                 m_Log.Debug($"{nameof(TreeControllerUISystem)}.{nameof(ChangePrefabSet)} trying to add prefab ids to set lookup.");
-                m_PrefabSetsLookup[prefabSetID].AdvancedForestBrushEntries = m_AdvancedForestBrushEntries.Value;
+                if (m_AdvancedForestBrushEntries.Value.Length > 2)
+                {
+                    m_PrefabSetsLookup[prefabSetID].AdvancedForestBrushEntries = m_AdvancedForestBrushEntries.Value;
+                }
+                else
+                {
+                    CustomSetRepository temporaryCustomSet = new CustomSetRepository(selectedPrefabs);
+                    m_PrefabSetsLookup[prefabSetID].AdvancedForestBrushEntries = temporaryCustomSet.AdvancedForestBrushEntries;
+                }
+
                 TrySaveCustomPrefabSet(prefabSetID);
             }
 
@@ -1063,7 +1082,7 @@ namespace Tree_Controller.Tools
         /// Sets the maximum terrain slope for vegetation placement.
         /// </summary>
         /// <param name="value">Maximum slope in degrees.</param>
-        private void SetMaxSlope(float value) 
+        private void SetMaxSlope(float value)
         {
             float maxSlope = Mathf.Clamp(value, 0f, 90f);
             m_MaxSlope.Value = maxSlope;
@@ -1071,6 +1090,9 @@ namespace Tree_Controller.Tools
             if (m_MinSlope.Value > maxSlope) {
                 m_MinSlope.Value = maxSlope;
             }
+
+            TreeControllerMod.Instance.Settings.MaxTreeSlope = m_MaxSlope.Value;
+            TreeControllerMod.Instance.Settings.ApplyAndSave();
         }
 
         /// <summary>

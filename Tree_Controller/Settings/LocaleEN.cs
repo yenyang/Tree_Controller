@@ -95,6 +95,8 @@ namespace Tree_Controller.Settings
                 { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.ResetWindSliders)), "After confirmation this will reset wind override sliders." },
                 { m_Setting.GetOptionWarningLocaleID(nameof(TreeControllerSettings.ResetWindSliders)), "Reset wind override sliders?" },
                 { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.Author)), "Tree Wind Controller co-authored with BruceyBoy, Originally by donutmonger." },
+                { m_Setting.GetOptionLabelLocaleID(nameof(TreeControllerSettings.HideSlopeLimits)), "Hide Slope Limits" },
+                { m_Setting.GetOptionDescLocaleID(nameof(TreeControllerSettings.HideSlopeLimits)), "Hides the tool options for minimum and maximum slopes while placing vegetation." },
                 { "Options.TOOLTIPYYTC[WholeMapApply]", "Right Click to Apply." },
                 { "YY_TREE_CONTROLLER[Selection]", "Selection" },
                 { "YY_TREE_CONTROLLER[Age]", "Age" },

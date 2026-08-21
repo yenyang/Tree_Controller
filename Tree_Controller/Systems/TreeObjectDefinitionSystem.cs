@@ -188,7 +188,7 @@ namespace Tree_Controller.Systems
                     }
 
                     if (m_TreeControllerUISystem.SlopeFilterEnabled &&
-                        !PlacementPassesSlopeFilter(currentObjectDefinition.m_Position)) 
+                        !PlacementPassesSlopeFilter(currentObjectDefinition.m_Position))
                     {
                         destroyEntity = true;
                     }

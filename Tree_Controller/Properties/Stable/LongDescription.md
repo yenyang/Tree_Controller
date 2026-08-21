@@ -77,11 +77,11 @@ I will respond on the code modding channels on Cities: Skylines Modding Discord.
 * yenyang - Mod Author
 * Chameleon TBN - Testing, Feedback, Icons, and Logo
 * BruceyBoy - Co-Authored Tree Wind Controller
-* phillycheese - Code Contribution
+* phillycheese, Winter - Code Contribution
 * donutmonger - Original author of Tree Wind Controller on Thunderstore.
 * Algernon - Help with UI, Cooperative Development and Code Sharing, Collaboration regarding line tool.
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing
 * T.D.W., krzychu124, and Quboid - Cooperative Development and Code Sharing
 * Nullpinter - Localization support
-* Localization: Hendrix, Fuchs23, FearMyFeedEU, and redlabracer  (German), Nyoko and Citadino (Spanish), Mazi and Furios (Italian), Luiz Fernando de Paula and felipecollucci (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak, Morgan (French), syuuga101 and nd381 (Japanese), TwotoolusFLY_LSh.st and Hinanchovo (Korean), _hayrynenart, SivenesisI,and krugl1y (Russian), allegretic (Chinese Traditional), Ti4goc (European Portuguese), GeraspteGatenKaas (Dutch)
+* Localization: Hendrix, Fuchs23, FearMyFeedEU, and redlabracer  (German), Nyoko and Citadino (Spanish), Mazi, Furios and Stefano Andreosi (Italian), Luiz Fernando de Paula, felipecollucci, and DTavares2112 (Brazilian Portuguese), RilkeXS and Nullpinter (Chinese Simplified), karmel68 (Polish), Karg, edouardtherrien24, CEO of Tabarnak, Morgan (French), syuuga101 and nd381 (Japanese), TwotoolusFLY_LSh.st, Hinanchovo and acelion19 (Korean), _hayrynenart, SivenesisI,and krugl1y (Russian), allegretic and graimeck (Chinese Traditional), Ti4goc (European Portuguese), GeraspteGatenKaas (Dutch)
 * Tigon Ologdring, code:witch - Testing, Feedback

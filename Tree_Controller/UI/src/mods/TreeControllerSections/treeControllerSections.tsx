@@ -88,6 +88,7 @@ const IsEditor$ =           bindValue<boolean>(mod.id, "IsEditor");
 const ShowStump$ =           bindValue<boolean>(mod.id, 'ShowStump');
 const ShowPanel$ =          bindValue<boolean>(mod.id, 'ShowForestBrushPanel');
 const HidePreserveAgeToggle$ = bindValue<boolean>(mod.id, 'HidePreserveAgeToggle');
+const HideSlopeLimits$ =    bindValue<boolean>(mod.id, 'HideSlopeLimits');
 
 // These are strings that will be used for event triggers.
 const radiusDownID =             "radius-down-arrow";
@@ -184,6 +185,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
         const ShowPanel = useValue(ShowPanel$);
         const DecorationMode = useValue(toolbar.decorationMode$);
         const HidePreserveAgeToggle = useValue(HidePreserveAgeToggle$);
+        const HideSlopeLimits = useValue(HideSlopeLimits$);
 
         // These set up state variables for custom sets switching from number to save disk icon.
         const [isCustomSet1Hovered, setCustomSet1Hovered] = useState(false);
@@ -442,7 +444,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                             <VanillaComponentResolver.instance.ToolButton tooltip={radiusUpTooltipDescription} onSelect={() => handleClick(radiusUpID)} src={arrowUpSrc} focusKey={VanillaComponentResolver.instance.FOCUS_DISABLED} className={VanillaComponentResolver.instance.mouseToolOptionsTheme.endButton} ></VanillaComponentResolver.instance.ToolButton>
                         </VanillaComponentResolver.instance.Section>
                     )}
-                    {(treeControllerToolActive || (objectToolActive && IsVegetation) || lineToolActive) && (
+                    {(objectToolActive || lineToolActive) && IsVegetation && !HideSlopeLimits &&  (
                         <VanillaComponentResolver.instance.Section title={minSlopeTitle}>
                             <SlopeNumberControl
                                 value={MinSlope}
@@ -452,7 +454,7 @@ export const TreeControllerComponent: ModuleRegistryExtend = (Component : any) =
                             ></SlopeNumberControl>
                         </VanillaComponentResolver.instance.Section>
                     )}
-                    {(treeControllerToolActive || (objectToolActive && IsVegetation) || lineToolActive) && (
+                    {(objectToolActive || lineToolActive) && IsVegetation && !HideSlopeLimits && (
                         <VanillaComponentResolver.instance.Section title={maxSlopeTitle}>
                             <SlopeNumberControl
                                 value={MaxSlope}

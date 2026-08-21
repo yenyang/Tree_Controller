@@ -210,6 +210,13 @@ namespace Tree_Controller.Settings
         public Ages PreviousAgeSelection { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to hide slope limits.
+        /// </summary>
+        [SettingsUISection(General, Stable)]
+        [SettingsUISetter(typeof(TreeControllerSettings), nameof(ToggleHideSlopeLimits))]
+        public bool HideSlopeLimits { get; set; }
+
+        /// <summary>
         /// Sets a value indicating whether the mod needs to safely remove components and reset models.
         /// </summary>
         [SettingsUIButton]
@@ -241,6 +248,7 @@ namespace Tree_Controller.Settings
                 ConstrainBrush = true;
                 IncludeStumps = false;
                 FasterFullBrushStrength = false;
+                HideSlopeLimits = false;
                 ApplyAndSave();
             }
         }
@@ -330,6 +338,12 @@ namespace Tree_Controller.Settings
         public float WindInterpolationDuration { get; set; }
 
         /// <summary>
+        ///  Gets or sets a value indicating the max tree slope.
+        /// </summary>
+        [SettingsUIHidden]
+        public float MaxTreeSlope { get; set; }
+
+        /// <summary>
         /// Gets a value indicating the author of Tree Wind Controller.
         /// </summary>
         [SettingsUISection(WindTab, Info)]
@@ -399,6 +413,8 @@ namespace Tree_Controller.Settings
             ConstrainBrush = true;
             FasterFullBrushStrength = false;
             PreviousAgeSelection = Ages.Adult;
+            MaxTreeSlope = 45f;
+            HideSlopeLimits = false;
         }
 
         /// <summary>
@@ -468,6 +484,15 @@ namespace Tree_Controller.Settings
         public bool DisableDisableTreeGrowth()
         {
             return true;
+        }
+
+        /// <summary>
+        /// Sets HideSlopeLimits on UI System to handle Hiding Slope Limit tool options.
+        /// </summary>
+        /// <param name="value">True if Slope Limits hidden. False if not.</param>
+        public void ToggleHideSlopeLimits(bool value)
+        {
+            World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<TreeControllerUISystem>().HideSlopeLimits = value;
         }
     }
 }

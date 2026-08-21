@@ -73,7 +73,7 @@ Algernon and I have collaborated to allow for sets and multiple vegetation types
 * yenyang - Mod Author
 * Chameleon TBN - Testing, Feedback, Icons, and Logo
 * BruceyBoy - Co-Authored Tree Wind Controller
-* phillycheese - Code Contribution
+* phillycheese, Winter - Code Contributions
 * donutmonger - Original author of Tree Wind Controller on Thunderstore.
 * Algernon - Help with UI, Cooperative Development and Code Sharing, Collaboration regarding line tool.
 * Klyte45 - Help with UI, Cooperative Development and Code Sharing

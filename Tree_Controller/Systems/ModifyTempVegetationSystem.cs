@@ -85,14 +85,6 @@ namespace Tree_Controller.Systems
                 ushort i = 1;
                 foreach (Entity entity in entities)
                 {
-
-                    // Slope Filter check
-                    if (!PlacementPassesSlopeFilter(entity)) 
-                    {
-                        EntityManager.AddComponent<Deleted>(entity);
-                        continue;
-                    }
-
                     if (EntityManager.TryGetComponent(entity, out PseudoRandomSeed pseudoRandomSeed))
                     {
                         if (m_RandomSeed + i < ushort.MaxValue)
@@ -145,13 +137,6 @@ namespace Tree_Controller.Systems
                 bool placingStreetTrees = false;
                 foreach (Entity entity in entities)
                 {
-                    // Slope Filter Check
-                    if (!PlacementPassesSlopeFilter(entity))
-                    {
-                        EntityManager.AddComponent<Deleted>(entity);
-                        continue;
-                    }
-
                     if (!EntityManager.TryGetComponent(entity, out PrefabRef prefabRef)
                         || !EntityManager.TryGetComponent(entity, out Game.Objects.Tree tree)
                         || !EntityManager.TryGetComponent(entity, out PseudoRandomSeed pseudoRandomSeed))

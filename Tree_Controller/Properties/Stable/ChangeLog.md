@@ -1,2 +1,3 @@
-﻿# HotFix v.1.7.4
-* Fix CTD when placing assets with vegatation subobjects if the subobject vegation doesn't meet slope limits.
+﻿# Patch v.1.7.5
+* Rebuild for game version v1.6.2f1
+* Updated Localization
